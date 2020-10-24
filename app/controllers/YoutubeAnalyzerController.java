@@ -1,6 +1,5 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import models.WebServiceClient;
 import play.libs.ws.WSClient;
 import play.mvc.Controller;
@@ -24,10 +23,13 @@ public class YoutubeAnalyzerController extends Controller {
      * this method will be called when the application receives a
      * <code>GET</code> request with a path of <code>/</code>.
      */
-    public Result index() {
+    public CompletionStage<Result> index() {
         WebServiceClient webServiceClient = new WebServiceClient(wsClient);
-        CompletionStage<JsonNode> response = webServiceClient.fetchVideos("Pikachu");
-        System.out.println(response);
-        return ok(views.html.index.render());
+        WSClient wsClient = webServiceClient.getWsClient();
+        return wsClient.url("https://www.googleapis.com/youtube/v3/search?part=snippet&q=pikachu&key=")
+                .get()
+                .thenApply(response -> ok("Feed title: " + response.asJson()
+                        .findPath("title")
+                        .asText()));
     }
 }

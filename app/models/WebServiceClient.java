@@ -17,6 +17,10 @@ public class WebServiceClient implements WSBodyReadables, WSBodyWritables {
         this.wsClient = wsClient;
     }
 
+    public WSClient getWsClient() {
+        return wsClient;
+    }
+
     public CompletionStage<JsonNode> fetchVideos(String key) {
         WSRequest request = wsClient.url("https://www.googleapis.com/youtube/v3/search?part=snippet&q=pikachu&key=AIzaSyBt1HUXNJTAtfKyENT-yx6rrBHgHTWnHj4");
         CompletionStage<JsonNode> jsonResponsePromise = request.get().thenApply(wsResponse -> wsResponse.getBody(json()));
