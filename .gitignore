@@ -1,4 +1,7 @@
 .idea
-project
+project/project
+project/target
 target
-conf/logback.xml
+logs
+.bsp
+.g8
