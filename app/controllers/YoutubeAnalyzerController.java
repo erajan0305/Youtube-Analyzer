@@ -1,13 +1,22 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import models.WebServiceClient;
+import play.libs.ws.WSClient;
 import play.mvc.Controller;
 import play.mvc.Result;
+
+import javax.inject.Inject;
+import java.util.concurrent.CompletionStage;
 
 /**
  * This controller contains an action to handle HTTP requests
  * to the application's home page.
  */
 public class YoutubeAnalyzerController extends Controller {
+
+    @Inject
+    WSClient wsClient;
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -16,6 +25,9 @@ public class YoutubeAnalyzerController extends Controller {
      * <code>GET</code> request with a path of <code>/</code>.
      */
     public Result index() {
+        WebServiceClient webServiceClient = new WebServiceClient(wsClient);
+        CompletionStage<JsonNode> response = webServiceClient.fetchVideos("Pikachu");
+        System.out.println(response);
         return ok(views.html.index.render());
     }
 }
