@@ -54,8 +54,8 @@ Seq[Any](format.raw/*1.1*/("""<!DOCTYPE html>
 
               /*
                   -- GENERATED --
-                  DATE: 2020-10-24T11:11:46.654
-                  SOURCE: /home/akash/Rajan/SOEN 6441/youtube-analyzer/app/views/channelInfo.scala.html
+                  DATE: 2020-10-24T14:38:56.829775
+                  SOURCE: /Users/kishanbhimani/IntellijProjects/Youtube-Analyzer/app/views/channelInfo.scala.html
                   HASH: 3d0bc9311698f9a25e427c5c3afd85421e367061
                   MATRIX: 995->0
                   LINES: 32->1

@@ -1,6 +1,6 @@
 // @GENERATOR:play-routes-compiler
-// @SOURCE:/home/akash/Rajan/SOEN 6441/youtube-analyzer/conf/routes
-// @DATE:Sat Oct 24 10:57:34 MDT 2020
+// @SOURCE:/Users/kishanbhimani/IntellijProjects/Youtube-Analyzer/conf/routes
+// @DATE:Sat Oct 24 14:38:56 EDT 2020
 
 
 package router {
