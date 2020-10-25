@@ -1,18 +1,25 @@
-@import models.SearchResults.SearchResults
-@(searchForm: Form[Search], searchKeywords: Array[String], searchResults: SearchResults)(response: String)(implicit messages: play.i18n.Messages)
+@(searchForm: Form[Search], searchResponse: List[String])(searchKeywords: Array[String])(implicit messages: play.i18n.Messages)
 
 
 <html>
-    <head>
-        <title>Youtube Analyzer</title>
-    </head>
-    <body>
-        <section id="content">
-            <h1>Youtube Analyzer</h1>
-            <br/><br/>
-            @helper.form(action = routes.YoutubeAnalyzerController.fetchVideosByKeywords()) {
-                @helper.inputText(searchForm("searchKeyword"))
-                <input type="submit" value="Search">
+<head>
+    <title>Youtube Analyzer</title>
+</head>
+<body>
+<section id="content">
+    <h1>Youtube Analyzer</h1>
+    <br/><br/>
+    @helper.form(action = routes.YoutubeAnalyzerController.fetchVideosByKeywords()) {
+    @helper.inputText(searchForm("searchKeyword"))
+    <input type="submit" value="Search">
+    }
+    <div>
+        @if(searchResponse != null) {
+        <ol>
+            @for(response <- searchResponse) {
+            <hr style="width:50%;text-align:left;margin-left:0">
+            @if(response != null) {
+            <li>@response</li>
             }
             <div>
                 @if(searchResults != null) {
@@ -32,6 +39,7 @@
                     </ol>
                 }
             </div>
-        </section>
-    </body>
+  </div>
+</section>
+</body>
 </html>

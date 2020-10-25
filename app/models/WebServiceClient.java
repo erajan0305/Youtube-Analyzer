@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 
 public class WebServiceClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;
-    private final String API_KEY = "";
+    private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
 
     @Inject
     public WebServiceClient(WSClient wsClient) {
@@ -40,7 +40,6 @@ public class WebServiceClient implements WSBodyReadables, WSBodyWritables {
         JsonNode jsonData = (JsonNode) responsePromise.toCompletableFuture().get();
         Videos videos = Json.fromJson(jsonData, Videos.class);
         if (videos.items != null && !videos.items.isEmpty()) {
-            System.out.println(videos.items.get(0).statistics.viewCount);
             return videos.items.get(0).statistics.viewCount;
         }
         return "No Data Available";

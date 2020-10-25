@@ -16,8 +16,10 @@ import views.html.index;
 import views.html.similarContent;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * This controller contains an action to handle HTTP requests
@@ -56,7 +58,12 @@ public class YoutubeAnalyzerController extends Controller {
                 e.printStackTrace();
             }
         });
-        return ok(index.render(searchForm, requestBody.get("searchKeyword")[0].split(" "), searchResults, "", messagesApi.preferred(request)));
+        List<String> searchResponse = searchResults.items.stream()
+                .map(item -> "<a href='https://www.youtube.com/watch?v=" + item.id.videoId + "' target='_blank'>" + item.snippet.title + "</a>&nbsp;&nbsp;" +
+                        "<a href='#' target='_blank'>" + item.snippet.channelTitle + "</a>&nbsp;&nbsp;" +
+                        item.viewCount + " " + item.snippet.publishTime)
+                .collect(Collectors.toList());
+        return ok(index.render(searchForm, searchResponse, "requestBody.get("searchKeyword")[0].split(" ")", messagesApi.preferred(request)));
     }
 
     public Result fetchSimilarityStats(String term) {
