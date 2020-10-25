@@ -1,4 +1,4 @@
-@(searchForm: Form[Search], searchResponse: List[String])(response: String)(implicit messages: play.i18n.Messages)
+@(searchForm: Form[Search], searchResponse: List[String])(searchKeywords: Array[String])(implicit messages: play.i18n.Messages)
 
 
 <html>
@@ -21,10 +21,25 @@
             @if(response != null) {
             <li>@response</li>
             }
-            }
-        </ol>
-        }
-    </div>
+            <div>
+                @if(searchResults != null) {
+                    @if(searchKeywords!=null && searchKeywords.length > 0){
+                        @for(searchKeyword <- searchKeywords){
+                            <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchKeyword)'>@searchKeyword</a>
+                        }
+                    }
+                    <ol>
+                    @for(item <- searchResults.items) {
+                        <hr style="width:50%;text-align:left;margin-left:0">
+                        @if(item != null) {
+                            <li>@item.snippet.title, <b>@item.snippet.channelTitle</b>
+                                ,@item.viewCount ,@item.snippet.publishTime</li>
+                        }
+                    }
+                    </ol>
+                }
+            </div>
+  </div>
 </section>
 </body>
 </html>

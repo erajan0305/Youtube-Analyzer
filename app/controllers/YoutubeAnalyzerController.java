@@ -13,6 +13,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import views.html.index;
+import views.html.similarContent;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -41,7 +42,7 @@ public class YoutubeAnalyzerController extends Controller {
      */
     public Result index(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
-        return ok(index.render(searchForm, null, "", messagesApi.preferred(request)));
+        return ok(index.render(searchForm, null, null, "", messagesApi.preferred(request)));
     }
 
     public Result fetchVideosByKeywords(Http.Request request) throws ExecutionException, InterruptedException {
@@ -62,6 +63,10 @@ public class YoutubeAnalyzerController extends Controller {
                         "<a href='#' target='_blank'>" + item.snippet.channelTitle + "</a>&nbsp;&nbsp;" +
                         item.viewCount + " " + item.snippet.publishTime)
                 .collect(Collectors.toList());
-        return ok(index.render(searchForm, searchResponse, "", messagesApi.preferred(request)));
+        return ok(index.render(searchForm, searchResponse, "requestBody.get("searchKeyword")[0].split(" ")", messagesApi.preferred(request)));
+    }
+
+    public Result fetchSimilarityStats(String term) {
+        return ok(similarContent.render());
     }
 }
