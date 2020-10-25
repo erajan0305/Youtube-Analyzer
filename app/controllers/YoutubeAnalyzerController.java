@@ -39,7 +39,7 @@ public class YoutubeAnalyzerController extends Controller {
      */
     public Result index(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
-        return ok(index.render(searchForm,null, "", messagesApi.preferred(request)));
+        return ok(index.render(searchForm, null, "", messagesApi.preferred(request)));
     }
 
     public Result fetchVideosByKeywords(Http.Request request) throws ExecutionException, InterruptedException {
@@ -48,15 +48,13 @@ public class YoutubeAnalyzerController extends Controller {
         WebServiceClient webServiceClient = new WebServiceClient(wsClient);
         JsonNode jsonData = webServiceClient.fetchVideos(requestBody.get("searchKeyword")[0]);
         SearchResults searchResults = Json.fromJson(jsonData, SearchResults.class);
-        searchResults.items.stream().forEach(item -> {
+        searchResults.items.forEach(item -> {
             try {
-                item.viewCount = webServiceClient.getVideoJsonByVideoIds(item.id.videoId);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+                item.viewCount = webServiceClient.getVideoJsonByVideoId(item.id.videoId);
+            } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
-        return ok(index.render(searchForm,searchResults, "", messagesApi.preferred(request)));
+        return ok(index.render(searchForm, searchResults, "", messagesApi.preferred(request)));
     }
 }

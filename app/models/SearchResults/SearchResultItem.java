@@ -7,16 +7,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "kind",
-        "etag",
         "id",
         "snippet"
 })
 public class SearchResultItem {
-    @JsonProperty("kind")
-    public String kind;
-    @JsonProperty("etag")
-    public String etag;
     @JsonProperty("id")
     public Id id;
     @JsonProperty("snippet")

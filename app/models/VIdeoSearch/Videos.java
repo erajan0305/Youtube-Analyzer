@@ -8,10 +8,7 @@ import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "kind",
-        "etag",
-        "items",
-        "pageInfo"
+        "items"
 })
 public class Videos {
     @JsonProperty("items")

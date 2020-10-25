@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 
 public class WebServiceClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;
+    private final String API_KEY = "";
 
     @Inject
     public WebServiceClient(WSClient wsClient) {
@@ -25,20 +26,21 @@ public class WebServiceClient implements WSBodyReadables, WSBodyWritables {
     }
 
     public JsonNode fetchVideos(String searchKey) throws ExecutionException, InterruptedException {
-        System.out.println("--" + searchKey);
-        WSRequest request = wsClient.url("https://www.googleapis.com/youtube/v3/search?part=snippet&q=" + searchKey + "&maxResults=10&key=AIzaSyBt1HUXNJTAtfKyENT-yx6rrBHgHTWnHj4");
+        WSRequest request = wsClient
+                .url("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&order=date&q=" + searchKey + "&fields=items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))&key=" + API_KEY);
         CompletionStage<Object> responsePromise = request.get().thenApply(wsResponse -> wsResponse.getBody(json()));
         JsonNode jsonData = (JsonNode) responsePromise.toCompletableFuture().get();
         return jsonData;
     }
 
 
-    public String getVideoJsonByVideoIds(String videoId) throws ExecutionException, InterruptedException {
-        WSRequest request = wsClient.url("https://www.googleapis.com/youtube/v3/videos?part=statistics&id=" + videoId + "&key=AIzaSyBt1HUXNJTAtfKyENT-yx6rrBHgHTWnHj4");
+    public String getVideoJsonByVideoId(String videoId) throws ExecutionException, InterruptedException {
+        WSRequest request = wsClient.url("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=" + videoId + "&fields=items(id,snippet(publishedAt,channelId,title,description,channelTitle),contentDetails(duration),statistics(viewCount,likeCount,dislikeCount,commentCount))&key=" + API_KEY);
         CompletionStage<Object> responsePromise = request.get().thenApply(wsResponse -> wsResponse.getBody(json()));
         JsonNode jsonData = (JsonNode) responsePromise.toCompletableFuture().get();
         Videos videos = Json.fromJson(jsonData, Videos.class);
-        if(!videos.items.isEmpty()){
+        if (videos.items != null && !videos.items.isEmpty()) {
+            System.out.println(videos.items.get(0).statistics.viewCount);
             return videos.items.get(0).statistics.viewCount;
         }
         return "No Data Available";

@@ -10,9 +10,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "channelId",
         "title",
         "description",
-        "thumbnails",
         "channelTitle",
-        "liveBroadcastContent",
         "publishTime"
 })
 public class Snippet {
@@ -24,12 +22,8 @@ public class Snippet {
     public String title;
     @JsonProperty("description")
     public String description;
-    @JsonProperty("thumbnails")
-    public Thumbnails thumbnails;
     @JsonProperty("channelTitle")
     public String channelTitle;
-    @JsonProperty("liveBroadcastContent")
-    public String liveBroadcastContent;
     @JsonProperty("publishTime")
     public String publishTime;
 }
