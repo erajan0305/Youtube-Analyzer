@@ -15,18 +15,18 @@
                 <input type="submit" value="Search">
             }
             <div>
-                <div>
                 @if(searchResults != null) {
                     <ol>
                     @for(item <- searchResults.items) {
+                        <hr style="width:50%;text-align:left;margin-left:0">
                         @if(item != null) {
-                            <li>@item.snippet.title, <b>@item.snippet.channelTitle</b> ,@item.viewCount ,@item.snippet.publishTime</li>
+                            <li>@item.snippet.title, <b>@item.snippet.channelTitle</b>
+                                ,@item.viewCount ,@item.snippet.publishTime</li>
                         }
                     }
                     </ol>
                 }
-        </div>
-        </div>
+            </div>
         </section>
     </body>
 </html>
