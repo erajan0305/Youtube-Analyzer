@@ -14,32 +14,22 @@
     <input type="submit" value="Search">
     }
     <div>
-        @if(searchResponse != null) {
+        @if(searchResponse != null && searchResponse.length > 0) {
         <ol>
+            @if(searchKeywords!=null && searchKeywords.length > 0){
+            @for(searchKeyword <- searchKeywords){
+            <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchKeyword)'>@searchKeyword</a>
+            }
+            }
             @for(response <- searchResponse) {
             <hr style="width:50%;text-align:left;margin-left:0">
             @if(response != null) {
             <li>@response</li>
             }
-            <div>
-                @if(searchResults != null) {
-                    @if(searchKeywords!=null && searchKeywords.length > 0){
-                        @for(searchKeyword <- searchKeywords){
-                            <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchKeyword)'>@searchKeyword</a>
-                        }
-                    }
-                    <ol>
-                    @for(item <- searchResults.items) {
-                        <hr style="width:50%;text-align:left;margin-left:0">
-                        @if(item != null) {
-                            <li>@item.snippet.title, <b>@item.snippet.channelTitle</b>
-                                ,@item.viewCount ,@item.snippet.publishTime</li>
-                        }
-                    }
-                    </ol>
-                }
-            </div>
-  </div>
+            }
+        </ol>
+        }
+    </div>
 </section>
 </body>
 </html>
