@@ -1,5 +1,5 @@
 @import models.SearchResults.SearchResults
-@(searchForm: Form[Search], searchResults: SearchResults)(response: String)(implicit messages: play.i18n.Messages)
+@(searchForm: Form[Search], searchKeywords: Array[String], searchResults: SearchResults)(response: String)(implicit messages: play.i18n.Messages)
 
 
 <html>
@@ -16,6 +16,11 @@
             }
             <div>
                 @if(searchResults != null) {
+                    @if(searchKeywords!=null && searchKeywords.length > 0){
+                        @for(searchKeyword <- searchKeywords){
+                            <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchKeyword)'>@searchKeyword</a>
+                        }
+                    }
                     <ol>
                     @for(item <- searchResults.items) {
                         <hr style="width:50%;text-align:left;margin-left:0">
