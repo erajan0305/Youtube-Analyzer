@@ -2,10 +2,12 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.Search;
+import models.SearchResults.SearchResults;
 import models.WebServiceClient;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
+import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -37,17 +39,24 @@ public class YoutubeAnalyzerController extends Controller {
      */
     public Result index(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
-        return ok(index.render(searchForm, "", messagesApi.preferred(request)));
+        return ok(index.render(searchForm,null, "", messagesApi.preferred(request)));
     }
 
     public Result fetchVideosByKeywords(Http.Request request) throws ExecutionException, InterruptedException {
         Form<Search> searchForm = formFactory.form(Search.class);
-//        Form<Search> postedSearchForm = formFactory.form(Search.class).bindFromRequest(request);
-//        Search search = postedSearchForm.get();
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         WebServiceClient webServiceClient = new WebServiceClient(wsClient);
         JsonNode jsonData = webServiceClient.fetchVideos(requestBody.get("searchKeyword")[0]);
-//        System.out.println(jsonData);
-        return ok(index.render(searchForm, jsonData.asText(), messagesApi.preferred(request)));
+        SearchResults searchResults = Json.fromJson(jsonData, SearchResults.class);
+        searchResults.items.stream().forEach(item -> {
+            try {
+                item.viewCount = webServiceClient.getVideoJsonByVideoIds(item.id.videoId);
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        return ok(index.render(searchForm,searchResults, "", messagesApi.preferred(request)));
     }
 }

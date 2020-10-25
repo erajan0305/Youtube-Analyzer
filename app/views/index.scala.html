@@ -1,19 +1,32 @@
-@(searchForm: Form[Search])(response: String)(implicit messages: play.i18n.Messages)
-@import helper._
+@import models.SearchResults.SearchResults
+@(searchForm: Form[Search], searchResults: SearchResults)(response: String)(implicit messages: play.i18n.Messages)
+
 
 <html>
-<head>
-    <title>Youtube Analyzer</title>
-</head>
-<body>
-<section id="content">
-    <h1>Youtube Analyzer</h1>
-    <br/><br/>
-    @helper.form(action = routes.YoutubeAnalyzerController.fetchVideosByKeywords()) {
-    @helper.inputText(searchForm("searchKeyword"))
-    <input type="submit" value="Search">
-    }
-    <div>@response</div>
-</section>
-</body>
+    <head>
+        <title>Youtube Analyzer</title>
+    </head>
+    <body>
+        <section id="content">
+            <h1>Youtube Analyzer</h1>
+            <br/><br/>
+            @helper.form(action = routes.YoutubeAnalyzerController.fetchVideosByKeywords()) {
+                @helper.inputText(searchForm("searchKeyword"))
+                <input type="submit" value="Search">
+            }
+            <div>
+                <div>
+                @if(searchResults != null) {
+                    <ol>
+                    @for(item <- searchResults.items) {
+                        @if(item != null) {
+                            <li>@item.snippet.title, <b>@item.snippet.channelTitle</b> ,@item.viewCount ,@item.snippet.publishTime</li>
+                        }
+                    }
+                    </ol>
+                }
+        </div>
+        </div>
+        </section>
+    </body>
 </html>
