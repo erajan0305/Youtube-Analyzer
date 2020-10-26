@@ -2,7 +2,7 @@ package controllers;
 
 import models.Search;
 import models.SearchResults.SearchResults;
-import models.WebServiceClient;
+import models.YouTubeClient;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
@@ -17,7 +17,6 @@ import views.html.similarContent;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 /**
@@ -44,20 +43,21 @@ public class YoutubeAnalyzerController extends Controller {
         return ok(index.render(searchForm, null, null, messagesApi.preferred(request)));
     }
 
-    public CompletionStage<Result> fetchVideosByKeywords(Http.Request request) throws ExecutionException, InterruptedException {
+    public CompletionStage<Result> fetchVideosByKeywords(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
-        WebServiceClient webServiceClient = new WebServiceClient(wsClient);
+        YouTubeClient youTubeClient = new YouTubeClient(wsClient);
         String searchKeyword = requestBody.get("searchKeyword")[0];
-        CompletionStage<SearchResults> searchResponsePromise = webServiceClient.fetchVideos(requestBody.get("searchKeyword")[0]);
+        CompletionStage<SearchResults> searchResponsePromise = youTubeClient.fetchVideos(requestBody.get("searchKeyword")[0]);
         searchResponsePromise.thenApply(searchResults -> searchResults.items.parallelStream()
-                .peek(item -> webServiceClient.getVideoJsonByVideoId(item.id.videoId)
+                .peek(item -> youTubeClient.getVideoJsonByVideoId(item.id.videoId)
                         .thenApply(viewCount -> {
                             item.viewCount = viewCount;
                             System.out.println(item.viewCount);
                             return item;
                         })
                 ).collect(Collectors.toList()));
+        // TODO: assign viewCount to item. Currently it is null even after assigning in `peek`.
         return searchResponsePromise.thenApply(searchResult -> ok(index.render(searchForm, searchResult, searchKeyword.split(" "), messagesApi.preferred(request))));
     }
 
