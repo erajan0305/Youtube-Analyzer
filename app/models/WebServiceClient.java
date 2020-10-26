@@ -1,6 +1,5 @@
 package models;
 
-import models.SearchResults.SearchResultItem;
 import models.SearchResults.SearchResults;
 import models.VIdeoSearch.Videos;
 import play.libs.Json;
@@ -27,21 +26,18 @@ public class WebServiceClient implements WSBodyReadables, WSBodyWritables {
 
     public CompletionStage<SearchResults> fetchVideos(String searchKey) {
         WSRequest request = this.wsClient
-                .url("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&order=date&q=" + searchKey + "&fields=items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))&key=" + API_KEY);
+                .url("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&type=videos&order=date&q=" + searchKey + "&fields=items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))&key=" + API_KEY);
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApply(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
-                .thenApply(searchResults -> searchResults.appendViewsCountToItems(searchResults));
+                .toCompletableFuture();
     }
 
 
-    public void getVideoJsonByVideoId(String videoId, SearchResultItem item) {
-        System.out.println(videoId);
+    public CompletionStage<String> getVideoJsonByVideoId(String videoId) {
         WSRequest request = this.wsClient.url("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=" + videoId + "&fields=items(id,snippet(publishedAt,channelId,title,description,channelTitle),contentDetails(duration),statistics(viewCount))&key=" + API_KEY);
-        request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
+        return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApply(video -> Json.fromJson(video, Videos.class))
                 .thenApply(video -> video.items.get(0).statistics.viewCount)
-                .thenAccept(viewsCount -> {
-                    item.viewCount = viewsCount;
-                });
+                .toCompletableFuture();
     }
 }
