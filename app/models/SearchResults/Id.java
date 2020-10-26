@@ -5,10 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-        "kind",
-        "videoId"
-})
+@JsonPropertyOrder({"videoId"})
+
 public class Id {
     @JsonProperty("videoId")
     public String videoId;
