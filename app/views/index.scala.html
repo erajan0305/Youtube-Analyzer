@@ -1,4 +1,5 @@
-@(searchForm: Form[Search], searchResponse: List[String])(searchKeywords: Array[String])(implicit messages: play.i18n.Messages)
+@import models.SearchResults.SearchResults
+@(searchForm: Form[Search], searchResults: SearchResults)(searchKeywords: Array[String])(implicit messages: play.i18n.Messages)
 
 
 <html>
@@ -14,17 +15,18 @@
     <input type="submit" value="Search">
     }
     <div>
-        @if(searchResponse != null && searchResponse.length > 0) {
+        @if(searchResults != null) {
         <ol>
             @if(searchKeywords!=null && searchKeywords.length > 0){
             @for(searchKeyword <- searchKeywords){
             <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchKeyword)'>@searchKeyword</a>
             }
             }
-            @for(response <- searchResponse) {
+            @for(item <- searchResults.items) {
             <hr style="width:50%;text-align:left;margin-left:0">
-            @if(response != null) {
-            <li>@response</li>
+            @if(item != null) {
+            <li>@item.snippet.title, <b>@item.snippet.channelTitle</b>
+                ,@item.viewCount ,@item.snippet.publishTime</li>
             }
             }
         </ol>

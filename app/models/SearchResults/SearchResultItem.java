@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "id",
-        "snippet"
+        "snippet",
+        "viewCount"
 })
 public class SearchResultItem {
     @JsonProperty("id")

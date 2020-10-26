@@ -1,6 +1,7 @@
 package models;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import models.SearchResults.SearchResultItem;
+import models.SearchResults.SearchResults;
 import models.VIdeoSearch.Videos;
 import play.libs.Json;
 import play.libs.ws.WSBodyReadables;
@@ -10,7 +11,6 @@ import play.libs.ws.WSRequest;
 
 import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
 public class WebServiceClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;
@@ -25,23 +25,23 @@ public class WebServiceClient implements WSBodyReadables, WSBodyWritables {
         return wsClient;
     }
 
-    public JsonNode fetchVideos(String searchKey) throws ExecutionException, InterruptedException {
-        WSRequest request = wsClient
+    public CompletionStage<SearchResults> fetchVideos(String searchKey) {
+        WSRequest request = this.wsClient
                 .url("https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&order=date&q=" + searchKey + "&fields=items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))&key=" + API_KEY);
-        CompletionStage<Object> responsePromise = request.get().thenApply(wsResponse -> wsResponse.getBody(json()));
-        JsonNode jsonData = (JsonNode) responsePromise.toCompletableFuture().get();
-        return jsonData;
+        return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
+                .thenApply(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
+                .thenApply(searchResults -> searchResults.appendViewsCountToItems(searchResults));
     }
 
 
-    public String getVideoJsonByVideoId(String videoId) throws ExecutionException, InterruptedException {
-        WSRequest request = wsClient.url("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=" + videoId + "&fields=items(id,snippet(publishedAt,channelId,title,description,channelTitle),contentDetails(duration),statistics(viewCount,likeCount,dislikeCount,commentCount))&key=" + API_KEY);
-        CompletionStage<Object> responsePromise = request.get().thenApply(wsResponse -> wsResponse.getBody(json()));
-        JsonNode jsonData = (JsonNode) responsePromise.toCompletableFuture().get();
-        Videos videos = Json.fromJson(jsonData, Videos.class);
-        if (videos.items != null && !videos.items.isEmpty()) {
-            return videos.items.get(0).statistics.viewCount;
-        }
-        return "No Data Available";
+    public void getVideoJsonByVideoId(String videoId, SearchResultItem item) {
+        System.out.println(videoId);
+        WSRequest request = this.wsClient.url("https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=" + videoId + "&fields=items(id,snippet(publishedAt,channelId,title,description,channelTitle),contentDetails(duration),statistics(viewCount))&key=" + API_KEY);
+        request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
+                .thenApply(video -> Json.fromJson(video, Videos.class))
+                .thenApply(video -> video.items.get(0).statistics.viewCount)
+                .thenAccept(viewsCount -> {
+                    item.viewCount = viewsCount;
+                });
     }
 }
