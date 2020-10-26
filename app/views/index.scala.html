@@ -15,13 +15,13 @@
     <input type="submit" value="Search">
     }
     <div>
+        @if(searchKeywords!=null && searchKeywords.length > 0){
+        @for(searchKeyword <- searchKeywords){
+        <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchKeyword)'>@searchKeyword</a>
+        }
+        }
         @if(searchResults != null) {
         <ol>
-            @if(searchKeywords!=null && searchKeywords.length > 0){
-            @for(searchKeyword <- searchKeywords){
-            <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchKeyword)'>@searchKeyword</a>
-            }
-            }
             @for(item <- searchResults.items) {
             <hr style="width:50%;text-align:left;margin-left:0">
             @if(item != null) {
