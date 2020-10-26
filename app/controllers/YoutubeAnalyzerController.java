@@ -65,7 +65,9 @@ public class YoutubeAnalyzerController extends Controller {
         return ok(similarContent.render());
     }
 
-    public Result fetchChannelInformation(String id) {
-        return ok(channelInfo.render(id));
+    public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id) {
+        YouTubeClient youTubeClient = new YouTubeClient(wsClient);
+        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = youTubeClient.getVideosJsonByChannelId(id);
+        return videosJsonByChannelIdSearchPromise.thenApply(searchResults -> ok(channelInfo.render(searchResults, "", messagesApi.preferred(request))));
     }
 }
