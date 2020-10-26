@@ -10,6 +10,7 @@ import play.libs.ws.WSClient;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.channelInfo;
 import views.html.index;
 import views.html.similarContent;
 
@@ -62,5 +63,9 @@ public class YoutubeAnalyzerController extends Controller {
 
     public Result fetchSimilarityStats(String term) {
         return ok(similarContent.render());
+    }
+
+    public Result fetchChannelInformation(String id) {
+        return ok(channelInfo.render(id));
     }
 }

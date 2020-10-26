@@ -25,7 +25,8 @@
             @for(item <- searchResults.items) {
             <hr style="width:50%;text-align:left;margin-left:0">
             @if(item != null) {
-            <li>@item.snippet.title, <b>@item.snippet.channelTitle</b>
+            <li><a href="https://www.youtube.com/watch?v=+@item.id.videoId" target="_blank">@item.snippet.title</a>,
+                <a href="@routes.YoutubeAnalyzerController.fetchChannelInformation(item.snippet.channelId)"><b>@item.snippet.channelTitle</b></a>
                 ,@item.viewCount ,@item.snippet.publishTime
             </li>
             }
