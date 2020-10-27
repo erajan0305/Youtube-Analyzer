@@ -1,5 +1,5 @@
 @import models.SearchResults.SearchResults
-@(searchForm: Form[Search], searchResults: SearchResults)(searchKeywords: Array[String])(implicit messages: play.i18n.Messages)
+@(searchForm: Form[Search], searchResultsMap: Map[String, SearchResults])(implicit messages: play.i18n.Messages)
 
 
 <html>
@@ -14,13 +14,14 @@
     @helper.inputText(searchForm("searchKeyword"))
     <input type="submit" value="Search">
     }
+
     <div>
-        @if(searchKeywords!=null && searchKeywords.length > 0){
-        @for(searchKeyword <- searchKeywords){
-        <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchKeyword)'>@searchKeyword</a>
+        @if(searchResultsMap !=null && searchResultsMap.size > 0) {
+        @for((searchWords, searchResults) <- searchResultsMap){
+        @for(searchWord <- searchWords.split(" ")){
+        <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchWord)'>@searchWord</a>
         }
-        }
-        @if(searchResults != null) {
+        @if(searchResults!=null) {
         <ol>
             @for(item <- searchResults.items) {
             <hr style="width:50%;text-align:left;margin-left:0">
@@ -32,6 +33,8 @@
             }
             }
         </ol>
+        }
+        }
         }
     </div>
 </section>

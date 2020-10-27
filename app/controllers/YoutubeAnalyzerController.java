@@ -1,6 +1,7 @@
 package controllers;
 
 import models.Search;
+import models.SearchResults.SearchResultItem;
 import models.SearchResults.SearchResults;
 import models.YouTubeClient;
 import play.data.Form;
@@ -15,6 +16,8 @@ import views.html.index;
 import views.html.similarContent;
 
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
@@ -32,6 +35,8 @@ public class YoutubeAnalyzerController extends Controller {
     @Inject
     MessagesApi messagesApi;
 
+    HashMap<String, SearchResults> searchResultHashMap = new HashMap<>();
+
     /**
      * An action that renders an HTML page with a welcome message.
      * The configuration in the <code>routes</code> file means that
@@ -40,25 +45,24 @@ public class YoutubeAnalyzerController extends Controller {
      */
     public Result index(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
-        return ok(index.render(searchForm, null, null, messagesApi.preferred(request)));
+        return ok(index.render(searchForm, null, messagesApi.preferred(request)));
     }
 
     public CompletionStage<Result> fetchVideosByKeywords(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
-        YouTubeClient youTubeClient = new YouTubeClient(wsClient);
         String searchKeyword = requestBody.get("searchKeyword")[0];
-        CompletionStage<SearchResults> searchResponsePromise = youTubeClient.fetchVideos(requestBody.get("searchKeyword")[0]);
+        YouTubeClient youTubeClient = new YouTubeClient(wsClient);
+        CompletionStage<SearchResults> searchResponsePromise = youTubeClient.fetchVideos(searchKeyword);
         searchResponsePromise.thenApply(searchResults -> searchResults.items.parallelStream()
-                .peek(item -> youTubeClient.getVideoJsonByVideoId(item.id.videoId)
-                        .thenApply(viewCount -> {
-                            item.viewCount = viewCount;
-                            System.out.println(item.viewCount);
-                            return item;
-                        })
-                ).collect(Collectors.toList()));
+                .map(SearchResultItem::appendViewCountToItem)
+                .peek(item -> System.out.println(item.viewCount))
+                .collect(Collectors.toList()));
         // TODO: assign viewCount to item. Currently it is null even after assigning in `peek`.
-        return searchResponsePromise.thenApply(searchResult -> ok(index.render(searchForm, searchResult, searchKeyword.split(" "), messagesApi.preferred(request))));
+        return searchResponsePromise.thenApply(searchResult -> {
+            searchResultHashMap.put(searchKeyword, searchResult);
+            return ok(index.render(searchForm, searchResultHashMap, messagesApi.preferred(request)));
+        });
     }
 
     public Result fetchSimilarityStats(String term) {
