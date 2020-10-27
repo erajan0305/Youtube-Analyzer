@@ -1,4 +1,5 @@
-@(id: String)
+@import models.SearchResults.SearchResults
+@(searchResults: SearchResults)(channelInfo: String)(implicit messages: play.i18n.Messages)
 
 <html lang="en">
 <head>
@@ -6,6 +7,21 @@
     <title>Channel Information</title>
 </head>
 <body>
-<h1>Channel Information @id</h1>
+<h1>Channel Information</h1>
+<div>
+    @if(searchResults != null) {
+    <h3>Top 10 Videos</h3>
+    <ul>
+        @for(item <- searchResults.items) {
+        <hr style="width:50%;text-align:left;margin-left:0">
+        @if(item != null) {
+        <li><a href="https://www.youtube.com/watch?v=@item.id.videoId" target="_blank">@item.snippet.title</a></li>
+        <li><b>Description: </b> @item.snippet.description</li>
+        <li><b>Publish Time: </b>@item.snippet.publishedAt</li>
+        }
+        }
+    </ul>
+    }
+</div>
 </body>
 </html>

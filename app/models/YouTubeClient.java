@@ -10,11 +10,12 @@ import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
 import javax.inject.Inject;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;
-    private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
+    private final String API_KEY = "AIzaSyBt1HUXNJTAtfKyENT-yx6rrBHgHTWnHj4";
 
     @Inject
     public YouTubeClient(WSClient wsClient) {
@@ -36,7 +37,6 @@ public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
                 .toCompletableFuture();
     }
 
-
     public CompletionStage<String> getVideoJsonByVideoId(String videoId) {
         WSRequest request = this.wsClient
                 .url("https://www.googleapis.com/youtube/v3/videos")
@@ -50,18 +50,18 @@ public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
                 .toCompletableFuture();
     }
 
-    public CompletionStage<String> getVideosJsonByChannelId(String channelId) {
+    public CompletableFuture<SearchResults> getVideosJsonByChannelId(String channelId) {
         WSRequest request = this.wsClient
-                .url("https://www.googleapis.com/youtube/v3/videos")
+                .url("https://www.googleapis.com/youtube/v3/search")
                 .addQueryParameter("channelId", channelId)
                 .addQueryParameter("maxResults", "10")
+                .addQueryParameter("type", "videos")
                 .addQueryParameter("order", "date")
-                .addQueryParameter("part", "snippet,contentDetails,statistics")
-                .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,title,description,channelTitle),contentDetails(duration),statistics(viewCount, likeCount, dislikeCount, favouriteCount, commentCount))")
+                .addQueryParameter("part", "snippet")
+                .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))")
                 .addQueryParameter("key", API_KEY);
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
-                .thenApply(video -> Json.fromJson(video, Videos.class))
-                .thenApply(video -> video.items.get(0).statistics.viewCount)
+                .thenApply(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
                 .toCompletableFuture();
     }
 
