@@ -96,6 +96,14 @@ public class YoutubeAnalyzerController extends Controller {
         return ok(similarContent.render(similarityStatsMap));
     }
 
+    /**
+     * @author Rajan Shah
+     * <p>
+     * Fetches channel information and 10 latest videos sorted by date, by {@param id}.
+     *
+     * {@param id: channel id for which information is requested}
+     * {@return ok {@link ChannelItem} and {@link SearchResults}}
+     */
     public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id) {
         YouTubeClient youTubeClient = new YouTubeClient(wsClient);
         CompletionStage<ChannelResultItems> channelItemPromise = youTubeClient.getChannelInformationByChannelId(id);
