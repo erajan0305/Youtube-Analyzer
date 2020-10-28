@@ -8,8 +8,8 @@ GET    /                           controllers.YoutubeAnalyzerController.index(r
 + nocsrf
 POST   /                           controllers.YoutubeAnalyzerController.fetchVideosByKeywords(request: Request)
 + nocsrf
-GET    /:term                      controllers.YoutubeAnalyzerController.fetchSimilarityStats(term: String)
-+ nocsrf
+GET    /stats                      controllers.YoutubeAnalyzerController.fetchSimilarityStats()
++ nocsrfø
 GET    /channel/:id                controllers.YoutubeAnalyzerController.fetchChannelInformation(request: Request, id: String)
 
 # Map static resources from the /public folder to the /assets URL path
