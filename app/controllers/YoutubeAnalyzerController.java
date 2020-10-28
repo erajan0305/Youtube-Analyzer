@@ -1,5 +1,7 @@
 package controllers;
 
+import models.Channel.ChannelItem;
+import models.Channel.ChannelResultItems;
 import models.Search;
 import models.SearchResults.SearchResultItem;
 import models.SearchResults.SearchResults;
@@ -73,7 +75,6 @@ public class YoutubeAnalyzerController extends Controller {
      * and passes it to {@link similarContent} view for rendering.
      *
      * @author Kishan Bhimani
-     *
      */
     public Result fetchSimilarityStats() {
         List<String> tokens = searchResultHashMap
@@ -90,14 +91,24 @@ public class YoutubeAnalyzerController extends Controller {
                         .collect(Collectors.groupingBy(identity(), counting()))// creates map of (unique words, count)
                         .entrySet().stream()
                         .sorted(Map.Entry.<String, Long>comparingByValue(reverseOrder()))
-                        .collect(toMap(entry -> entry.getKey(), entry -> entry.getValue(), (a, b) -> a,
+                        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a,
                                 LinkedHashMap::new)); // hashmap is unordered, overrode toMap constructor to make it ordered.
         return ok(similarContent.render(similarityStatsMap));
     }
 
+    /**
+     * @author Rajan Shah
+     * <p>
+     * Fetches channel information and 10 latest videos sorted by date, by {@param id}.
+     *
+     * {@param id: channel id for which information is requested}
+     * {@return ok {@link ChannelItem} and {@link SearchResults}}
+     */
     public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id) {
         YouTubeClient youTubeClient = new YouTubeClient(wsClient);
+        CompletionStage<ChannelResultItems> channelItemPromise = youTubeClient.getChannelInformationByChannelId(id);
         CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = youTubeClient.getVideosJsonByChannelId(id);
-        return videosJsonByChannelIdSearchPromise.thenApply(searchResults -> ok(channelInfo.render(searchResults, "", messagesApi.preferred(request))));
+        return channelItemPromise.thenCompose(channelItem -> videosJsonByChannelIdSearchPromise
+                .thenApply(videoJsonByChannelId -> ok(channelInfo.render(videoJsonByChannelId, channelItem.items.get(0), messagesApi.preferred(request)))));
     }
 }

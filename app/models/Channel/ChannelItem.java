@@ -5,9 +5,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"id"})
+@JsonPropertyOrder({
+        "id",
+        "snippet",
+        "statistics"
+})
 
-public class Id {
+public class ChannelItem {
     @JsonProperty("id")
     public String id;
+    @JsonProperty("snippet")
+    public Snippet snippet;
+    @JsonProperty("statistics")
+    public ChannelStatistics channelStatistics;
 }
