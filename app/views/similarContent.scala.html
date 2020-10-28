@@ -1,10 +1,17 @@
+@(similarityStatsMap: Map[String, Long])
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Similar Content</title>
-</head>
-<body>
-<h1>Similar Content</h1>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Similar Content</title>
+    </head>
+    <body>
+        <h1>Similar Content</h1>
+        @if(similarityStatsMap != null && similarityStatsMap.size() > 0) {
+            @for((token, count) <- similarityStatsMap) {
+                <h5>@token : @count</h5>
+            }
+        }
+    </body>
 </html>
