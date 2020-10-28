@@ -70,11 +70,12 @@ public class YoutubeAnalyzerController extends Controller {
     }
 
     /**
-     * This Method uses static hashmap {@link YoutubeAnalyzerController#searchResultHashMap} and processes
-     * all the {@link SearchResults} objects to creates a hashmap of words used in the title against it's count
-     * and passes it to {@link similarContent} view for rendering.
-     *
      * @author Kishan Bhimani
+     * <p>
+     * Uses static hashmap {@link YoutubeAnalyzerController#searchResultHashMap} and processes
+     * all the {@link SearchResults} objects to creates a hashmap of words used in the title against it's count.
+     *
+     * {@return ok {@link similarContent}}
      */
     public Result fetchSimilarityStats() {
         List<String> tokens = searchResultHashMap
