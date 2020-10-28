@@ -1,5 +1,6 @@
 package controllers;
 
+import models.Channel.ChannelItem;
 import models.Search;
 import models.SearchResults.SearchResultItem;
 import models.SearchResults.SearchResults;
@@ -17,7 +18,6 @@ import views.html.similarContent;
 
 import javax.inject.Inject;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
@@ -71,7 +71,9 @@ public class YoutubeAnalyzerController extends Controller {
 
     public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id) {
         YouTubeClient youTubeClient = new YouTubeClient(wsClient);
+        CompletionStage<ChannelItem> channelItemPromise = youTubeClient.getChannelInformationByChannelId(id);
         CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = youTubeClient.getVideosJsonByChannelId(id);
-        return videosJsonByChannelIdSearchPromise.thenApply(searchResults -> ok(channelInfo.render(searchResults, "", messagesApi.preferred(request))));
+        return channelItemPromise.thenCompose(channelItem -> videosJsonByChannelIdSearchPromise
+                .thenApply(videoJsonByChannelId -> ok(channelInfo.render(videoJsonByChannelId, channelItem, messagesApi.preferred(request)))));
     }
 }

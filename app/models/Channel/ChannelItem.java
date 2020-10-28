@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "statistics"
 })
 
-public class ChannelItems {
+public class ChannelItem {
     @JsonProperty("id")
     public Id id;
     @JsonProperty("snippet")

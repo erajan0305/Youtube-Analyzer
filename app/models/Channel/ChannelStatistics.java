@@ -15,8 +15,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class ChannelStatistics {
     @JsonProperty("viewCount")
     public String viewCount;
-    @JsonProperty("commentCount")
-    public String commentCount;
     @JsonProperty("subscriberCount")
     public String subscriberCount;
     @JsonProperty("videoCount")
