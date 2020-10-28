@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 public class ChannelItem {
     @JsonProperty("id")
-    public Id id;
+    public String id;
     @JsonProperty("snippet")
     public Snippet snippet;
     @JsonProperty("statistics")

@@ -1,6 +1,6 @@
 package models;
 
-import models.Channel.ChannelItem;
+import models.Channel.ChannelResultItems;
 import models.SearchResults.SearchResults;
 import models.VIdeoSearch.Videos;
 import play.libs.Json;
@@ -65,7 +65,7 @@ public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
                 .toCompletableFuture();
     }
 
-    public CompletionStage<ChannelItem> getChannelInformationByChannelId(String channelId) {
+    public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
         WSRequest request = this.wsClient
                 .url("https://www.googleapis.com/youtube/v3/channels")
                 .addQueryParameter("id", channelId)
@@ -73,7 +73,7 @@ public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
                 .addQueryParameter("fields", "items(id, snippet(title, description, customUrl, publishedAt, country), statistics(viewCount, subscriberCount, videoCount))")
                 .addQueryParameter("key", API_KEY);
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
-                .thenApply(channelJsonNode -> Json.fromJson(channelJsonNode, ChannelItem.class))
+                .thenApply(channelJsonNode -> Json.fromJson(channelJsonNode, ChannelResultItems.class))
                 .toCompletableFuture();
     }
 }

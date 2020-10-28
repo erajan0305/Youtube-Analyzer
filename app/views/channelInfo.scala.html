@@ -10,10 +10,8 @@
 <body>
 <h1>Channel Information</h1>
 <div>
-    @if(searchResults != null) {
-    <h2>Top 10 Videos</h2>
-    <h3>Channel Information</h3>
-    <h4>Channel Id: @channelItem.id.id</h4>
+    @if(channelItem != null){
+    <h4>Channel Id: @channelItem.id</h4>
     <h4>Title: @channelItem.snippet.title</h4>
     <h4>Description : @channelItem.snippet.description</h4>
     <h4>Custom URL: @channelItem.snippet.customUrl</h4>
@@ -22,6 +20,9 @@
     <h4>View Count: @channelItem.channelStatistics.viewCount</h4>
     <h4>Subscriber Count: @channelItem.channelStatistics.subscriberCount</h4>
     <h4>Video Count: @channelItem.channelStatistics.videoCount</h4>
+    }
+    @if(searchResults != null){
+    <h2>Top 10 Videos</h2>
     <ul>
         @for(item <- searchResults.items) {
         <hr style="width:50%;text-align:left;margin-left:0">

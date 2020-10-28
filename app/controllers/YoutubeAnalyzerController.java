@@ -1,6 +1,7 @@
 package controllers;
 
 import models.Channel.ChannelItem;
+import models.Channel.ChannelResultItems;
 import models.Search;
 import models.SearchResults.SearchResultItem;
 import models.SearchResults.SearchResults;
@@ -90,16 +91,16 @@ public class YoutubeAnalyzerController extends Controller {
                         .collect(Collectors.groupingBy(identity(), counting()))// creates map of (unique words, count)
                         .entrySet().stream()
                         .sorted(Map.Entry.<String, Long>comparingByValue(reverseOrder()))
-                        .collect(toMap(entry -> entry.getKey(), entry -> entry.getValue(), (a, b) -> a,
+                        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a,
                                 LinkedHashMap::new)); // hashmap is unordered, overrode toMap constructor to make it ordered.
         return ok(similarContent.render(similarityStatsMap));
     }
 
     public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id) {
         YouTubeClient youTubeClient = new YouTubeClient(wsClient);
-        CompletionStage<ChannelItem> channelItemPromise = youTubeClient.getChannelInformationByChannelId(id);
+        CompletionStage<ChannelResultItems> channelItemPromise = youTubeClient.getChannelInformationByChannelId(id);
         CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = youTubeClient.getVideosJsonByChannelId(id);
         return channelItemPromise.thenCompose(channelItem -> videosJsonByChannelIdSearchPromise
-                .thenApply(videoJsonByChannelId -> ok(channelInfo.render(videoJsonByChannelId, channelItem, messagesApi.preferred(request)))));
+                .thenApply(videoJsonByChannelId -> ok(channelInfo.render(videoJsonByChannelId, channelItem.items.get(0), messagesApi.preferred(request)))));
     }
 }
