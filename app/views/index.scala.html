@@ -3,40 +3,44 @@
 
 
 <html>
-<head>
-    <title>Youtube Analyzer</title>
-</head>
-<body>
-<section id="content">
-    <h1>Youtube Analyzer</h1>
-    <br/><br/>
-    @helper.form(action = routes.YoutubeAnalyzerController.fetchVideosByKeywords()) {
-    @helper.inputText(searchForm("searchKeyword"))
-    <input type="submit" value="Search">
-    }
+    <head>
+        <title>Youtube Analyzer</title>
+    </head>
+    <body>
+        <section id="content">
+            <h1>Youtube Analyzer</h1>
+            <br/>
+            <br/>
+            <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats()'>Similarity Stats</a>
+            @helper.form(action = routes.YoutubeAnalyzerController.fetchVideosByKeywords()) {
+                @helper.inputText(searchForm("searchKeyword"))
+                <input type="submit" value="Search">
+            }
 
-    <div>
-        @if(searchResultsMap !=null && searchResultsMap.size > 0) {
-        @for((searchWords, searchResults) <- searchResultsMap){
-        @for(searchWord <- searchWords.split(" ")){
-        <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchWord)'>@searchWord</a>
-        }
-        @if(searchResults!=null) {
-        <ol>
-            @for(item <- searchResults.items) {
-            <hr style="width:50%;text-align:left;margin-left:0">
-            @if(item != null) {
-            <li><a href="https://www.youtube.com/watch?v=@item.id.videoId" target="_blank">@item.snippet.title</a>,
-                <a href="@routes.YoutubeAnalyzerController.fetchChannelInformation(item.snippet.channelId)"><b>@item.snippet.channelTitle</b></a>
-                ,@item.viewCount ,@item.snippet.publishTime
-            </li>
+            <div>
+            @if(searchResultsMap != null && searchResultsMap.size > 0) {
+                @for((searchWords, searchResults) <- searchResultsMap) {
+                    <h5><b>Search Terms: </b>
+                        @searchWords.split(" ")</h5>
+                    @if(searchResults != null) {
+                        <ol>
+                        @for(item <- searchResults.items) {
+                            <hr style="width: 50%;
+                                text-align: left;
+                                margin-left: 0">
+                            @if(item != null) {
+                                <li><a href="https://www.youtube.com/watch?v=@item.id.videoId" target="_blank">@item.snippet.title</a>
+                                    ,
+                                    <a href="@routes.YoutubeAnalyzerController.fetchChannelInformation(item.snippet.channelId)"><b>@item.snippet.channelTitle</b></a>
+                                    ,@item.viewCount ,@item.snippet.publishTime
+                                </li>
+                            }
+                        }
+                        </ol>
+                    }
+                }
             }
-            }
-        </ol>
-        }
-        }
-        }
-    </div>
-</section>
-</body>
+            </div>
+        </section>
+    </body>
 </html>
