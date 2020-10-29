@@ -18,7 +18,10 @@ import views.html.index;
 import views.html.similarContent;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
@@ -39,7 +42,7 @@ public class YoutubeAnalyzerController extends Controller {
     @Inject
     MessagesApi messagesApi;
 
-    static HashMap<String, SearchResults> searchResultHashMap = new HashMap<>();
+    static LinkedHashMap<String, SearchResults> searchResultHashMap = new LinkedHashMap<>();
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -74,16 +77,21 @@ public class YoutubeAnalyzerController extends Controller {
      * <p>
      * Uses static hashmap {@link YoutubeAnalyzerController#searchResultHashMap} and processes
      * all the {@link SearchResults} objects to creates a hashmap of words used in the title against it's count.
-     *
+     * <p>
      * {@return ok {@link similarContent}}
      */
-    public Result fetchSimilarityStats() {
+    public Result fetchSimilarityStats(String keyword) {
+        if(searchResultHashMap.get(keyword) == null){
+            return notFound(similarContent.render(null));
+        }
         List<String> tokens = searchResultHashMap
-                .values()
+                .get(keyword)
+                .items
                 .stream()
-                .flatMap(searchResults -> searchResults.items.stream())
                 .map(searchResultItem -> searchResultItem.snippet.title)
-                .flatMap(title -> Arrays.stream(title.split(" ").clone())) // Split title into words
+                .flatMap(title -> Arrays.stream(title.split("\\s+").clone()))
+                .map(s -> s.replaceAll("[^\\p{Alpha}]", ""))// Split title into words// Split title into words
+                .filter(s -> !s.isEmpty())
                 .collect(toList());
 
         Map<String, Long> similarityStatsMap =
@@ -101,7 +109,7 @@ public class YoutubeAnalyzerController extends Controller {
      * @author Rajan Shah
      * <p>
      * Fetches channel information and 10 latest videos sorted by date, by {@param id}.
-     *
+     * <p>
      * {@param id: channel id for which information is requested}
      * {@return ok {@link ChannelItem} and {@link SearchResults}}
      */
