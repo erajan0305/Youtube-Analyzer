@@ -8,7 +8,7 @@ GET    /                           controllers.YoutubeAnalyzerController.index(r
 + nocsrf
 POST   /                           controllers.YoutubeAnalyzerController.fetchVideosByKeywords(request: Request)
 + nocsrf
-GET    /stats                      controllers.YoutubeAnalyzerController.fetchSimilarityStats()
+GET    /stats/:keyword                      controllers.YoutubeAnalyzerController.fetchSimilarityStats(keyword: String)
 + nocsrfø
 GET    /channel/:id                controllers.YoutubeAnalyzerController.fetchChannelInformation(request: Request, id: String)
 

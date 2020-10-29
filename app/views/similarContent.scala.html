@@ -25,15 +25,17 @@
     <body>
         <h1>Similar Content</h1>
         <table>
-            <tr>
-                <th><b>Word</b></th>
-                <th>Count</th>
-            </tr>
             @if(similarityStatsMap != null && similarityStatsMap.size() > 0) {
+                <tr>
+                    <th><b>Word</b></th>
+                    <th>Count</th>
+                </tr>
                 @for((token, count) <- similarityStatsMap) {
                     <tr><td>@token </td>
                         <td> @count</td></tr>
                 }
+            } else {
+                <h2 style="color: red">Error: Not Found</h2>
             }
         </table>
     </body>
