@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class SessionHelper {
-    public static HashMap<String, LinkedHashMap<String, SearchResults>> sessionHashMap = new HashMap<>();
+    private static HashMap<String, LinkedHashMap<String, SearchResults>> sessionHashMap = new HashMap<>();
     public static final String SESSION_KEY = "sessionId";
 
     public static String getUserAgentNameFromRequest(Http.Request request) {

@@ -56,9 +56,8 @@ public class YoutubeAnalyzerController extends Controller {
             SessionHelper.setSession(request);
             return ok(index.render(searchForm, null, messagesApi.preferred(request)))
                     .addingToSession(request, SessionHelper.SESSION_KEY, SessionHelper.getUserAgentNameFromRequest(request));
-        } else {
-            return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
         }
+        return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
     }
 
     public CompletionStage<Result> fetchVideosByKeywords(Http.Request request) {
