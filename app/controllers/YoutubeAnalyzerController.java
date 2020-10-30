@@ -3,10 +3,10 @@ package controllers;
 import models.Channel.ChannelItem;
 import models.Channel.ChannelResultItems;
 import models.Helper.SessionHelper;
+import models.Helper.YouTubeClient;
 import models.Search;
 import models.SearchResults.SearchResultItem;
 import models.SearchResults.SearchResults;
-import models.YouTubeClient;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
@@ -53,7 +53,7 @@ public class YoutubeAnalyzerController extends Controller {
     public Result index(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
         if (!SessionHelper.isSessionExist(request)) {
-            SessionHelper.setSession(request);
+            SessionHelper.setSession(request, new LinkedHashMap<>());
             return ok(index.render(searchForm, null, messagesApi.preferred(request)))
                     .addingToSession(request, SessionHelper.SESSION_KEY, SessionHelper.getUserAgentNameFromRequest(request));
         }
@@ -76,9 +76,11 @@ public class YoutubeAnalyzerController extends Controller {
         // TODO: assign viewCount to item. Currently it is null even after assigning in `peek`.
         return searchResponsePromise.thenApply(searchResult -> {
             LinkedHashMap<String, SearchResults> searchResultsHashMap = SessionHelper.getSearchResultsHashMapFromSession(request);
-            if (searchResultsHashMap != null) {
-                searchResultsHashMap.put(searchKeyword, searchResult);
+            if (searchResultsHashMap == null || searchResultsHashMap.isEmpty()) {
+                searchResultsHashMap = new LinkedHashMap<>();
             }
+            searchResultsHashMap.put(searchKeyword, searchResult);
+            SessionHelper.setSession(request, searchResultsHashMap);
             return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
         });
     }
@@ -133,7 +135,6 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-
         YouTubeClient youTubeClient = new YouTubeClient(wsClient);
         CompletionStage<ChannelResultItems> channelItemPromise = youTubeClient.getChannelInformationByChannelId(id);
         CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = youTubeClient.getVideosJsonByChannelId(id);

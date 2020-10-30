@@ -3,7 +3,7 @@ package models.SearchResults;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import models.YouTubeClient;
+import models.Helper.YouTubeClient;
 import play.libs.ws.WSClient;
 
 import javax.inject.Inject;
