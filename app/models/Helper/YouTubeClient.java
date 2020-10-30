@@ -1,4 +1,4 @@
-package models;
+package models.Helper;
 
 import models.Channel.ChannelResultItems;
 import models.SearchResults.SearchResults;

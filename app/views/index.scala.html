@@ -18,11 +18,11 @@
                 <div>
                 @if(searchResultsMap != null && searchResultsMap.size > 0) {
                     @for((searchWords, searchResults) <- searchResultsMap) {
-                        <span>
-                            <b>Search Terms: </b>
-                            <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchWords)'>@searchWords</a>
-                        </span>
-                        @if(searchResults != null) {
+                        @if(searchResults != null && searchResults.items != null) {
+                            <span>
+                                <b>Search Terms: </b>
+                                <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchWords)'>@searchWords</a>
+                            </span>
                             <ol>
                             @for(item <- searchResults.items) {
                                 <hr style="width: 50%;
