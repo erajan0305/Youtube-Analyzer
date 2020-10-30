@@ -15,7 +15,7 @@ import java.util.concurrent.CompletionStage;
 
 public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;
-    private final String API_KEY = "AIzaSyBt1HUXNJTAtfKyENT-yx6rrBHgHTWnHj4";
+    private final String API_KEY = "AIzaSyDSdXwds9Ok_eoNmxWiqNfXLQ5SjG0AuBQ";
 
     @Inject
     public YouTubeClient(WSClient wsClient) {

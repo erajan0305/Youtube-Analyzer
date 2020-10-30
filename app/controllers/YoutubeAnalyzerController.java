@@ -1,11 +1,8 @@
 package controllers;
 
-import models.Channel.ChannelItem;
 import models.Channel.ChannelResultItems;
 import models.Helper.SessionHelper;
-import models.Helper.YouTubeClient;
 import models.Search;
-import models.SearchResults.SearchResultItem;
 import models.SearchResults.SearchResults;
 import play.data.Form;
 import play.data.FormFactory;
@@ -19,30 +16,25 @@ import views.html.index;
 import views.html.similarContent;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
-
-import static java.util.Collections.reverseOrder;
-import static java.util.function.UnaryOperator.identity;
-import static java.util.stream.Collectors.*;
 
 /**
  * This controller contains an action to handle HTTP requests
- * to the application's home page.
+ * to the application's pages.
  */
 public class YoutubeAnalyzerController extends Controller {
 
     @Inject
-    WSClient wsClient;
-    @Inject
     FormFactory formFactory;
     @Inject
     MessagesApi messagesApi;
+    @Inject
+    WSClient wsClient;
+
+    static LinkedHashMap<String, SearchResults> searchResultHashMap = new LinkedHashMap<>();
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -67,13 +59,16 @@ public class YoutubeAnalyzerController extends Controller {
         Form<Search> searchForm = formFactory.form(Search.class);
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         String searchKeyword = requestBody.get("searchKeyword")[0];
-        YouTubeClient youTubeClient = new YouTubeClient(wsClient);
-        CompletionStage<SearchResults> searchResponsePromise = youTubeClient.fetchVideos(searchKeyword);
-        searchResponsePromise.thenApply(searchResults -> searchResults.items.parallelStream()
-                .map(SearchResultItem::appendViewCountToItem)
-                .peek(item -> System.out.println(item.viewCount))
-                .collect(Collectors.toList()));
+        SearchResults searchResultsObject = new SearchResults(wsClient);
+        CompletionStage<SearchResults> searchResponsePromise = searchResultsObject.fetchVideos(searchKeyword);
+
+        // TODO: implement this part in MODEL
+//        searchResponsePromise.thenApply(searchResults -> searchResults.items.parallelStream()
+//                .map(SearchResultItem::appendViewCountToItem)
+//                .peek(item -> System.out.println(item.viewCount))
+//                .collect(Collectors.toList()));
         // TODO: assign viewCount to item. Currently it is null even after assigning in `peek`.
+
         return searchResponsePromise.thenApply(searchResult -> {
             LinkedHashMap<String, SearchResults> searchResultsHashMap = SessionHelper.getSearchResultsHashMapFromSession(request);
             if (searchResultsHashMap == null || searchResultsHashMap.isEmpty()) {
@@ -99,27 +94,13 @@ public class YoutubeAnalyzerController extends Controller {
         }
         if (SessionHelper.getSearchResultsHashMapFromSession(request) == null
                 || SessionHelper.getSearchResultsHashMapFromSession(request).get(keyword) == null) {
-            return notFound(similarContent.render(null));
+            if (searchResultHashMap.get(keyword) == null) {
+                return notFound(similarContent.render(null));
+            }
         }
-
-        List<String> tokens = SessionHelper.getSearchResultsHashMapFromSession(request)
-                .get(keyword)
-                .items
-                .stream()
-                .map(searchResultItem -> searchResultItem.snippet.title)
-                .flatMap(title -> Arrays.stream(title.split("\\s+").clone()))
-                .map(s -> s.replaceAll("[^\\p{Alpha}]", ""))// Split title into words// Split title into words
-                .filter(s -> !s.isEmpty())
-                .collect(toList());
-
-        Map<String, Long> similarityStatsMap =
-                tokens.stream()
-                        .map(String::toLowerCase)
-                        .collect(Collectors.groupingBy(identity(), counting()))// creates map of (unique words, count)
-                        .entrySet().stream()
-                        .sorted(Map.Entry.<String, Long>comparingByValue(reverseOrder()))
-                        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a,
-                                LinkedHashMap::new)); // hashmap is unordered, overrode toMap constructor to make it ordered.
+        SearchResults searchResultsObject = new SearchResults();
+        Map<String, Long> similarityStatsMap = searchResultsObject
+                .getSimilarityStats(SessionHelper.getSearchResultsHashMapFromSession(request), keyword);
         return ok(similarContent.render(similarityStatsMap));
     }
 
@@ -129,16 +110,19 @@ public class YoutubeAnalyzerController extends Controller {
      * Fetches channel information and 10 latest videos sorted by date, by {@param id}.
      * <p>
      * {@param id: channel id for which information is requested}
-     * {@return ok {@link ChannelItem} and {@link SearchResults}}
+     * {@return ok {@link ChannelResultItems} and {@link SearchResults}}
      */
     public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id) {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-        YouTubeClient youTubeClient = new YouTubeClient(wsClient);
-        CompletionStage<ChannelResultItems> channelItemPromise = youTubeClient.getChannelInformationByChannelId(id);
-        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = youTubeClient.getVideosJsonByChannelId(id);
+        SearchResults searchResults = new SearchResults(wsClient);
+        ChannelResultItems channelResultItems = new ChannelResultItems(wsClient);
+        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = searchResults.getVideosJsonByChannelId(id);
+        CompletionStage<ChannelResultItems> channelItemPromise = channelResultItems.getChannelInformationByChannelId(id);
+
         return channelItemPromise.thenCompose(channelItem -> videosJsonByChannelIdSearchPromise
-                .thenApply(videoJsonByChannelId -> ok(channelInfo.render(videoJsonByChannelId, channelItem.items.get(0), messagesApi.preferred(request)))));
+                .thenApply(videoJsonByChannelId -> ok(channelInfo.render(videoJsonByChannelId, channelItem.items.get(0), messagesApi.preferred(request)))
+                ));
     }
 }
