@@ -20,9 +20,12 @@
     <h4>View Count: @channelItem.channelStatistics.viewCount</h4>
     <h4>Subscriber Count: @channelItem.channelStatistics.subscriberCount</h4>
     <h4>Video Count: @channelItem.channelStatistics.videoCount</h4>
+    } else {
+    <h2 style="color: red">Error: Not Found</h2>
     }
-    @if(searchResults != null){
+
     <h2>Top 10 Videos</h2>
+    @if(searchResults != null){
     <ul>
         @for(item <- searchResults.items) {
         <hr style="width:50%;text-align:left;margin-left:0">
@@ -33,6 +36,8 @@
         }
         }
     </ul>
+    }else {
+    <h2 style="color: red">Error: Not Found</h2>
     }
 </div>
 </body>
