@@ -1,6 +1,6 @@
 package models.Helper;
 
-import models.SearchResults.SearchResults;
+import models.POJO.SearchResults.SearchResults;
 import play.mvc.Http;
 
 import java.util.HashMap;

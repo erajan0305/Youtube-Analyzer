@@ -1,7 +1,7 @@
 package models.Helper;
 
-import models.Channel.ChannelResultItems;
-import models.SearchResults.SearchResults;
+import models.POJO.Channel.ChannelResultItems;
+import models.POJO.SearchResults.SearchResults;
 import play.libs.ws.WSClient;
 
 import javax.inject.Inject;
@@ -19,22 +19,22 @@ import static java.util.stream.Collectors.*;
 public class YoutubeAnalyzer {
     @Inject
     WSClient wsClient;
+    YouTubeApiClient youTubeApiClient;
 
     public YoutubeAnalyzer() {
     }
 
     public YoutubeAnalyzer(WSClient wsClient) {
         this.wsClient = wsClient;
+        youTubeApiClient = new YouTubeApiClient(this.wsClient);
     }
 
     public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId) {
-        YouTubeClient youTubeClient = new YouTubeClient(this.wsClient);
-        return youTubeClient.getVideosJsonByChannelId(channelId);
+        return youTubeApiClient.getVideosJsonByChannelId(channelId);
     }
 
     public CompletionStage<SearchResults> fetchVideos(String searchKeyword) {
-        YouTubeClient youTubeClient = new YouTubeClient(this.wsClient);
-        return youTubeClient.fetchVideos(searchKeyword);
+        return youTubeApiClient.fetchVideos(searchKeyword);
     }
 
     public Map<String, Long> getSimilarityStats(LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap, String keyword) {
@@ -58,12 +58,10 @@ public class YoutubeAnalyzer {
     }
 
     public CompletionStage<String> getVideosJsonByVideoId(String videoId) {
-        YouTubeClient youTubeClient = new YouTubeClient(this.wsClient);
-        return youTubeClient.getVideoJsonByVideoId(videoId);
+        return youTubeApiClient.getVideoJsonByVideoId(videoId);
     }
 
     public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
-        YouTubeClient youTubeClient = new YouTubeClient(this.wsClient);
-        return youTubeClient.getChannelInformationByChannelId(channelId);
+        return youTubeApiClient.getChannelInformationByChannelId(channelId);
     }
 }

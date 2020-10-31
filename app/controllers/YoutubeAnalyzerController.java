@@ -1,10 +1,10 @@
 package controllers;
 
-import models.Channel.ChannelResultItems;
 import models.Helper.SessionHelper;
 import models.Helper.YoutubeAnalyzer;
+import models.POJO.Channel.ChannelResultItems;
+import models.POJO.SearchResults.SearchResults;
 import models.Search;
-import models.SearchResults.SearchResults;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;

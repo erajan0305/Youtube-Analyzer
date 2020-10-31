@@ -1,4 +1,4 @@
-package models.VIdeoSearch;
+package models.POJO.VIdeoSearch;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
