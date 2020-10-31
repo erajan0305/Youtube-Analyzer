@@ -1,4 +1,4 @@
-package models.Channel;
+package models.POJO.Channel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

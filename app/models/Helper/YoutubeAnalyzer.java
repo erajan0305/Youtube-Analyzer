@@ -1,10 +1,7 @@
-package models.SearchResults;
+package models.Helper;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import models.Helper.YouTubeClient;
+import models.POJO.Channel.ChannelResultItems;
+import models.POJO.SearchResults.SearchResults;
 import play.libs.ws.WSClient;
 
 import javax.inject.Inject;
@@ -19,39 +16,25 @@ import static java.util.Collections.reverseOrder;
 import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.*;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"items"})
-
-public class SearchResults {
-
-    public SearchResults() {
-    }
-
+public class YoutubeAnalyzer {
     @Inject
     WSClient wsClient;
+    YouTubeApiClient youTubeApiClient;
 
-    public SearchResults(WSClient wsClient) {
-        this.wsClient = wsClient;
+    public YoutubeAnalyzer() {
     }
 
-    @JsonProperty("items")
-    public List<SearchResultItem> items = null;
-
-    public String searchResultsAsString() {
-        return "Video Id: " + items.stream()
-                .map(item -> item.id.videoId)
-                .collect(Collectors.joining(", "));
+    public YoutubeAnalyzer(WSClient wsClient) {
+        this.wsClient = wsClient;
+        youTubeApiClient = new YouTubeApiClient(this.wsClient);
     }
 
     public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId) {
-        YouTubeClient youTubeClient = new YouTubeClient(this.wsClient);
-        return youTubeClient.getVideosJsonByChannelId(channelId);
+        return youTubeApiClient.getVideosJsonByChannelId(channelId);
     }
 
     public CompletionStage<SearchResults> fetchVideos(String searchKeyword) {
-        YouTubeClient youTubeClient = new YouTubeClient(this.wsClient);
-        return youTubeClient.fetchVideos(searchKeyword);
+        return youTubeApiClient.fetchVideos(searchKeyword);
     }
 
     public Map<String, Long> getSimilarityStats(LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap, String keyword) {
@@ -72,5 +55,13 @@ public class SearchResults {
                 .sorted(Map.Entry.<String, Long>comparingByValue(reverseOrder()))
                 .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a,
                         LinkedHashMap::new));
+    }
+
+    public CompletionStage<String> getVideosJsonByVideoId(String videoId) {
+        return youTubeApiClient.getVideoJsonByVideoId(videoId);
+    }
+
+    public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
+        return youTubeApiClient.getChannelInformationByChannelId(channelId);
     }
 }

@@ -1,9 +1,10 @@
 package controllers;
 
-import models.Channel.ChannelResultItems;
 import models.Helper.SessionHelper;
+import models.Helper.YoutubeAnalyzer;
+import models.POJO.Channel.ChannelResultItems;
+import models.POJO.SearchResults.SearchResults;
 import models.Search;
-import models.SearchResults.SearchResults;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
@@ -59,14 +60,14 @@ public class YoutubeAnalyzerController extends Controller {
         Form<Search> searchForm = formFactory.form(Search.class);
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         String searchKeyword = requestBody.get("searchKeyword")[0];
-        SearchResults searchResultsObject = new SearchResults(wsClient);
-        CompletionStage<SearchResults> searchResponsePromise = searchResultsObject.fetchVideos(searchKeyword);
+        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer(wsClient);
+        CompletionStage<SearchResults> searchResponsePromise = youtubeAnalyzer.fetchVideos(searchKeyword);
 
         // TODO: implement this part in MODEL
-//        searchResponsePromise.thenApply(searchResults -> searchResults.items.parallelStream()
-//                .map(SearchResultItem::appendViewCountToItem)
-//                .peek(item -> System.out.println(item.viewCount))
-//                .collect(Collectors.toList()));
+//        CompletionStage<List<SearchResultItem>> listCompletionStage = searchResponsePromise
+//                .thenApply(searchResults -> searchResults.items.parallelStream()
+//                        .map(SearchResultItem::appendViewCountToItem)
+//                        .collect(Collectors.toList()));
         // TODO: assign viewCount to item. Currently it is null even after assigning in `peek`.
 
         return searchResponsePromise.thenApply(searchResult -> {
@@ -98,8 +99,8 @@ public class YoutubeAnalyzerController extends Controller {
                 return notFound(similarContent.render(null));
             }
         }
-        SearchResults searchResultsObject = new SearchResults();
-        Map<String, Long> similarityStatsMap = searchResultsObject
+        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer();
+        Map<String, Long> similarityStatsMap = youtubeAnalyzer
                 .getSimilarityStats(SessionHelper.getSearchResultsHashMapFromSession(request), keyword);
         return ok(similarContent.render(similarityStatsMap));
     }
@@ -116,10 +117,9 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-        SearchResults searchResults = new SearchResults(wsClient);
-        ChannelResultItems channelResultItems = new ChannelResultItems(wsClient);
-        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = searchResults.getVideosJsonByChannelId(id);
-        CompletionStage<ChannelResultItems> channelItemPromise = channelResultItems.getChannelInformationByChannelId(id);
+        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer(wsClient);
+        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = youtubeAnalyzer.getVideosJsonByChannelId(id);
+        CompletionStage<ChannelResultItems> channelItemPromise = youtubeAnalyzer.getChannelInformationByChannelId(id);
 
         return channelItemPromise.thenCompose(channelItem -> videosJsonByChannelIdSearchPromise
                 .thenApply(videoJsonByChannelId -> ok(channelInfo.render(videoJsonByChannelId, channelItem.items.get(0), messagesApi.preferred(request)))
