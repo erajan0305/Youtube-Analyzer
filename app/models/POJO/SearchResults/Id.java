@@ -1,4 +1,4 @@
-package models.SearchResults;
+package models.POJO.SearchResults;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
