@@ -1,4 +1,4 @@
-package models.SearchResults;
+package models.POJO.Channel;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,15 +6,17 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "id",
-        "snippet",
-        "viewCount"
+        "viewCount",
+        "commentCount",
+        "subscriberCount",
+        "videoCount"
 })
-public class SearchResultItem {
-    @JsonProperty("id")
-    public Id id;
-    @JsonProperty("snippet")
-    public Snippet snippet;
+
+public class ChannelStatistics {
     @JsonProperty("viewCount")
     public String viewCount;
+    @JsonProperty("subscriberCount")
+    public String subscriberCount;
+    @JsonProperty("videoCount")
+    public String videoCount;
 }

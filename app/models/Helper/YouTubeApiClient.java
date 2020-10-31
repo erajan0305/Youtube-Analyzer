@@ -1,8 +1,8 @@
 package models.Helper;
 
-import models.Channel.ChannelResultItems;
-import models.SearchResults.SearchResults;
-import models.VIdeoSearch.Videos;
+import models.POJO.Channel.ChannelResultItems;
+import models.POJO.SearchResults.SearchResults;
+import models.POJO.VIdeoSearch.Videos;
 import play.libs.Json;
 import play.libs.ws.WSBodyReadables;
 import play.libs.ws.WSBodyWritables;
@@ -13,12 +13,12 @@ import javax.inject.Inject;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
+public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;
     private final String API_KEY = "AIzaSyDSdXwds9Ok_eoNmxWiqNfXLQ5SjG0AuBQ";
 
     @Inject
-    public YouTubeClient(WSClient wsClient) {
+    public YouTubeApiClient(WSClient wsClient) {
         this.wsClient = wsClient;
     }
 
