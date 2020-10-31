@@ -33,14 +33,8 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .addQueryParameter("q", searchKey)
                 .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))")
                 .addQueryParameter("key", API_KEY);
-        return request.get().thenApply(wsResponse -> {
-            System.out.println(wsResponse);
-            return Json.parse(wsResponse.getBody());
-        })
-                .thenApply(wsResponse -> {
-                    System.out.println(Json.stringify(wsResponse));
-                    return Json.fromJson(wsResponse, SearchResults.class);
-                })
+        return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
+                .thenApply(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
                 .toCompletableFuture();
     }
 

@@ -17,4 +17,7 @@ public class SearchResultItem {
     public Snippet snippet;
     @JsonProperty("viewCount")
     public String viewCount;
+
+    public SearchResultItem() {
+    }
 }

@@ -10,4 +10,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class Id {
     @JsonProperty("videoId")
     public String videoId;
+
+    public Id() {
+    }
+
+    public Id(String videoId) {
+        this.videoId = videoId;
+    }
 }

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "channelTitle",
         "publishTime"
 })
+
 public class Snippet {
     @JsonProperty("publishedAt")
     public String publishedAt;
@@ -26,4 +27,16 @@ public class Snippet {
     public String channelTitle;
     @JsonProperty("publishTime")
     public String publishTime;
+
+    public Snippet() {
+    }
+
+    public Snippet(String channelId, String channelTitle, String title, String description, String publishedAt, String publishTime) {
+        this.channelId = channelId;
+        this.channelTitle = channelTitle;
+        this.description = description;
+        this.title = title;
+        this.publishedAt = publishedAt;
+        this.publishTime = publishTime;
+    }
 }
