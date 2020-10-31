@@ -1,0 +1,144 @@
+{
+  "items": [
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "FxxkOfvY39c"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-31T20:11:40Z",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ",
+        "title": "golang intro",
+        "description": "язык программирования golang.",
+        "channelTitle": "Emilius Omeen",
+        "publishTime": "2020-10-31T20:11:40Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "qD4Ts5O95h8"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-31T17:26:28Z",
+        "channelId": "UCDpu8bWzXOBQvKv6L-Qn0Pw",
+        "title": "Golang Atomic Package Example",
+        "description": "In this video I discuss about Golang's Atomic package with example implementation. Also a discussion on why it is needed. If you want in-depth tutorial on ...",
+        "channelTitle": "Tennexas",
+        "publishTime": "2020-10-31T17:26:28Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "bCudQ9RB1HE"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-31T15:47:28Z",
+        "channelId": "UCP9SHUqnSdGEiEHbqIudMxw",
+        "title": "Golang Trying out darck theme",
+        "description": "",
+        "channelTitle": "AntHiveIO",
+        "publishTime": "2020-10-31T15:47:28Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "rj4YLxW6si8"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-31T14:30:39Z",
+        "channelId": "UCdx_LSPOBtivmfVD0Pe3b6w",
+        "title": "ubuntu 安装golang 编译环境",
+        "description": "你好，欢迎来到我的《七天掌握golang，助你拿高薪》。 我的远景是想录一门让尽可能多的人都能掌握的课，所以这门课的内容不会讲的特别深入。 我个人认为编程本身 ...",
+        "channelTitle": "DailyProgrammer",
+        "publishTime": "2020-10-31T14:30:39Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "VFBM8MyF8BE"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-31T04:42:48Z",
+        "channelId": "UCSAT-ISk50JCd3Q6nSn6i0w",
+        "title": "Vol39 - Structural pattern - Proxy - Golang - Nhập Môn Cơ Bản",
+        "description": "Yuh #laptrinhvien #cơbản #design #pattern #structural #proxy #nhậpmôn #golang #coding #cntt #laptrinh Ủng hộ mình tại: 00728491001 - TPBANK DO ...",
+        "channelTitle": "Yuh lập trình viên",
+        "publishTime": "2020-10-31T04:42:48Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "L_aFdVm8iWA"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-30T21:55:05Z",
+        "channelId": "UCKHoFsVybOWwi6vLbnbYZmQ",
+        "title": "Meetup Golang Bogota - ¿Cómo usar redis con golang en AWS Lambdas? 4:54",
+        "description": "Aprende a usar Redis en un contexto serverless con AWS Lambdas implementadas en Golang y terraform como infraestructura como código Powered by ...",
+        "channelTitle": "Supreme Architecture",
+        "publishTime": "2020-10-30T21:55:05Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "jA7LFWCPk8U"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-30T20:32:40Z",
+        "channelId": "UC8JFGA21a-9aizHFlrg7qfw",
+        "title": "Building a ping service using Golang for Docker and Kubernetes",
+        "description": "In this video we'll build a quick service using Go to ping a provided list of URLs on a loop, and run the service on Docker+Kubernetes in order to monitor internal ...",
+        "channelTitle": "Kyle Ferguson",
+        "publishTime": "2020-10-30T20:32:40Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "n5p8HkO6bnE"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-30T16:40:12Z",
+        "channelId": "UC6MtKoJrZLNELkS96F99eIQ",
+        "title": "[Backend #12] Load config from file &amp; environment variables in Golang with Viper",
+        "description": "When developing and deploying a backend web application, we usually have to use different configurations for different environments such as development, ...",
+        "channelTitle": "TECH SCHOOL",
+        "publishTime": "2020-10-30T16:40:12Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "ehARXXlv48s"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-30T13:19:24Z",
+        "channelId": "UCP9SHUqnSdGEiEHbqIudMxw",
+        "title": "Golang StackOverflow coding",
+        "description": "",
+        "channelTitle": "AntHiveIO",
+        "publishTime": "2020-10-30T13:19:24Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "BU6YVuoPTAY"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-30T11:46:43Z",
+        "channelId": "UCSJtkYP_t8hJkQxyAVlWTjQ",
+        "title": "Flutter Vs Golang Part 8 : Update Data dengan Flutter Rest Full Api",
+        "description": "Membuat Program CRUD dengan Flutter dan Golang https://echo.labstack.com/guide/installation https://github.com/go-sql-driver/mysql ...",
+        "channelTitle": "Baim Coding Shop",
+        "publishTime": "2020-10-30T11:46:43Z"
+      }
+    }
+  ]
+}
