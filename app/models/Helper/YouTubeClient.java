@@ -16,6 +16,7 @@ import java.util.concurrent.CompletionStage;
 public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;
     private final String API_KEY = "AIzaSyDSdXwds9Ok_eoNmxWiqNfXLQ5SjG0AuBQ";
+    public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     @Inject
     public YouTubeClient(WSClient wsClient) {
@@ -24,7 +25,7 @@ public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
 
     public CompletionStage<SearchResults> fetchVideos(String searchKey) {
         WSRequest request = this.wsClient
-                .url("https://www.googleapis.com/youtube/v3/search")
+                .url(BASE_URL + "search")
                 .addQueryParameter("part", "snippet")
                 .addQueryParameter("maxResults", "10")
                 .addQueryParameter("type", "videos")
@@ -32,14 +33,20 @@ public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
                 .addQueryParameter("q", searchKey)
                 .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))")
                 .addQueryParameter("key", API_KEY);
-        return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
-                .thenApply(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
+        return request.get().thenApply(wsResponse -> {
+            System.out.println(wsResponse);
+            return Json.parse(wsResponse.getBody());
+        })
+                .thenApply(wsResponse -> {
+                    System.out.println(Json.stringify(wsResponse));
+                    return Json.fromJson(wsResponse, SearchResults.class);
+                })
                 .toCompletableFuture();
     }
 
     public CompletionStage<String> getVideoJsonByVideoId(String videoId) {
         WSRequest request = this.wsClient
-                .url("https://www.googleapis.com/youtube/v3/videos")
+                .url(BASE_URL + "videos")
                 .addQueryParameter("id", videoId)
                 .addQueryParameter("part", "snippet,contentDetails,statistics")
                 .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,title,description,channelTitle),contentDetails(duration),statistics(viewCount, likeCount, dislikeCount, favouriteCount, commentCount))")
@@ -52,7 +59,7 @@ public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
 
     public CompletableFuture<SearchResults> getVideosJsonByChannelId(String channelId) {
         WSRequest request = this.wsClient
-                .url("https://www.googleapis.com/youtube/v3/search")
+                .url(BASE_URL + "search")
                 .addQueryParameter("channelId", channelId)
                 .addQueryParameter("maxResults", "10")
                 .addQueryParameter("type", "videos")
@@ -67,7 +74,7 @@ public class YouTubeClient implements WSBodyReadables, WSBodyWritables {
 
     public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
         WSRequest request = this.wsClient
-                .url("https://www.googleapis.com/youtube/v3/channels")
+                .url(BASE_URL + "channels")
                 .addQueryParameter("id", channelId)
                 .addQueryParameter("part", "snippet,statistics")
                 .addQueryParameter("fields", "items(id, snippet(title, description, customUrl, publishedAt, country), statistics(viewCount, subscriberCount, videoCount))")
