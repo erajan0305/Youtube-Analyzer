@@ -13,8 +13,8 @@ import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.*;
 
 public class YoutubeAnalyzer {
-    WSClient wsClient;
-    YouTubeApiClient youTubeApiClient;
+    public WSClient wsClient;
+    public YouTubeApiClient youTubeApiClient;
 
     public YoutubeAnalyzer() {
     }

@@ -3,7 +3,6 @@ package controllers;
 import models.Helper.SessionHelper;
 import models.Helper.YoutubeAnalyzer;
 import models.POJO.SearchResults.SearchResults;
-import org.junit.Before;
 import org.junit.Test;
 import play.Application;
 import play.inject.guice.GuiceApplicationBuilder;

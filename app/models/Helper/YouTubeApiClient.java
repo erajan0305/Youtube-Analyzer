@@ -2,7 +2,7 @@ package models.Helper;
 
 import models.POJO.Channel.ChannelResultItems;
 import models.POJO.SearchResults.SearchResults;
-import models.POJO.VIdeoSearch.Videos;
+import models.POJO.VideoSearch.Videos;
 import play.libs.Json;
 import play.libs.ws.WSBodyReadables;
 import play.libs.ws.WSBodyWritables;

@@ -4,7 +4,7 @@ import dataset.DatasetHelper;
 import models.Helper.YouTubeApiClient;
 import models.POJO.Channel.ChannelResultItems;
 import models.POJO.SearchResults.SearchResults;
-import models.POJO.VIdeoSearch.Videos;
+import models.POJO.VideoSearch.Videos;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
