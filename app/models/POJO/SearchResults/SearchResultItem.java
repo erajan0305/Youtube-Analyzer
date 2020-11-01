@@ -20,4 +20,13 @@ public class SearchResultItem {
 
     public SearchResultItem() {
     }
+
+    @Override
+    public String toString() {
+        return "SearchResultItem{" +
+                "id=" + id +
+                ", snippet=" + snippet +
+                ", viewCount='" + viewCount + '\'' +
+                '}';
+    }
 }

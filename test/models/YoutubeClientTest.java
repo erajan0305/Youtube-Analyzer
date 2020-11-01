@@ -1,18 +1,17 @@
 package models;
 
+import dataset.DatasetHelper;
 import models.Helper.YouTubeApiClient;
-import models.POJO.SearchResults.Id;
-import models.POJO.SearchResults.SearchResultItem;
 import models.POJO.SearchResults.SearchResults;
-import models.POJO.SearchResults.Snippet;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.routing.RoutingDsl;
 import play.server.Server;
 
+import java.io.File;
 import java.io.IOException;
 
 import static play.mvc.Results.ok;
@@ -28,15 +27,17 @@ public class YoutubeClientTest {
                 (components) -> RoutingDsl.fromComponents(components)
                         .GET("/search")
                         .routingTo(request -> {
-                            SearchResultItem searchResultItem = new SearchResultItem();
-                            System.out.println(searchResultItem);
-                            searchResultItem.id = new Id("123");
-                            searchResultItem.snippet = new Snippet("xyzabc", "Channel Title,",
-                                    "Title", "Description", "publishedAT", "publishTime");
-                            searchResultItem.viewCount = "1000";
-                            SearchResults searchResults = new SearchResults();
-                            searchResults.items.add(searchResultItem);
-                            return ok(Json.toJson(searchResults));
+                            String searchKey = request.getQueryString("q");
+                            if (searchKey.toLowerCase().equals("java")) {
+                                return ok(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/searchresults/Java.json")));
+                            }
+                            if (searchKey.toLowerCase().equals("python")) {
+                                return ok(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/searchresults/Python.json")));
+                            }
+                            if (searchKey.toLowerCase().equals("golang")) {
+                                return ok(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/searchresults/Golang.json")));
+                            }
+                            return ok();
                         })
                         .build());
         wsTestClient = play.test.WSTestClient.newClient(server.httpPort());
@@ -46,8 +47,17 @@ public class YoutubeClientTest {
 
     @Test
     public void fetchVideos() throws Exception {
-        SearchResults searchResults = youTubeApiClient.fetchVideos("hello world").toCompletableFuture().get();
-        System.out.println(searchResults);
+        SearchResults actualJava = youTubeApiClient.fetchVideos("java").toCompletableFuture().get();
+        SearchResults expectedJava = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Java.json"), SearchResults.class);
+        Assert.assertEquals(expectedJava.toString(), actualJava.toString());
+
+        SearchResults actualPython = youTubeApiClient.fetchVideos("python").toCompletableFuture().get();
+        SearchResults expectedPython = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Python.json"), SearchResults.class);
+        Assert.assertEquals(expectedPython.toString(), actualPython.toString());
+
+        SearchResults actualGolang = youTubeApiClient.fetchVideos("golang").toCompletableFuture().get();
+        SearchResults expectedGolang = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Golang.json"), SearchResults.class);
+        Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
     }
 
     @After
