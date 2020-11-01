@@ -9,7 +9,6 @@ import play.libs.ws.WSBodyWritables;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
-import javax.inject.Inject;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -18,7 +17,6 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
     private final String API_KEY = "AIzaSyDSdXwds9Ok_eoNmxWiqNfXLQ5SjG0AuBQ";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
-    @Inject
     public YouTubeApiClient(WSClient wsClient) {
         this.wsClient = wsClient;
     }

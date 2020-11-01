@@ -1,6 +1,9 @@
 package controllers;
 
 import models.Helper.SessionHelper;
+import models.Helper.YoutubeAnalyzer;
+import models.POJO.SearchResults.SearchResults;
+import org.junit.Before;
 import org.junit.Test;
 import play.Application;
 import play.inject.guice.GuiceApplicationBuilder;
@@ -10,8 +13,10 @@ import play.test.WithApplication;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.*;
 
@@ -21,6 +26,8 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
     protected Application provideApplication() {
         return new GuiceApplicationBuilder().build();
     }
+
+    YoutubeAnalyzer youtubeAnalyzerSpy;
 
     @Test
     public void testIndex() {
@@ -40,6 +47,9 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
                 .uri("/");
         request.session(SessionHelper.SESSION_KEY, SessionHelper.SESSION_KEY);
         request.header("USER_AGENT", "chrome");
+        youtubeAnalyzerSpy = spy(new YoutubeAnalyzer());
+        doReturn(CompletableFuture.supplyAsync(SearchResults::new)).when(youtubeAnalyzerSpy).fetchVideos(anyString());
+        verify(youtubeAnalyzerSpy).fetchVideos(anyString());
         Map<String, String[]> requestBody = new HashMap<>();
         String[] searchKeyWord = new String[]{"hello world"};
         requestBody.put("searchKeyword", searchKeyWord);
