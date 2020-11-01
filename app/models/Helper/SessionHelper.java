@@ -25,12 +25,10 @@ public class SessionHelper {
     public static void setSearchResultsHashMapFromSession(Http.Request request, String searchKeyword, SearchResults searchResults) {
         String key = getSessionValue(request);
         LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = getSearchResultsHashMapFromSession(request);
+        if (searchResultsLinkedHashMap == null) {
+            searchResultsLinkedHashMap = new LinkedHashMap<>();
+        }
         searchResultsLinkedHashMap.put(searchKeyword, searchResults);
-        sessionSearchResultsBySearchKeywordHashMap.put(key, searchResultsLinkedHashMap);
-    }
-
-    public static void setSearchResultsSession(Http.Request request, LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap) {
-        String key = getUserAgentNameFromRequest(request);
         sessionSearchResultsBySearchKeywordHashMap.put(key, searchResultsLinkedHashMap);
     }
 
@@ -42,13 +40,11 @@ public class SessionHelper {
     public static void setSessionChannelItemHashMap(Http.Request request, String channelId, ChannelResultItems channelResultItems) {
         String key = getSessionValue(request);
         HashMap<String, ChannelResultItems> channelResultItemsHashMap = getChannelItemFromSession(request);
+        if (channelResultItemsHashMap == null) {
+            channelResultItemsHashMap = new HashMap<>();
+        }
         channelResultItemsHashMap.put(channelId, channelResultItems);
         sessionChannelItemHashMap.put(key, channelResultItemsHashMap);
-    }
-
-    public static void setSessionVideosForChannelId(Http.Request request, HashMap<String, SearchResults> videosByChannelId) {
-        String key = getUserAgentNameFromRequest(request);
-        sessionVideosForChannelId.put(key, videosByChannelId);
     }
 
     public static HashMap<String, SearchResults> getVideosByChannelIdFromSession(Http.Request request) {
@@ -59,15 +55,12 @@ public class SessionHelper {
     public static void setSessionVideosForChannelIdHashMap(Http.Request request, String channelId, SearchResults searchResults) {
         String key = getSessionValue(request);
         HashMap<String, SearchResults> videosByChannelIdHashMap = getVideosByChannelIdFromSession(request);
+        if (videosByChannelIdHashMap == null) {
+            videosByChannelIdHashMap = new HashMap<>();
+        }
         videosByChannelIdHashMap.put(channelId, searchResults);
         sessionVideosForChannelId.put(key, videosByChannelIdHashMap);
     }
-
-    public static void setChannelResultItemsSession(Http.Request request, HashMap<String, ChannelResultItems> channelResultItemsHashMap) {
-        String key = getUserAgentNameFromRequest(request);
-        sessionChannelItemHashMap.put(key, channelResultItemsHashMap);
-    }
-
 
     public static boolean isSessionExist(Http.Request request) {
         return request.session().get(SESSION_KEY).orElse(null) != null;

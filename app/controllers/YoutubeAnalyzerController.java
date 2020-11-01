@@ -47,7 +47,6 @@ public class YoutubeAnalyzerController extends Controller {
     public Result index(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
         if (!SessionHelper.isSessionExist(request)) {
-            SessionHelper.setSearchResultsSession(request, new LinkedHashMap<>());
             return ok(index.render(searchForm, null, messagesApi.preferred(request)))
                     .addingToSession(request, SessionHelper.SESSION_KEY, SessionHelper.getUserAgentNameFromRequest(request));
         }
@@ -77,11 +76,6 @@ public class YoutubeAnalyzerController extends Controller {
         // TODO: assign viewCount to item. Currently it is null even after assigning in `peek`.
 
         return searchResponsePromise.thenApply(searchResult -> {
-            LinkedHashMap<String, SearchResults> searchResultsHashMap = SessionHelper.getSearchResultsHashMapFromSession(request);
-            if (searchResultsHashMap == null || searchResultsHashMap.isEmpty()) {
-                searchResultsHashMap = new LinkedHashMap<>();
-                SessionHelper.setSearchResultsSession(request, searchResultsHashMap);
-            }
             SessionHelper.setSearchResultsHashMapFromSession(request, searchKeyword, searchResult);
             return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
         });
@@ -134,7 +128,6 @@ public class YoutubeAnalyzerController extends Controller {
             channelItemPromise = CompletableFuture.completedFuture(sessionChannelResultItems.get(id));
         } else {
             channelItemPromise = youtubeAnalyzer.getChannelInformationByChannelId(id);
-            SessionHelper.setChannelResultItemsSession(request, new HashMap<>());
         }
 
         if (sessionVideosByChannelId != null && sessionVideosByChannelId.containsKey(id)) {
@@ -142,7 +135,6 @@ public class YoutubeAnalyzerController extends Controller {
             videosJsonByChannelIdSearchPromise = CompletableFuture.completedFuture(sessionVideosByChannelId.get(id));
         } else {
             videosJsonByChannelIdSearchPromise = youtubeAnalyzer.getVideosJsonByChannelId(id);
-            SessionHelper.setSessionVideosForChannelId(request, new HashMap<>());
         }
 
         return channelItemPromise.thenCompose(channelResultItems -> videosJsonByChannelIdSearchPromise

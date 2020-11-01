@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,10 +15,9 @@ import java.util.stream.Collectors;
 public class SearchResults {
 
     @JsonProperty("items")
-    public List<SearchResultItem> items;
+    public List<SearchResultItem> items = null;
 
     public SearchResults() {
-        this.items = new ArrayList<>();
     }
 
     public String searchResultsAsString() {
