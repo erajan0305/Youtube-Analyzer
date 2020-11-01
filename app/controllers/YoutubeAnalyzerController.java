@@ -76,7 +76,7 @@ public class YoutubeAnalyzerController extends Controller {
         // TODO: assign viewCount to item. Currently it is null even after assigning in `peek`.
 
         return searchResponsePromise.thenApply(searchResult -> {
-            SessionHelper.setSearchResultsHashMapFromSession(request, searchKeyword, searchResult);
+            SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResult);
             return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
         });
     }

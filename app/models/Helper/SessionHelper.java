@@ -22,7 +22,7 @@ public class SessionHelper {
         return sessionSearchResultsBySearchKeywordHashMap.get(key);
     }
 
-    public static void setSearchResultsHashMapFromSession(Http.Request request, String searchKeyword, SearchResults searchResults) {
+    public static void setSessionSearchResultsHashMap(Http.Request request, String searchKeyword, SearchResults searchResults) {
         String key = getSessionValue(request);
         LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = getSearchResultsHashMapFromSession(request);
         if (searchResultsLinkedHashMap == null) {
