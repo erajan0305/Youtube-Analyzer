@@ -19,4 +19,14 @@ public class VideoStatistics {
     @JsonProperty("commentCount")
     public String commentCount;
 
+    @Override
+    public String toString() {
+        return "VideoStatistics{" +
+                "viewCount='" + viewCount + '\'' +
+                ", likeCount='" + likeCount + '\'' +
+                ", dislikeCount='" + dislikeCount + '\'' +
+                ", favouriteCount='" + favouriteCount + '\'' +
+                ", commentCount='" + commentCount + '\'' +
+                '}';
+    }
 }

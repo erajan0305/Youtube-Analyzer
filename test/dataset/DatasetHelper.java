@@ -7,11 +7,10 @@ import play.libs.Json;
 import java.io.File;
 import java.io.IOException;
 
-
 public class DatasetHelper {
     static ObjectMapper mapper = new ObjectMapper();
 
-    public static <T> T jsonFileToObject(File input, Class<T> clazz){
+    public static <T> T jsonFileToObject(File input, Class<T> clazz) {
         try {
             JsonNode masterJSON = mapper.readTree(input);
             return Json.fromJson(masterJSON, clazz);
@@ -21,7 +20,7 @@ public class DatasetHelper {
         return null;
     }
 
-    public static JsonNode jsonNodeFromJsonFile(File input){
+    public static JsonNode jsonNodeFromJsonFile(File input) {
         try {
             JsonNode masterJSON = mapper.readTree(input);
             return masterJSON;
