@@ -27,4 +27,11 @@ public class SearchResults {
                 .map(item -> item.id.videoId)
                 .collect(Collectors.joining(", "));
     }
+
+    @Override
+    public String toString() {
+        return "SearchResults{" +
+                "items=" + items +
+                '}';
+    }
 }

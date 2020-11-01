@@ -17,4 +17,11 @@ public class Id {
     public Id(String videoId) {
         this.videoId = videoId;
     }
+
+    @Override
+    public String toString() {
+        return "Id{" +
+                "videoId='" + videoId + '\'' +
+                '}';
+    }
 }

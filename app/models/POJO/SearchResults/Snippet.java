@@ -39,4 +39,16 @@ public class Snippet {
         this.publishedAt = publishedAt;
         this.publishTime = publishTime;
     }
+
+    @Override
+    public String toString() {
+        return "Snippet{" +
+                "publishedAt='" + publishedAt + '\'' +
+                ", channelId='" + channelId + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", channelTitle='" + channelTitle + '\'' +
+                ", publishTime='" + publishTime + '\'' +
+                '}';
+    }
 }
