@@ -1,4 +1,4 @@
-package models.POJO.VIdeoSearch;
+package models.POJO.VideoSearch;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,4 +19,14 @@ public class VideoStatistics {
     @JsonProperty("commentCount")
     public String commentCount;
 
+    @Override
+    public String toString() {
+        return "VideoStatistics{" +
+                "viewCount='" + viewCount + '\'' +
+                ", likeCount='" + likeCount + '\'' +
+                ", dislikeCount='" + dislikeCount + '\'' +
+                ", favouriteCount='" + favouriteCount + '\'' +
+                ", commentCount='" + commentCount + '\'' +
+                '}';
+    }
 }

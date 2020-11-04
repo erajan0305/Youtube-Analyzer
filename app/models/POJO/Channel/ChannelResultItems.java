@@ -17,4 +17,11 @@ public class ChannelResultItems {
 
     @JsonProperty("items")
     public List<ChannelItem> items = null;
+
+    @Override
+    public String toString() {
+        return "ChannelResultItems{" +
+                "items=" + items +
+                '}';
+    }
 }

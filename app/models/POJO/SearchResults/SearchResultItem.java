@@ -17,4 +17,16 @@ public class SearchResultItem {
     public Snippet snippet;
     @JsonProperty("viewCount")
     public String viewCount;
+
+    public SearchResultItem() {
+    }
+
+    @Override
+    public String toString() {
+        return "SearchResultItem{" +
+                "id=" + id +
+                ", snippet=" + snippet +
+                ", viewCount='" + viewCount + '\'' +
+                '}';
+    }
 }

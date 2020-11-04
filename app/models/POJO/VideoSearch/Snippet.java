@@ -1,4 +1,4 @@
-package models.POJO.VIdeoSearch;
+package models.POJO.VideoSearch;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,4 +26,16 @@ public class Snippet {
     public String channelTitle;
     @JsonProperty("publishTime")
     public String publishTime;
+
+    @Override
+    public String toString() {
+        return "Snippet{" +
+                "publishedAt='" + publishedAt + '\'' +
+                ", channelId='" + channelId + '\'' +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", channelTitle='" + channelTitle + '\'' +
+                ", publishTime='" + publishTime + '\'' +
+                '}';
+    }
 }

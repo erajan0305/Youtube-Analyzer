@@ -1,4 +1,4 @@
-package models.POJO.VIdeoSearch;
+package models.POJO.VideoSearch;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,4 +14,13 @@ public class VideoSearchResultItem {
     public Snippet snippet;
     @JsonProperty("statistics")
     public VideoStatistics statistics;
+
+    @Override
+    public String toString() {
+        return "VideoSearchResultItem{" +
+                "id='" + id + '\'' +
+                ", snippet=" + snippet +
+                ", statistics=" + statistics +
+                '}';
+    }
 }

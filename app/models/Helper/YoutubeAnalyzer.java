@@ -4,11 +4,7 @@ import models.POJO.Channel.ChannelResultItems;
 import models.POJO.SearchResults.SearchResults;
 import play.libs.ws.WSClient;
 
-import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
@@ -17,9 +13,8 @@ import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.*;
 
 public class YoutubeAnalyzer {
-    @Inject
-    WSClient wsClient;
-    YouTubeApiClient youTubeApiClient;
+    public WSClient wsClient;
+    public YouTubeApiClient youTubeApiClient;
 
     public YoutubeAnalyzer() {
     }
@@ -38,8 +33,13 @@ public class YoutubeAnalyzer {
     }
 
     public Map<String, Long> getSimilarityStats(LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap, String keyword) {
-        List<String> tokens = searchResultsLinkedHashMap
-                .get(keyword)
+        SearchResults searchResults = searchResultsLinkedHashMap.get(keyword);
+        if (searchResults == null || (searchResults.items == null || searchResults.items.size() == 0)) {
+            return new HashMap<String, Long>() {{
+                put(keyword, (long) 0);
+            }};
+        }
+        List<String> tokens = searchResults
                 .items
                 .stream()
                 .map(searchResultItem -> searchResultItem.snippet.title)

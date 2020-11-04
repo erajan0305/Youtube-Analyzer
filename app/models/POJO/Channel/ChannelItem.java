@@ -18,4 +18,13 @@ public class ChannelItem {
     public Snippet snippet;
     @JsonProperty("statistics")
     public ChannelStatistics channelStatistics;
+
+    @Override
+    public String toString() {
+        return "ChannelItem{" +
+                "id='" + id + '\'' +
+                ", snippet=" + snippet +
+                ", channelStatistics=" + channelStatistics +
+                '}';
+    }
 }

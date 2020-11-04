@@ -23,5 +23,16 @@ public class Snippet {
     public String publishedAt;
     @JsonProperty("country")
     public String country;
+
+    @Override
+    public String toString() {
+        return "Snippet{" +
+                "title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", customUrl='" + customUrl + '\'' +
+                ", publishedAt='" + publishedAt + '\'' +
+                ", country='" + country + '\'' +
+                '}';
+    }
 }
 

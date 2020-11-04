@@ -1,0 +1,116 @@
+{
+  "items": [
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "FxxkOfvY39c"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-31T20:11:40Z",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ",
+        "title": "golang intro",
+        "description": "язык программирования golang.",
+        "channelTitle": "Emilius Omeen",
+        "publishTime": "2020-10-31T20:11:40Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "PNvJroXh6Kg"
+      },
+      "snippet": {
+        "publishedAt": "2020-03-01T10:34:52Z",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ",
+        "title": "docker",
+        "description": "Docker — программное обеспечение для автоматизации развёртывания и управления приложениями в средах с поддержкой контейнеризации.",
+        "channelTitle": "Emilius Omeen",
+        "publishTime": "2020-03-01T10:34:52Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "NJQRZmqEwCQ"
+      },
+      "snippet": {
+        "publishedAt": "2019-05-01T08:17:39Z",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ",
+        "title": "расчет ипотеки, кредита, типы досрочного погашения",
+        "description": "Что есть что в кредите: тело платежа, проценты. Два плана погашения кредита.",
+        "channelTitle": "Emilius Omeen",
+        "publishTime": "2019-05-01T08:17:39Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "GIIwHwdRAwM"
+      },
+      "snippet": {
+        "publishedAt": "2018-10-13T18:28:38Z",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ",
+        "title": "степ, удельный рынок",
+        "description": "Митюшкин Александр исполнил степ под шансон.",
+        "channelTitle": "Emilius Omeen",
+        "publishTime": "2018-10-13T18:28:38Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "bHgK3Q4HhuA"
+      },
+      "snippet": {
+        "publishedAt": "2016-11-07T06:43:13Z",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ",
+        "title": "LIGW",
+        "description": "схемы работы, описание, настройки мультиплексоров mercury, узлы.",
+        "channelTitle": "Emilius Omeen",
+        "publishTime": "2016-11-07T06:43:13Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "v0EZEcfbAfQ"
+      },
+      "snippet": {
+        "publishedAt": "2016-11-07T06:40:00Z",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ",
+        "title": "старое видео о старом SBC",
+        "description": "настройка, описание старого sbc, хуавей.",
+        "channelTitle": "Emilius Omeen",
+        "publishTime": "2016-11-07T06:40:00Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "EHyBw98A4Go"
+      },
+      "snippet": {
+        "publishedAt": "2015-03-23T11:19:46Z",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ",
+        "title": "протокол sip",
+        "description": "https://drive.google.com/open?id=0B3CtgzVp1WmHZGdKWS04UjVQaUU&authuser=0 Содержание: International Standards Запросы Ответы Сценарий ...",
+        "channelTitle": "Emilius Omeen",
+        "publishTime": "2015-03-23T11:19:46Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#channel",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ"
+      },
+      "snippet": {
+        "publishedAt": "2012-06-13T12:29:03Z",
+        "channelId": "UC-R1UuxHVDyNoJN0Tn4nkiQ",
+        "title": "Emilius Omeen",
+        "description": "",
+        "channelTitle": "Emilius Omeen",
+        "publishTime": "2012-06-13T12:29:03Z"
+      }
+    }
+  ]
+}

@@ -14,15 +14,22 @@ import java.util.stream.Collectors;
 
 public class SearchResults {
 
-    public SearchResults() {
-    }
-
     @JsonProperty("items")
     public List<SearchResultItem> items = null;
+
+    public SearchResults() {
+    }
 
     public String searchResultsAsString() {
         return "Video Id: " + items.stream()
                 .map(item -> item.id.videoId)
                 .collect(Collectors.joining(", "));
+    }
+
+    @Override
+    public String toString() {
+        return "SearchResults{" +
+                "items=" + items +
+                '}';
     }
 }

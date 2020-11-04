@@ -1,4 +1,4 @@
-package models.POJO.VIdeoSearch;
+package models.POJO.VideoSearch;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,4 +15,11 @@ public class Videos {
 
     @JsonProperty("items")
     public List<VideoSearchResultItem> items = null;
+
+    @Override
+    public String toString() {
+        return "Videos{" +
+                "items=" + items +
+                '}';
+    }
 }
