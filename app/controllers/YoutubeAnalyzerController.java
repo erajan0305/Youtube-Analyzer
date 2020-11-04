@@ -36,6 +36,16 @@ public class YoutubeAnalyzerController extends Controller {
     @Inject
     WSClient wsClient;
 
+    YoutubeAnalyzer youtubeAnalyzer;
+
+    public YoutubeAnalyzerController() {
+        this.youtubeAnalyzer = new YoutubeAnalyzer();
+    }
+
+    public void setYoutubeAnalyzer(YoutubeAnalyzer youtubeAnalyzer) {
+        this.youtubeAnalyzer = youtubeAnalyzer;
+    }
+
     static LinkedHashMap<String, SearchResults> searchResultHashMap = new LinkedHashMap<>();
 
     /**
@@ -46,6 +56,9 @@ public class YoutubeAnalyzerController extends Controller {
      */
     public Result index(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
+        if (this.youtubeAnalyzer.wsClient == null) {
+            this.youtubeAnalyzer.setWsClient(wsClient);
+        }
         if (!SessionHelper.isSessionExist(request)) {
             return ok(index.render(searchForm, null, messagesApi.preferred(request)))
                     .addingToSession(request, SessionHelper.SESSION_KEY, SessionHelper.getUserAgentNameFromRequest(request));
@@ -99,8 +112,8 @@ public class YoutubeAnalyzerController extends Controller {
                 return notFound(similarContent.render(null));
             }
         }
-        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer();
-        Map<String, Long> similarityStatsMap = youtubeAnalyzer
+//        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer();
+        Map<String, Long> similarityStatsMap = this.youtubeAnalyzer
                 .getSimilarityStats(SessionHelper.getSearchResultsHashMapFromSession(request), keyword);
         return ok(similarContent.render(similarityStatsMap));
     }
@@ -113,11 +126,13 @@ public class YoutubeAnalyzerController extends Controller {
      * {@param id: channel id for which information is requested}
      * {@return ok {@link ChannelResultItems} and {@link SearchResults}}
      */
+    // Might need to pass the searchKeyWord to fetch the top 10 videos for the channel which ha the search keyword in them.
+    // If so, update the key in videosByChannelIdSessionHashMap to -> id+"-"+searchKeyword
     public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id) {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer(wsClient);
+//        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer(wsClient);
         HashMap<String, ChannelResultItems> sessionChannelResultItems = SessionHelper.getChannelItemFromSession(request);
         HashMap<String, SearchResults> sessionVideosByChannelId = SessionHelper.getVideosByChannelIdFromSession(request);
         CompletionStage<ChannelResultItems> channelItemPromise;
@@ -127,14 +142,14 @@ public class YoutubeAnalyzerController extends Controller {
             System.out.println("Returning channel result items from session");
             channelItemPromise = CompletableFuture.completedFuture(sessionChannelResultItems.get(id));
         } else {
-            channelItemPromise = youtubeAnalyzer.getChannelInformationByChannelId(id);
+            channelItemPromise = this.youtubeAnalyzer.getChannelInformationByChannelId(id);
         }
 
         if (sessionVideosByChannelId != null && sessionVideosByChannelId.containsKey(id)) {
             System.out.println("Returning top 10 videos search results from session");
             videosJsonByChannelIdSearchPromise = CompletableFuture.completedFuture(sessionVideosByChannelId.get(id));
         } else {
-            videosJsonByChannelIdSearchPromise = youtubeAnalyzer.getVideosJsonByChannelId(id);
+            videosJsonByChannelIdSearchPromise = this.youtubeAnalyzer.getVideosJsonByChannelId(id);
         }
 
         return channelItemPromise.thenCompose(channelResultItems -> videosJsonByChannelIdSearchPromise

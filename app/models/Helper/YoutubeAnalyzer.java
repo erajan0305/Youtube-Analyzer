@@ -24,6 +24,15 @@ public class YoutubeAnalyzer {
         youTubeApiClient = new YouTubeApiClient(this.wsClient);
     }
 
+    public void setWsClient(WSClient wsClient) {
+        this.wsClient = wsClient;
+        this.youTubeApiClient = new YouTubeApiClient(this.wsClient);
+    }
+
+    public void setYouTubeApiClient(YouTubeApiClient youTubeApiClient) {
+        this.youTubeApiClient = youTubeApiClient;
+    }
+
     public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId) {
         return youTubeApiClient.getVideosJsonByChannelId(channelId);
     }
@@ -57,9 +66,9 @@ public class YoutubeAnalyzer {
                         LinkedHashMap::new));
     }
 
-    public CompletionStage<String> getVideosJsonByVideoId(String videoId) {
+    /*public CompletionStage<String> getVideosJsonByVideoId(String videoId) {
         return youTubeApiClient.getVideoJsonByVideoId(videoId);
-    }
+    }*/
 
     public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
         return youTubeApiClient.getChannelInformationByChannelId(channelId);

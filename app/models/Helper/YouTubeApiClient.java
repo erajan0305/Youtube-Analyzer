@@ -1,6 +1,7 @@
 package models.Helper;
 
 import models.POJO.Channel.ChannelResultItems;
+import models.POJO.SearchResults.SearchResultItem;
 import models.POJO.SearchResults.SearchResults;
 import models.POJO.VideoSearch.Videos;
 import play.libs.Json;
@@ -9,8 +10,10 @@ import play.libs.ws.WSBodyWritables;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;
