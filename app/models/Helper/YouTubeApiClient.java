@@ -12,6 +12,9 @@ import play.libs.ws.WSRequest;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+/**
+ * This class makes requests to YOUTUBE API V3 to fetch content based on parameters.
+ */
 public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
     public WSClient wsClient;
     private final String API_KEY = "AIzaSyDSdXwds9Ok_eoNmxWiqNfXLQ5SjG0AuBQ";
@@ -21,6 +24,16 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
         this.wsClient = wsClient;
     }
 
+    /**
+     * <p>
+     * This method makes request to the <code>search</code> API of Youtube and
+     * fetches the top 10 videos for the <code>searchKey</code> sorted by date of upload.
+     * </p>
+     *
+     * @param searchKey this is the key for which search request is executed
+     * @return CompletionStage of {@link SearchResults}.
+     * @author Rajan Shah
+     */
     public CompletionStage<SearchResults> fetchVideos(String searchKey) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "search")
@@ -36,6 +49,14 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .toCompletableFuture();
     }
 
+    /**
+     * This method makes request to the <code>videos</code> API of Youtube and fetches the video information
+     * for <code>videoId</code>
+     *
+     * @param videoId id for which information is to be fetched
+     * @return CompletionStage of {@link Videos} viewCount
+     * @author Rajan Shah
+     */
     public CompletionStage<String> getVideoJsonByVideoId(String videoId) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "videos")
@@ -49,6 +70,15 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .toCompletableFuture();
     }
 
+    /**
+     * This method makes request to the <code>search</code> API of Youtube and fetches the video information
+     * for <code>channelId,keyword</code>
+     *
+     * @param channelId id for which information is to be fetched
+     * @param keyword   keyword for which top 10 videos is to be fetched for <code>id</code>
+     * @return CompletionStage of {@link SearchResults}
+     * @author Rajan Shah
+     */
     public CompletableFuture<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "search")
@@ -67,6 +97,14 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .toCompletableFuture();
     }
 
+    /**
+     * This method makes request to the <code>channels</code> API of Youtube and fetches the channel information
+     * for <code>channelId</code>
+     *
+     * @param channelId id for which channel information is to be fetched
+     * @return CompletionStage of {@link ChannelResultItems}
+     * @author Rajan Shah
+     */
     public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "channels")
