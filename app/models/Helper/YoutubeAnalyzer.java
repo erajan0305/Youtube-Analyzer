@@ -66,9 +66,9 @@ public class YoutubeAnalyzer {
                         LinkedHashMap::new));
     }
 
-    /*public CompletionStage<String> getVideosJsonByVideoId(String videoId) {
+    public CompletionStage<String> getVideosJsonByVideoId(String videoId) {
         return youTubeApiClient.getVideoJsonByVideoId(videoId);
-    }*/
+    }
 
     public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
         return youTubeApiClient.getChannelInformationByChannelId(channelId);

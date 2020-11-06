@@ -46,6 +46,14 @@ public class YoutubeAnalyzerController extends Controller {
         this.youtubeAnalyzer = youtubeAnalyzer;
     }
 
+    public void setFormFactory(FormFactory formFactory) {
+        this.formFactory = formFactory;
+    }
+
+    public void setMessagesApi(MessagesApi messagesApi) {
+        this.messagesApi = messagesApi;
+    }
+
     static LinkedHashMap<String, SearchResults> searchResultHashMap = new LinkedHashMap<>();
 
     /**
@@ -73,19 +81,18 @@ public class YoutubeAnalyzerController extends Controller {
         Form<Search> searchForm = formFactory.form(Search.class);
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         String searchKeyword = requestBody.get("searchKeyword")[0];
-        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer(wsClient);
-        CompletionStage<SearchResults> searchResponsePromise = youtubeAnalyzer.fetchVideos(searchKeyword);
         LinkedHashMap<String, SearchResults> searchResultsSessionHashMap = SessionHelper.getSearchResultsHashMapFromSession(request);
         if (searchResultsSessionHashMap != null && searchResultsSessionHashMap.containsKey(searchKeyword)) {
             // Search Result already exists in Session Cache
             System.out.println("Returning search results from session");
             return CompletableFuture.completedFuture(ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request))));
         }
+        CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
         // TODO: implement this part in MODEL
 //        CompletionStage<List<SearchResultItem>> listCompletionStage = searchResponsePromise
 //                .thenApply(searchResults -> searchResults.items.parallelStream()
 //                        .map(SearchResultItem::appendViewCountToItem)
-//                        .collect(Collectors.toList()));
+//                        .collect(Collectors.toList()));CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
         // TODO: assign viewCount to item. Currently it is null even after assigning in `peek`.
 
         return searchResponsePromise.thenApply(searchResult -> {
@@ -112,7 +119,6 @@ public class YoutubeAnalyzerController extends Controller {
                 return notFound(similarContent.render(null));
             }
         }
-//        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer();
         Map<String, Long> similarityStatsMap = this.youtubeAnalyzer
                 .getSimilarityStats(SessionHelper.getSearchResultsHashMapFromSession(request), keyword);
         return ok(similarContent.render(similarityStatsMap));
@@ -131,7 +137,6 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-//        YoutubeAnalyzer youtubeAnalyzer = new YoutubeAnalyzer(wsClient);
         HashMap<String, ChannelResultItems> sessionChannelResultItems = SessionHelper.getChannelItemFromSession(request);
         HashMap<String, SearchResults> sessionVideosByChannelId = SessionHelper.getVideosByChannelIdFromSession(request);
         CompletionStage<ChannelResultItems> channelItemPromise;
@@ -148,7 +153,7 @@ public class YoutubeAnalyzerController extends Controller {
             System.out.println("Returning top 10 videos search results from session");
             videosJsonByChannelIdSearchPromise = CompletableFuture.completedFuture(sessionVideosByChannelId.get(id + keyword));
         } else {
-            videosJsonByChannelIdSearchPromise = youtubeAnalyzer.getVideosJsonByChannelId(id, keyword);
+            videosJsonByChannelIdSearchPromise = this.youtubeAnalyzer.getVideosJsonByChannelId(id, keyword);
         }
 
         return channelItemPromise.thenCompose(channelResultItems -> videosJsonByChannelIdSearchPromise
