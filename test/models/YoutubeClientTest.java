@@ -30,8 +30,8 @@ public class YoutubeClientTest {
                 (components) -> RoutingDsl.fromComponents(components)
                         .GET("/search")
                         .routingTo(request -> {
-                            if (request.getQueryString("q") != null && !request.getQueryString("q").isEmpty()) {
-                                String searchKey = request.getQueryString("q").toLowerCase();
+                            if (request.queryString("q").isPresent() && !request.queryString("channelId").isPresent()) {
+                                String searchKey = request.queryString("q").get().toLowerCase();
                                 switch (searchKey) {
                                     case "java":
                                         return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/searchresults/Java.json"))));
@@ -43,7 +43,7 @@ public class YoutubeClientTest {
                                         return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/empty.json"))));
                                 }
                             } else {
-                                String channelId = request.getQueryString("channelId");
+                                String channelId = request.queryString("channelId").get();
                                 switch (channelId) {
                                     case "UC0RhatS1pyxInC00YKjjBqQ":
                                         return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/channelvideos/Java_UC0RhatS1pyxInC00YKjjBqQ.json"))));
@@ -58,7 +58,7 @@ public class YoutubeClientTest {
                         })
                         .GET("/videos")
                         .routingTo(request -> {
-                            String videoId = request.getQueryString("id");
+                            String videoId = request.queryString("id").get();
                             switch (videoId) {
                                 case "uhp3GbQiSRs":
                                     return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/viewcount/Java_uhp3GbQiSRs.json"))));
@@ -72,7 +72,7 @@ public class YoutubeClientTest {
                         })
                         .GET("/channels")
                         .routingTo(request -> {
-                            String channelId = request.getQueryString("id");
+                            String channelId = request.queryString("id").get();
                             switch (channelId) {
                                 case "UC0RhatS1pyxInC00YKjjBqQ":
                                     return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/channelinformation/Channel_Java_UC0RhatS1pyxInC00YKjjBqQ.json"))));
@@ -139,22 +139,22 @@ public class YoutubeClientTest {
 
     @Test
     public void getVideosJsonByChannelId() throws Exception {
-        SearchResults actualJava = youTubeApiClient.getVideosJsonByChannelId("UC0RhatS1pyxInC00YKjjBqQ").toCompletableFuture().get();
+        SearchResults actualJava = youTubeApiClient.getVideosJsonByChannelId("UC0RhatS1pyxInC00YKjjBqQ", "java").toCompletableFuture().get();
         SearchResults expectedJava = DatasetHelper.jsonFileToObject(new File("test/dataset/channelvideos/Java_UC0RhatS1pyxInC00YKjjBqQ.json"), SearchResults.class);
         assert expectedJava != null;
         Assert.assertEquals(expectedJava.toString(), actualJava.toString());
 
-        SearchResults actualPython = youTubeApiClient.getVideosJsonByChannelId("UCWr0mx597DnSGLFk1WfvSkQ").toCompletableFuture().get();
+        SearchResults actualPython = youTubeApiClient.getVideosJsonByChannelId("UCWr0mx597DnSGLFk1WfvSkQ", "python").toCompletableFuture().get();
         SearchResults expectedPython = DatasetHelper.jsonFileToObject(new File("test/dataset/channelvideos/Python_UCWr0mx597DnSGLFk1WfvSkQ.json"), SearchResults.class);
         assert expectedPython != null;
         Assert.assertEquals(expectedPython.toString(), actualPython.toString());
 
-        SearchResults actualGolang = youTubeApiClient.getVideosJsonByChannelId("UC-R1UuxHVDyNoJN0Tn4nkiQ").toCompletableFuture().get();
+        SearchResults actualGolang = youTubeApiClient.getVideosJsonByChannelId("UC-R1UuxHVDyNoJN0Tn4nkiQ", "golang").toCompletableFuture().get();
         SearchResults expectedGolang = DatasetHelper.jsonFileToObject(new File("test/dataset/channelvideos/Golang_UC-R1UuxHVDyNoJN0Tn4nkiQ.json"), SearchResults.class);
         assert expectedGolang != null;
         Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
 
-        SearchResults actualNoResult = youTubeApiClient.getVideosJsonByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
+        SearchResults actualNoResult = youTubeApiClient.getVideosJsonByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5", "").toCompletableFuture().get();
         Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
         assert Objects.requireNonNull(expectedEmptyJson).items == null;
         assert Objects.requireNonNull(actualNoResult).items == null;

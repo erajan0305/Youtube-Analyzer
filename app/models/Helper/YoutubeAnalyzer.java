@@ -33,8 +33,8 @@ public class YoutubeAnalyzer {
         this.youTubeApiClient = youTubeApiClient;
     }
 
-    public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId) {
-        return youTubeApiClient.getVideosJsonByChannelId(channelId);
+    public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
+        return youTubeApiClient.getVideosJsonByChannelId(channelId, keyword);
     }
 
     public CompletionStage<SearchResults> fetchVideos(String searchKeyword) {

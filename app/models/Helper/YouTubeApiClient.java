@@ -52,10 +52,11 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .toCompletableFuture();
     }
 
-    public CompletableFuture<SearchResults> getVideosJsonByChannelId(String channelId) {
+    public CompletableFuture<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "search")
                 .addQueryParameter("channelId", channelId)
+                .addQueryParameter("q", keyword)
                 .addQueryParameter("maxResults", "10")
                 .addQueryParameter("type", "videos")
                 .addQueryParameter("order", "date")

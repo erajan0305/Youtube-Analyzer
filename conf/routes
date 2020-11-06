@@ -10,7 +10,7 @@ POST   /                           controllers.YoutubeAnalyzerController.fetchVi
 + nocsrf
 GET    /stats/:keyword             controllers.YoutubeAnalyzerController.fetchSimilarityStats(request : Request, keyword: String)
 + nocsrfø
-GET    /channel/:id                controllers.YoutubeAnalyzerController.fetchChannelInformation(request: Request, id: String)
+GET    /channel/:id/:keyword               controllers.YoutubeAnalyzerController.fetchChannelInformation(request: Request, id: String, keyword: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

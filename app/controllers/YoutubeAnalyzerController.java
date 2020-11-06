@@ -124,11 +124,10 @@ public class YoutubeAnalyzerController extends Controller {
      * Fetches channel information and 10 latest videos sorted by date, by {@param id}.
      * <p>
      * {@param id: channel id for which information is requested}
+     * {@param keyword: search key for top 10 videos by {@param id}}
      * {@return ok {@link ChannelResultItems} and {@link SearchResults}}
      */
-    // Might need to pass the searchKeyWord to fetch the top 10 videos for the channel which ha the search keyword in them.
-    // If so, update the key in videosByChannelIdSessionHashMap to -> id+"-"+searchKeyword
-    public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id) {
+    public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id, String keyword) {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
@@ -145,11 +144,11 @@ public class YoutubeAnalyzerController extends Controller {
             channelItemPromise = this.youtubeAnalyzer.getChannelInformationByChannelId(id);
         }
 
-        if (sessionVideosByChannelId != null && sessionVideosByChannelId.containsKey(id)) {
+        if (sessionVideosByChannelId != null && sessionVideosByChannelId.containsKey(id + keyword)) {
             System.out.println("Returning top 10 videos search results from session");
-            videosJsonByChannelIdSearchPromise = CompletableFuture.completedFuture(sessionVideosByChannelId.get(id));
+            videosJsonByChannelIdSearchPromise = CompletableFuture.completedFuture(sessionVideosByChannelId.get(id + keyword));
         } else {
-            videosJsonByChannelIdSearchPromise = this.youtubeAnalyzer.getVideosJsonByChannelId(id);
+            videosJsonByChannelIdSearchPromise = youtubeAnalyzer.getVideosJsonByChannelId(id, keyword);
         }
 
         return channelItemPromise.thenCompose(channelResultItems -> videosJsonByChannelIdSearchPromise
@@ -158,7 +157,7 @@ public class YoutubeAnalyzerController extends Controller {
                         return notFound(channelInfo.render(null, null, messagesApi.preferred(request)));
                     }
                     SessionHelper.setSessionChannelItemHashMap(request, id, channelResultItems);
-                    SessionHelper.setSessionVideosForChannelIdHashMap(request, id, videoJsonByChannelId);
+                    SessionHelper.setSessionVideosForChannelIdHashMap(request, id, keyword, videoJsonByChannelId);
                     return ok(channelInfo.render(videoJsonByChannelId, channelResultItems.items.get(0), messagesApi.preferred(request)));
                 })
         );
