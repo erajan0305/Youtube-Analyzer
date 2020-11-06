@@ -4,12 +4,17 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Model Class for Search Results Item.
+ */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "id",
         "snippet",
         "viewCount"
 })
+
 public class SearchResultItem {
     @JsonProperty("id")
     public Id id;
