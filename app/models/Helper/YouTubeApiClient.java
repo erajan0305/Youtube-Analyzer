@@ -1,6 +1,7 @@
 package models.Helper;
 
 import models.POJO.Channel.ChannelResultItems;
+import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;
 import models.POJO.VideoSearch.Videos;
 import play.libs.Json;
@@ -77,5 +78,19 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApply(channelJsonNode -> Json.fromJson(channelJsonNode, ChannelResultItems.class))
                 .toCompletableFuture();
+    }
+
+    public CompletionStage<String> getSentimentByVideoId(String videoId) {
+        WSRequest request = this.wsClient
+                .url(BASE_URL + "commentThreads")
+                .addQueryParameter("part", "snippet")
+                .addQueryParameter("maxResults", "100")
+                .addQueryParameter("order", "relevance")
+                .addQueryParameter("video_id", videoId)
+                .addQueryParameter("fields", "items(snippet(topLevelComment(snippet(textDisplay,textOriginal))))")
+                .addQueryParameter("key", API_KEY);
+        return request.get().thenApplyAsync(wsResponse -> Json.parse(wsResponse.getBody()))
+                .thenApplyAsync(wsResponse -> Json.fromJson(wsResponse, CommentResults.class))
+                .thenApplyAsync(CommentResults::getAnalysisResult);
     }
 }
