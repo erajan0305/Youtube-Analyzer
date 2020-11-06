@@ -67,9 +67,9 @@ public class SessionHelperTest extends WithApplication {
     public void testVideosByChannelIdSessionData() {
         SearchResults searchResults = new SearchResults();
         LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = new LinkedHashMap<String, SearchResults>() {{
-            put("abcxyz", searchResults);
+            put("abcxyz" + "searchKeyword", searchResults);
         }};
-        SessionHelper.setSessionVideosForChannelIdHashMap(request.build(), "abcxyz", searchResults);
+        SessionHelper.setSessionVideosForChannelIdHashMap(request.build(), "abcxyz", "searchKeyword", searchResults);
         assertEquals(searchResultsLinkedHashMap.get("abcxyz"), SessionHelper.getVideosByChannelIdFromSession(request.build()).get("abcxyz"));
     }
 }
