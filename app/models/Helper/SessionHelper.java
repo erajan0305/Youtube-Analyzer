@@ -52,13 +52,13 @@ public class SessionHelper {
         return sessionVideosForChannelId.get(key);
     }
 
-    public static void setSessionVideosForChannelIdHashMap(Http.Request request, String channelId, SearchResults searchResults) {
+    public static void setSessionVideosForChannelIdHashMap(Http.Request request, String channelId, String keyword, SearchResults searchResults) {
         String key = getSessionValue(request);
         HashMap<String, SearchResults> videosByChannelIdHashMap = getVideosByChannelIdFromSession(request);
         if (videosByChannelIdHashMap == null) {
             videosByChannelIdHashMap = new HashMap<>();
         }
-        videosByChannelIdHashMap.put(channelId, searchResults);
+        videosByChannelIdHashMap.put(channelId + keyword, searchResults);
         sessionVideosForChannelId.put(key, videosByChannelIdHashMap);
     }
 

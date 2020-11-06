@@ -24,8 +24,8 @@ public class YoutubeAnalyzer {
         youTubeApiClient = new YouTubeApiClient(this.wsClient);
     }
 
-    public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId) {
-        return youTubeApiClient.getVideosJsonByChannelId(channelId);
+    public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
+        return youTubeApiClient.getVideosJsonByChannelId(channelId, keyword);
     }
 
     public CompletionStage<SearchResults> fetchVideos(String searchKeyword) {
