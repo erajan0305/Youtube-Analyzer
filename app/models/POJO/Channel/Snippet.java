@@ -24,6 +24,17 @@ public class Snippet {
     @JsonProperty("country")
     public String country;
 
+    public Snippet() {
+    }
+
+    public Snippet(String title, String description, String country, String customUrl, String publishedAt) {
+        this.title = title;
+        this.description = description;
+        this.country = country;
+        this.customUrl = customUrl;
+        this.publishedAt = publishedAt;
+    }
+
     @Override
     public String toString() {
         return "Snippet{" +

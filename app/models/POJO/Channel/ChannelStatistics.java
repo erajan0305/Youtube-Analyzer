@@ -20,6 +20,15 @@ public class ChannelStatistics {
     @JsonProperty("videoCount")
     public String videoCount;
 
+    public ChannelStatistics() {
+    }
+
+    public ChannelStatistics(String videoCount, String viewCount, String subscriberCount) {
+        this.viewCount = viewCount;
+        this.videoCount = videoCount;
+        this.subscriberCount = subscriberCount;
+    }
+
     @Override
     public String toString() {
         return "ChannelStatistics{" +
