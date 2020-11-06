@@ -133,7 +133,7 @@ public class YoutubeAnalyzerController extends Controller {
      * {@param keyword: search key for top 10 videos by {@param id}}
      * {@return ok {@link ChannelResultItems} and {@link SearchResults}}
      */
-    public CompletionStage<Result> fetchChannelInformation(Http.Request request, String id, String keyword) {
+    public CompletionStage<Result> fetchChannelInformationAndTop10Videos(Http.Request request, String id, String keyword) {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }

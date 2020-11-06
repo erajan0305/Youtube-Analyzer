@@ -32,8 +32,8 @@ public class SessionHelperTest extends WithApplication {
     @Before
     public void init() {
         request = fakeRequest(GET, "/");
-        request.header("USER_AGENT", "chrome");
-        request.session(SessionHelper.SESSION_KEY, String.valueOf(request.getHeaders().get(Http.HeaderNames.USER_AGENT)));
+        request.header("User-Agent", "chrome");
+        request.session(SessionHelper.SESSION_KEY, request.getHeaders().get("User-Agent").get());
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }
@@ -71,5 +71,15 @@ public class SessionHelperTest extends WithApplication {
         }};
         SessionHelper.setSessionVideosForChannelIdHashMap(request.build(), "abcxyz", "searchKeyword", searchResults);
         assertEquals(searchResultsLinkedHashMap.get("abcxyz"), SessionHelper.getVideosByChannelIdFromSession(request.build()).get("abcxyz"));
+    }
+
+    @Test
+    public void getSessionValueTest() {
+        assertEquals(request.getHeaders().get("User-Agent").get(), SessionHelper.getSessionValue(request.build()));
+    }
+
+    @Test
+    public void getUserAgentNameFromRequestTest() {
+        System.out.println(SessionHelper.getUserAgentNameFromRequest(request.build()));
     }
 }

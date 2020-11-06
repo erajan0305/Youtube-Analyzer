@@ -2,6 +2,9 @@ package controllers;
 
 import models.Helper.SessionHelper;
 import models.Helper.YoutubeAnalyzer;
+import models.POJO.Channel.ChannelItem;
+import models.POJO.Channel.ChannelResultItems;
+import models.POJO.Channel.ChannelStatistics;
 import models.POJO.SearchResults.Id;
 import models.POJO.SearchResults.SearchResultItem;
 import models.POJO.SearchResults.SearchResults;
@@ -68,8 +71,8 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
     @Test
     public void indexTestWithSession() {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.index());
-        requestBuilder.header("USER_AGENT", "chrome");
-        requestBuilder.session(SessionHelper.SESSION_KEY, String.valueOf(requestBuilder.getHeaders().get(Http.HeaderNames.USER_AGENT)));
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
         Result result = youtubeAnalyzerController.index(requestBuilder.build());
         Assert.assertEquals(OK, result.status());
     }
@@ -77,8 +80,8 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
     @Test
     public void fetchVideosByKeywordsTest() throws ExecutionException, InterruptedException {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchVideosByKeywords());
-        requestBuilder.session(SessionHelper.SESSION_KEY, String.valueOf(requestBuilder.getHeaders().get(Http.HeaderNames.USER_AGENT)));
-        requestBuilder.header("USER_AGENT", "chrome");
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
         Map<String, String[]> requestBody = new HashMap<>();
         String[] searchKeyWord = new String[]{"hello world"};
         requestBody.put("searchKeyword", searchKeyWord);
@@ -90,8 +93,8 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
     @Test   // returns 404 as no search words present to find similar stats for.
     public void getSimilarityStatsTest0() {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchSimilarityStats("hello world"));
-        requestBuilder.session(SessionHelper.SESSION_KEY, String.valueOf(requestBuilder.getHeaders().get(Http.HeaderNames.USER_AGENT)));
-        requestBuilder.header("USER_AGENT", "chrome");
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
         Result result = youtubeAnalyzerController.fetchSimilarityStats(requestBuilder.build(), "hello world");
         Assert.assertEquals(NOT_FOUND, result.status());
     }
@@ -108,8 +111,9 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         }};
         when(youtubeAnalyzerMock.fetchVideos("hello world")).thenReturn(CompletableFuture.supplyAsync(() -> searchResults1));
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchVideosByKeywords());
-        requestBuilder.session(SessionHelper.SESSION_KEY, String.valueOf(requestBuilder.getHeaders().get(Http.HeaderNames.USER_AGENT)));
-        requestBuilder.header("USER_AGENT", "chrome");
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
+
         Map<String, String[]> requestBody = new HashMap<>();
         String[] searchKeyWord = new String[]{"hello world"};
         requestBody.put("searchKeyword", searchKeyWord);
@@ -118,9 +122,54 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(OK, resultCompletionStage.toCompletableFuture().get().status());
 
         requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchSimilarityStats("hello world"));
-        requestBuilder.session(SessionHelper.SESSION_KEY, String.valueOf(requestBuilder.getHeaders().get(Http.HeaderNames.USER_AGENT)));
-        requestBuilder.header("USER_AGENT", "chrome");
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
         Result result = youtubeAnalyzerController.fetchSimilarityStats(requestBuilder.build(), "hello world");
         Assert.assertEquals(OK, result.status());
+    }
+
+    @Test   // returns 404 as no channel information is available
+    public void fetchChannelInformationAndTop10VideosTest0() throws ExecutionException, InterruptedException {
+        when(youtubeAnalyzerMock.getChannelInformationByChannelId(anyString())).thenReturn(CompletableFuture.supplyAsync(ChannelResultItems::new));
+        when(youtubeAnalyzerMock.getVideosJsonByChannelId(anyString(), anyString())).thenReturn(CompletableFuture.supplyAsync(SearchResults::new));
+        Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos("abcXyz", "hello world"));
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
+        CompletionStage<Result> resultCompletionStage = youtubeAnalyzerController.fetchChannelInformationAndTop10Videos(requestBuilder.build(), "abcXyz", "hello wolrd");
+        Assert.assertEquals(NOT_FOUND, resultCompletionStage.toCompletableFuture().get().status());
+    }
+
+    @Test
+    public void fetchChannelInformationAndTop10VideosTest1() throws ExecutionException, InterruptedException {
+        ChannelResultItems channelResultItems = new ChannelResultItems();
+        ChannelItem channelItem = new ChannelItem();
+        channelItem.id = "abcXyz";
+        channelItem.snippet = new models.POJO.Channel.Snippet("title", "description", "country", "customUrl", "publishedAt");
+        channelItem.channelStatistics = new ChannelStatistics("123", "456", "11");
+        channelResultItems.items = new ArrayList<ChannelItem>() {{
+            add(channelItem);
+        }};
+        SearchResults searchResults1 = new SearchResults();
+        SearchResultItem searchResultItem = new SearchResultItem();
+        searchResultItem.id = new Id("abcXyz");
+        searchResultItem.viewCount = "123";
+        searchResultItem.snippet = new Snippet("123", "channelTitle", "title", "description", "publishedAt", "publishTime");
+        searchResults1.items = new ArrayList<SearchResultItem>() {{
+            add(searchResultItem);
+        }};
+        when(youtubeAnalyzerMock.getChannelInformationByChannelId(anyString())).thenReturn(CompletableFuture.supplyAsync(() -> channelResultItems));
+        when(youtubeAnalyzerMock.getVideosJsonByChannelId(anyString(), anyString())).thenReturn(CompletableFuture.supplyAsync(() -> searchResults1));
+        Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos("abcXyz", "hello world"));
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
+        CompletionStage<Result> resultCompletionStage = youtubeAnalyzerController.fetchChannelInformationAndTop10Videos(requestBuilder.build(), "abcXyz", "hello world");
+        Assert.assertEquals(200, resultCompletionStage.toCompletableFuture().get().status());
+
+        // returning from session
+        requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos("abcXyz", "hello world"));
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
+        resultCompletionStage = youtubeAnalyzerController.fetchChannelInformationAndTop10Videos(requestBuilder.build(), "abcXyz", "hello world");
+        Assert.assertEquals(200, resultCompletionStage.toCompletableFuture().get().status());
     }
 }

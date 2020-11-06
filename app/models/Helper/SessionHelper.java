@@ -14,7 +14,7 @@ public class SessionHelper {
     public static final String SESSION_KEY = "sessionId";
 
     public static String getUserAgentNameFromRequest(Http.Request request) {
-        return request.getHeaders().get(Http.HeaderNames.USER_AGENT).orElse(null);
+        return request.getHeaders().get("User-Agent").orElse(null);
     }
 
     public static LinkedHashMap<String, SearchResults> getSearchResultsHashMapFromSession(Http.Request request) {

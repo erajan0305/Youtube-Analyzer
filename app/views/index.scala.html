@@ -31,7 +31,7 @@
                                 @if(item != null) {
                                     <li><a href="https://www.youtube.com/watch?v=@item.id.videoId" target="_blank">@item.snippet.title</a>
                                         ,
-                                        <a href="@routes.YoutubeAnalyzerController.fetchChannelInformation(item.snippet.channelId,searchWords)"><b>@item.snippet.channelTitle</b></a>
+                                        <a href="@routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(item.snippet.channelId,searchWords)"><b>@item.snippet.channelTitle</b></a>
                                         ,@item.viewCount ,@item.snippet.publishTime
                                     </li>
                                 }
