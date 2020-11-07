@@ -12,6 +12,9 @@ import static java.util.Collections.reverseOrder;
 import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.*;
 
+/**
+ * Helper class to make requests to {@link YouTubeApiClient} and perform calculations on data.
+ */
 public class YoutubeAnalyzer {
     public WSClient wsClient;
     public YouTubeApiClient youTubeApiClient;
@@ -19,24 +22,42 @@ public class YoutubeAnalyzer {
     public YoutubeAnalyzer() {
     }
 
-    public YoutubeAnalyzer(WSClient wsClient) {
-        this.wsClient = wsClient;
-        youTubeApiClient = new YouTubeApiClient(this.wsClient);
-    }
-
+    /**
+     * @param wsClient WSClient Object to make External API calls
+     */
     public void setWsClient(WSClient wsClient) {
         this.wsClient = wsClient;
         this.youTubeApiClient = new YouTubeApiClient(this.wsClient);
     }
 
+    /**
+     * Instantiates {@link YouTubeApiClient}
+     *
+     * @param youTubeApiClient YoutubeApiClient Object
+     */
     public void setYouTubeApiClient(YouTubeApiClient youTubeApiClient) {
         this.youTubeApiClient = youTubeApiClient;
     }
 
+    /**
+     * This is a helper method that calls the {@link YouTubeApiClient}'s <code>getVideosJsonByChannelId</code> method.
+     *
+     * @param channelId id for which information is to be fetched
+     * @param keyword   keyword for which top 10 videos is to be fetched for <code>id</code>
+     * @return CompletionStage of {@link SearchResults}
+     * @author Rajan Shah
+     */
     public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
         return youTubeApiClient.getVideosJsonByChannelId(channelId, keyword);
     }
 
+    /**
+     * This is a helper method that calls the {@link YouTubeApiClient}'s <code>fetchVideos</code> method
+     *
+     * @param searchKeyword this is the key for which method is executed
+     * @return CompletionStage of {@link SearchResults}.
+     * @author Rajan Shah
+     */
     public CompletionStage<SearchResults> fetchVideos(String searchKeyword) {
         return youTubeApiClient.fetchVideos(searchKeyword);
     }
@@ -66,10 +87,24 @@ public class YoutubeAnalyzer {
                         LinkedHashMap::new));
     }
 
+    /**
+     * This is a helper method that calls the {@link YouTubeApiClient}'s <code>getVideoJsonByVideoId</code> method
+     *
+     * @param videoId this is the video for which method is executed
+     * @return CompletionStage of {@link SearchResults}.
+     * @author Rajan Shah
+     */
     public CompletionStage<String> getVideosJsonByVideoId(String videoId) {
         return youTubeApiClient.getVideoJsonByVideoId(videoId);
     }
 
+    /**
+     * This is a helper method that calls {@link YouTubeApiClient}'s <code>getChannelInformationByChannelId</code> method.
+     *
+     * @param channelId id for which channel information is to be fetched
+     * @return CompletionStage of {@link ChannelResultItems}
+     * @author Rajan Shah
+     */
     public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
         return youTubeApiClient.getChannelInformationByChannelId(channelId);
     }
