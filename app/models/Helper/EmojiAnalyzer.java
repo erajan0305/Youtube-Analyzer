@@ -69,12 +69,12 @@ public class EmojiAnalyzer {
     }
 
     public static String generateReport(String comments) {
-        var emojiCounts = EmojiParser.extractEmojis(comments).parallelStream()
+        Map<String, Long> emojiCounts = EmojiParser.extractEmojis(comments).parallelStream()
                 .collect(Collectors.groupingBy(EmojiAnalyzer::encodeEmojiSentiment,
                         Collectors.counting()));
         System.out.println(emojiCounts);
-        var totalCounts = emojiCounts.values().parallelStream().reduce(0L, Long::sum);
-        var result = emojiCounts.entrySet().parallelStream()
+        Long totalCounts = emojiCounts.values().parallelStream().reduce(0L, Long::sum);
+        Map<String, Float> result = emojiCounts.entrySet().parallelStream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> (e.getValue() * 100.0f) / totalCounts));
         System.out.println(result);
         if (result.getOrDefault("happy", 0.0f) >= 70.0f)
