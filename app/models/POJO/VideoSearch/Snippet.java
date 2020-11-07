@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * Model Class for {@link VideoSearchResultItem} Snippet.
+ */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "publishedAt",
@@ -13,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
         "channelTitle",
         "publishTime"
 })
+
 public class Snippet {
     @JsonProperty("publishedAt")
     public String publishedAt;
