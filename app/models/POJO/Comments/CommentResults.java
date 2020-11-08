@@ -20,7 +20,7 @@ public class CommentResults {
 
     private String getComments() {
         Stream<String> commentStream = items.parallelStream()
-                .map(commentResultItem -> commentResultItem.getSnippet().getTopLevelComment().getSnippet().getTextOriginal().trim().strip());
+                .map(commentResultItem -> commentResultItem.getSnippet().getTopLevelComment().getSnippet().getTextOriginal().trim());
         return EmojiAnalyzer.processCommentStream(commentStream);
     }
 
