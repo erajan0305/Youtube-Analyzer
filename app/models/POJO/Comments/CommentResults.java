@@ -9,6 +9,10 @@ import models.Helper.EmojiAnalyzer;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Model Class for Comment Results.
+ */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"items"})

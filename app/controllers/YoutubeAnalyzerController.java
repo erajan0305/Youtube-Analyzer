@@ -76,7 +76,7 @@ public class YoutubeAnalyzerController extends Controller {
      *
      * @param request Http Request mapped to the method
      * @return Result <code>OK</code>: 200.
-     * @author Rajan Shah
+     * @author Kishan Bhimani, Rajan Shah, Umang Patel
      */
     public Result index(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
@@ -101,7 +101,7 @@ public class YoutubeAnalyzerController extends Controller {
      *
      * @param request Http Request mapped to the method
      * @return Result <code>OK</code>: 200, {@link SearchResults}.
-     * @author Rajan Shah
+     * @author Rajan Shah, Kishan Bhimani, Umang Patel
      */
     public CompletionStage<Result> fetchVideosByKeywords(Http.Request request) {
         if (!SessionHelper.isSessionExist(request)) {
@@ -138,10 +138,19 @@ public class YoutubeAnalyzerController extends Controller {
 
     /**
      * <p>
-     * Calculates similarity-level statistic for videos from search results, counting all unique words in the
+     * An action that renders an HTML page with a search form.
+     * The configuration in the <code>routes</code> file means that
+     * this method will be called when the application receives a
+     * <code>GET</code> request with a path of <code>/stats/:keyword</code>.<br>
+     * Calculates similarity-level statistic for videos from {@link SearchResults}, counting all unique words in the
      * video title in descending order.
      * <p>
-     * {@return ok {@link similarContent}}
+     *
+     * @param request Http Request mapped to the method
+     * @param keyword search keyword used to fetch videos.
+     * @return Result <code>OK</code>: 200, {@link Map} that contains uniqueWord of type {@link String} as key and
+     * count of type {@link Long} as a value.
+     * @author Kishan Bhimani
      */
     public Result fetchSimilarityStats(Http.Request request, String keyword) {
         if (!SessionHelper.isSessionExist(request)) {

@@ -19,6 +19,7 @@ public class SessionHelper {
     /**
      * @param request Http Request
      * @return User-Agent obtained from the request headers.
+     * @author Kishan Bhimani
      */
     public static String getUserAgentNameFromRequest(Http.Request request) {
         return request.getHeaders().get("User-Agent").orElse(null);
@@ -28,7 +29,7 @@ public class SessionHelper {
      * This method returns the SearchResults stored for the current session
      *
      * @param request Http Request
-     * @return HashMap of SearchKeyword and {@link SearchResults}
+     * @return {@link LinkedHashMap} of SearchKeyword and {@link SearchResults}
      * @author Kishan Bhimani
      */
     public static LinkedHashMap<String, SearchResults> getSearchResultsHashMapFromSession(Http.Request request) {
@@ -58,7 +59,7 @@ public class SessionHelper {
      * This method returns the {@link ChannelResultItems} stored for the current session
      *
      * @param request Http Request
-     * @return HashMap of ChannelId and {@link ChannelResultItems}
+     * @return {@link HashMap} of ChannelId and {@link ChannelResultItems}
      * @author Rajan Shah
      */
     public static HashMap<String, ChannelResultItems> getChannelItemFromSession(Http.Request request) {
@@ -88,7 +89,7 @@ public class SessionHelper {
      * This method returns the {@link SearchResults} stored for the current session for channelId and keyword
      *
      * @param request Http Request
-     * @return HashMap of ChannelId and {@link SearchResults}
+     * @return {@link HashMap} of ChannelId and {@link SearchResults}
      * @author Rajan Shah
      */
     public static HashMap<String, SearchResults> getVideosByChannelIdFromSession(Http.Request request) {

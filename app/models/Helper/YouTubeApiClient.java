@@ -36,8 +36,8 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
      * </p>
      *
      * @param searchKey this is the key for which search request is executed
-     * @return CompletionStage of {@link SearchResults}.
-     * @author Rajan Shah
+     * @return {@link CompletionStage} of {@link SearchResults}.
+     * @author Kishan Bhimani, Rajan Shah, Umang J Patel
      */
     public CompletionStage<SearchResults> fetchVideos(String searchKey) {
         WSRequest request = this.wsClient
@@ -59,8 +59,8 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
      * for <code>videoId</code>
      *
      * @param videoId id for which information is to be fetched
-     * @return CompletionStage of {@link Videos} viewCount
-     * @author Rajan Shah
+     * @return {@link CompletionStage} of {@link Videos} viewCount
+     * @author Rajan Shah, Kishan Bhimani, Umang J Patel
      */
     public CompletionStage<String> getViewCountByVideoId(String videoId) {
         WSRequest request = this.wsClient
@@ -81,10 +81,10 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
      *
      * @param channelId id for which information is to be fetched
      * @param keyword   keyword for which top 10 videos is to be fetched for <code>id</code>
-     * @return CompletionStage of {@link SearchResults}
+     * @return {@link CompletionStage} of {@link SearchResults}
      * @author Rajan Shah
      */
-    public CompletableFuture<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
+    public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "search")
                 .addQueryParameter("channelId", channelId)
@@ -105,7 +105,7 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
      * for <code>channelId</code>
      *
      * @param channelId id for which channel information is to be fetched
-     * @return CompletionStage of {@link ChannelResultItems}
+     * @return {@link CompletionStage} of {@link ChannelResultItems}
      * @author Rajan Shah
      */
     public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
@@ -120,6 +120,14 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .toCompletableFuture();
     }
 
+    /**
+     * This method makes request to the <code>channels</code> API of Youtube and fetches the channel information
+     * for <code>channelId</code>
+     *
+     * @param videoId id for which sentiment is to be calculated.
+     * @return {@link CompletableFuture} of {@link String}
+     * @author Umang J Patel
+     */
     public CompletableFuture<String> getSentimentByVideoId(String videoId) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "commentThreads")
@@ -134,6 +142,14 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .thenApplyAsync(CommentResults::getAnalysisResult).toCompletableFuture().exceptionally(throwable -> EmojiManager.getForAlias("neutral_face").getUnicode());
     }
 
+    /**
+     * This method makes request to the <code>channels</code> API of Youtube and fetches the channel information
+     * for <code>channelId</code>
+     *
+     * @param searchKey key used to get {@link models.POJO.SearchResults.SearchResultItem}s from {@link SearchResults}
+     * @return {@link CompletableFuture} of {@link List<String>}
+     * @author Umang J Patel
+     */
     public CompletableFuture<List<String>> getSentimentForVideos(String searchKey) {
         WSRequest request = this.wsClient
                 .url("https://www.googleapis.com/youtube/v3/search")

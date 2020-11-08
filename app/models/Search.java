@@ -1,5 +1,9 @@
 package models;
 
+/**
+ * Model Class for Search Input.
+ */
+
 public class Search {
     public String searchKeyword;
 
