@@ -12,7 +12,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
         "id",
         "snippet",
-        "viewCount"
+        "viewCount",
+        "commentSentiment"
 })
 
 public class SearchResultItem {
@@ -22,6 +23,8 @@ public class SearchResultItem {
     public Snippet snippet;
     @JsonProperty("viewCount")
     public String viewCount;
+    @JsonProperty("commentSentiment")
+    public String commentSentiment;
 
     public SearchResultItem() {
     }
@@ -32,6 +35,7 @@ public class SearchResultItem {
                 "id=" + id +
                 ", snippet=" + snippet +
                 ", viewCount='" + viewCount + '\'' +
+                ", commentSentiment='" + commentSentiment + '\'' +
                 '}';
     }
 }

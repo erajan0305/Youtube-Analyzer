@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * This controller contains an action to handle HTTP requests
  * to the application's pages.
@@ -65,11 +67,6 @@ public class YoutubeAnalyzerController extends Controller {
     public void setMessagesApi(MessagesApi messagesApi) {
         this.messagesApi = messagesApi;
     }
-
-    /**
-     * SearchResults hashmap to store the results of searches and querying for <code>fetchSimilarityStats</code> method.
-     */
-    static LinkedHashMap<String, SearchResults> searchResultHashMap = new LinkedHashMap<>();
 
     /**
      * An action that renders an HTML page with a search form.
@@ -116,19 +113,25 @@ public class YoutubeAnalyzerController extends Controller {
         LinkedHashMap<String, SearchResults> searchResultsSessionHashMap = SessionHelper.getSearchResultsHashMapFromSession(request);
         if (searchResultsSessionHashMap != null && searchResultsSessionHashMap.containsKey(searchKeyword)) {
             // Search Result already exists in Session Cache
-            System.out.println("Returning search results from session");
             return CompletableFuture.completedFuture(ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request))));
         }
         CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
-        // TODO: implement this part in MODEL
-//        CompletionStage<List<SearchResultItem>> listCompletionStage = searchResponsePromise
-//                .thenApply(searchResults -> searchResults.items.parallelStream()
-//                        .map(SearchResultItem::appendViewCountToItem)
-//                        .collect(Collectors.toList()));CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
-        // TODO: assign viewCount to item. Currently it is null even after assigning in `peek`.
 
-        return searchResponsePromise.thenApply(searchResult -> {
-            SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResult);
+        return searchResponsePromise.thenApply(searchResults -> {
+            searchResults.items.parallelStream()
+                    .map(searchResultItem -> CompletableFuture.allOf(
+                            youtubeAnalyzer.getViewCountByVideoId(searchResultItem.id.videoId)
+                                    .thenApply(countString -> {
+                                        searchResultItem.viewCount = countString;
+                                        return searchResultItem;
+                                    }).toCompletableFuture(),
+                            youtubeAnalyzer.getSentimentPerVideo(searchResultItem.id.videoId)
+                                    .thenApply(commentSentiment -> {
+                                        searchResultItem.commentSentiment = commentSentiment;
+                                        return searchResultItem;
+                                    }).toCompletableFuture()
+                    )).map(CompletableFuture::join).collect(toList());
+            SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResults);
             return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
         });
     }
@@ -146,9 +149,7 @@ public class YoutubeAnalyzerController extends Controller {
         }
         if (SessionHelper.getSearchResultsHashMapFromSession(request) == null
                 || SessionHelper.getSearchResultsHashMapFromSession(request).get(keyword) == null) {
-            if (searchResultHashMap.get(keyword) == null) {
-                return notFound(similarContent.render(null));
-            }
+            return notFound(similarContent.render(null));
         }
         Map<String, Long> similarityStatsMap = this.youtubeAnalyzer
                 .getSimilarityStats(SessionHelper.getSearchResultsHashMapFromSession(request), keyword);
@@ -204,5 +205,7 @@ public class YoutubeAnalyzerController extends Controller {
                     return ok(channelInfo.render(videoJsonByChannelId, channelResultItems.items.get(0), messagesApi.preferred(request)));
                 })
         );
+
+
     }
 }

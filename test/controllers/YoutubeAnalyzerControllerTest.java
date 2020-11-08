@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import play.Application;
@@ -65,6 +66,8 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         youtubeAnalyzerController.setMessagesApi(messagesApi);
         searchResults = new SearchResults();
         when(youtubeAnalyzerMock.fetchVideos(anyString())).thenReturn(CompletableFuture.supplyAsync(() -> searchResults));
+        when(youtubeAnalyzerMock.getViewCountByVideoId(anyString())).thenReturn(CompletableFuture.supplyAsync(ArgumentMatchers::anyString));
+        when(youtubeAnalyzerMock.getSentimentPerVideo(anyString())).thenReturn(CompletableFuture.supplyAsync(ArgumentMatchers::anyString));
         when(youtubeAnalyzerMock.getSimilarityStats(any(LinkedHashMap.class), anyString())).thenReturn(new HashMap<String, Long>());
     }
 

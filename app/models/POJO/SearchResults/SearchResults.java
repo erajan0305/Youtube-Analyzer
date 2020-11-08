@@ -24,16 +24,14 @@ public class SearchResults {
     public SearchResults() {
     }
 
-    public String searchResultsAsString() {
-        return "Video Id: " + items.stream()
-                .map(item -> item.id.videoId)
-                .collect(Collectors.joining(", "));
-    }
-
     @Override
     public String toString() {
         return "SearchResults{" +
                 "items=" + items +
                 '}';
+    }
+
+    public List<String> getVideoIds() {
+        return items.parallelStream().map(video -> video.id.videoId).collect(Collectors.toList());
     }
 }

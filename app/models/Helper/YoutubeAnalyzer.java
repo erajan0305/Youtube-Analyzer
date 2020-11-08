@@ -94,8 +94,8 @@ public class YoutubeAnalyzer {
      * @return CompletionStage of {@link SearchResults}.
      * @author Rajan Shah
      */
-    public CompletionStage<String> getVideosJsonByVideoId(String videoId) {
-        return youTubeApiClient.getVideoJsonByVideoId(videoId);
+    public CompletionStage<String> getViewCountByVideoId(String videoId) {
+        return youTubeApiClient.getViewCountByVideoId(videoId);
     }
 
     /**
@@ -107,5 +107,27 @@ public class YoutubeAnalyzer {
      */
     public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
         return youTubeApiClient.getChannelInformationByChannelId(channelId);
+    }
+
+    /**
+     * This is a helper method that calls {@link YouTubeApiClient}'s <code>getSentimentForVideos</code> method
+     *
+     * @param searchKey is the search keyword used to search for the videos
+     * @return CompletionStage of {@link List<String>} i.e list of sentiments (emoji) for each video.
+     * @author Umang J Patel
+     */
+    public CompletionStage<List<String>> getVideoSentiments(String searchKey) {
+        return youTubeApiClient.getSentimentForVideos(searchKey);
+    }
+
+    /**
+     * This is a helper method that calls {@link YouTubeApiClient}'s <code>getSentimentByVideo</code> method
+     *
+     * @param videoId is the ID of a particular video
+     * @return CompletionStage of {@link String} i.e sentiment (emoji) for a particular video.
+     * @author Umang J Patel
+     */
+    public CompletionStage<String> getSentimentPerVideo(String videoId) {
+        return youTubeApiClient.getSentimentByVideoId(videoId);
     }
 }
