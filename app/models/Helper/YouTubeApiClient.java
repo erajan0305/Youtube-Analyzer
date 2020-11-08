@@ -134,7 +134,7 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .thenApplyAsync(CommentResults::getAnalysisResult).toCompletableFuture().exceptionally(throwable -> EmojiManager.getForAlias("neutral_face").getUnicode());
     }
 
-    public CompletableFuture<List<String>> fetchCommentsForVideos(String searchKey) {
+    public CompletableFuture<List<String>> getSentimentForVideos(String searchKey) {
         WSRequest request = this.wsClient
                 .url("https://www.googleapis.com/youtube/v3/search")
                 .addQueryParameter("part", "snippet")
