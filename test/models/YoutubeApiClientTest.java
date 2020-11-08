@@ -19,7 +19,7 @@ import java.util.Objects;
 
 import static play.mvc.Results.ok;
 
-public class YoutubeClientTest {
+public class YoutubeApiClientTest {
     private YouTubeApiClient youTubeApiClient;
     private WSClient wsTestClient;
     private Server server;

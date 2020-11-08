@@ -45,7 +45,7 @@ public class YoutubeAnalyzer {
      * @param channelId id for which information is to be fetched
      * @param keyword   keyword for which top 10 videos is to be fetched for <code>id</code>
      * @return CompletionStage of {@link SearchResults}
-     * @author Rajan Shah
+     * @author Kishan Bhimani, Rajan Shah, Umang J Patel
      */
     public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
         return youTubeApiClient.getVideosJsonByChannelId(channelId, keyword);
@@ -56,12 +56,22 @@ public class YoutubeAnalyzer {
      *
      * @param searchKeyword this is the key for which method is executed
      * @return CompletionStage of {@link SearchResults}.
-     * @author Rajan Shah
+     * @author Rajan Shah, Kishan Bhimani, Umang J Patel
      */
     public CompletionStage<SearchResults> fetchVideos(String searchKeyword) {
         return youTubeApiClient.fetchVideos(searchKeyword);
     }
 
+    /**
+     * This is a helper method that Calculates similarity-level statistic for videos from {@link SearchResults}, counting all unique words in the
+     * video title in descending order.
+     *
+     * @param searchResultsLinkedHashMap {@link LinkedHashMap} of all {@link SearchResults}.
+     * @param keyword                    key to get {@link SearchResults} from <code>searchResultsLinkedHashMap</code>.
+     * @return {@link Map} that contains uniqueWord of type {@link String} as key and
+     * count of type {@link Long} as a value.
+     * @author Kishan Bhimani
+     */
     public Map<String, Long> getSimilarityStats(LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap, String keyword) {
         SearchResults searchResults = searchResultsLinkedHashMap.get(keyword);
         if (searchResults == null || (searchResults.items == null || searchResults.items.size() == 0)) {
@@ -73,9 +83,10 @@ public class YoutubeAnalyzer {
                 .items
                 .stream()
                 .map(searchResultItem -> searchResultItem.snippet.title)
-                .flatMap(title -> Arrays.stream(title.split("\\s+").clone()))   // split into words
-                .map(s -> s.replaceAll("[^\\p{Alpha}]", ""))    // removing special characters
-                .filter(s -> !s.isEmpty())
+                .flatMap(title -> Arrays.stream(title.split("\\s+").clone()))    // split into words
+                .map(s -> s.replaceAll("[^a-zA-Z0-9]", ""))          // discarding special characters
+                .filter(s -> !s.matches("[0-9]+"))                              // discarding only number strings
+                .filter(s -> !s.isEmpty() && s.length() > 1)                          // accept only non empty string with length more than 1
                 .collect(toList());
 
         return tokens.stream()
