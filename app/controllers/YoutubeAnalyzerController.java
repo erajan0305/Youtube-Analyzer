@@ -204,5 +204,7 @@ public class YoutubeAnalyzerController extends Controller {
                     return ok(channelInfo.render(videoJsonByChannelId, channelResultItems.items.get(0), messagesApi.preferred(request)));
                 })
         );
+
+
     }
 }
