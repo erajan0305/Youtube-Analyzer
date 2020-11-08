@@ -36,4 +36,8 @@ public class SearchResults {
                 "items=" + items +
                 '}';
     }
+
+    public List<String> getVideoIds() {
+        return items.parallelStream().map(video -> video.id.videoId).collect(Collectors.toList());
+    }
 }
