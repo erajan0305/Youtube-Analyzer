@@ -25,14 +25,14 @@
                             </span>
                             <ol>
                             @for(item <- searchResults.items) {
-                                <hr style="width: 50%;
+                                <hr style="width: 75%;
                                     text-align: left;
                                     margin-left: 0">
                                 @if(item != null) {
                                     <li><a href="https://www.youtube.com/watch?v=@item.id.videoId" target="_blank">@item.snippet.title</a>
                                         ,
-                                        <a href="@routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(item.snippet.channelId,searchWords)"><b>@item.snippet.channelTitle</b></a>
-                                        ,@item.viewCount ,@item.snippet.publishTime
+                                        <a href="@routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(item.snippet.channelId, searchWords)"><b>@item.snippet.channelTitle</b></a>
+                                        ,@item.viewCount, @item.commentSentiment,@item.snippet.publishTime,
                                     </li>
                                 }
                             }

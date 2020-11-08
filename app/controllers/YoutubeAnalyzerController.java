@@ -125,6 +125,12 @@ public class YoutubeAnalyzerController extends Controller {
                         return searchResultItem;
                     }).toCompletableFuture()
             ).map(CompletableFuture::join).collect(toList());
+            searchResults.items.parallelStream().map(searchResultItem -> youtubeAnalyzer.getSentimentPerVideo(searchResultItem.id.videoId)
+                    .thenApply(commentSentiment -> {
+                        searchResultItem.commentSentiment = commentSentiment;
+                        return searchResultItem;
+                    }).toCompletableFuture()
+            ).map(CompletableFuture::join).collect(toList());
             SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResults);
             return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
         });
@@ -199,5 +205,7 @@ public class YoutubeAnalyzerController extends Controller {
                     return ok(channelInfo.render(videoJsonByChannelId, channelResultItems.items.get(0), messagesApi.preferred(request)));
                 })
         );
+
+
     }
 }

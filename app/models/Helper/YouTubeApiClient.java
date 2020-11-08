@@ -1,6 +1,8 @@
 package models.Helper;
 
+import com.vdurmont.emoji.EmojiManager;
 import models.POJO.Channel.ChannelResultItems;
+import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;
 import models.POJO.VideoSearch.Videos;
 import play.libs.Json;
@@ -9,8 +11,11 @@ import play.libs.ws.WSBodyWritables;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 /**
  * This class makes requests to YOUTUBE API V3 to fetch content based on parameters.
@@ -90,10 +95,8 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .addQueryParameter("part", "snippet")
                 .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))")
                 .addQueryParameter("key", API_KEY);
-        return request.get().thenApply(wsResponse -> {
-            System.out.println(wsResponse);
-            return Json.parse(wsResponse.getBody());
-        }).thenApply(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
+        return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
+                .thenApply(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
                 .toCompletableFuture();
     }
 
@@ -115,5 +118,45 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApply(channelJsonNode -> Json.fromJson(channelJsonNode, ChannelResultItems.class))
                 .toCompletableFuture();
+    }
+
+    public CompletableFuture<String> getSentimentByVideoId(String videoId) {
+        WSRequest request = this.wsClient
+                .url(BASE_URL + "commentThreads")
+                .addQueryParameter("part", "snippet")
+                .addQueryParameter("maxResults", "100")
+                .addQueryParameter("order", "relevance")
+                .addQueryParameter("video_id", videoId)
+                .addQueryParameter("fields", "items(snippet(topLevelComment(snippet(textDisplay,textOriginal))))")
+                .addQueryParameter("key", API_KEY);
+        return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
+                .thenApplyAsync(wsResponse -> Json.fromJson(wsResponse, CommentResults.class))
+                .thenApplyAsync(CommentResults::getAnalysisResult).toCompletableFuture().exceptionally(throwable -> EmojiManager.getForAlias("neutral_face").getUnicode());
+    }
+
+    public CompletableFuture<List<String>> getSentimentForVideos(String searchKey) {
+        WSRequest request = this.wsClient
+                .url("https://www.googleapis.com/youtube/v3/search")
+                .addQueryParameter("part", "snippet")
+                .addQueryParameter("maxResults", "10")
+                .addQueryParameter("type", "video")
+                .addQueryParameter("q", searchKey)
+                .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))")
+                .addQueryParameter("key", API_KEY);
+        CompletableFuture<List<String>> result = null;
+        try {
+            result = request.stream().thenApplyAsync(wsResponse -> Json.parse(wsResponse.getBody()))
+                    .thenApplyAsync(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
+                    .thenApplyAsync(SearchResults::getVideoIds)
+                    .thenApplyAsync(videoIds -> {
+                        List<CompletableFuture<String>> comments = videoIds.parallelStream().map(this::getSentimentByVideoId).collect(Collectors.toList());
+                        CompletableFuture<Void> futures = CompletableFuture.allOf(comments.toArray(new CompletableFuture[0]));
+                        return futures.thenApplyAsync(future -> comments.parallelStream().map(CompletableFuture::join).collect(Collectors.toList()));
+                    }).toCompletableFuture().get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        System.out.println(result);
+        return result;
     }
 }
