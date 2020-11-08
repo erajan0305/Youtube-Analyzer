@@ -94,8 +94,8 @@ public class YoutubeAnalyzer {
      * @return CompletionStage of {@link SearchResults}.
      * @author Rajan Shah
      */
-    public CompletionStage<String> getVideosJsonByVideoId(String videoId) {
-        return youTubeApiClient.getVideoJsonByVideoId(videoId);
+    public CompletionStage<String> getViewCountByVideoId(String videoId) {
+        return youTubeApiClient.getViewCountByVideoId(videoId);
     }
 
     /**

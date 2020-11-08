@@ -17,7 +17,7 @@ import java.util.concurrent.CompletionStage;
  */
 public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
     public WSClient wsClient;
-    private final String API_KEY = "AIzaSyDSdXwds9Ok_eoNmxWiqNfXLQ5SjG0AuBQ";
+    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     public YouTubeApiClient(WSClient wsClient) {
@@ -57,16 +57,16 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
      * @return CompletionStage of {@link Videos} viewCount
      * @author Rajan Shah
      */
-    public CompletionStage<String> getVideoJsonByVideoId(String videoId) {
+    public CompletionStage<String> getViewCountByVideoId(String videoId) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "videos")
                 .addQueryParameter("id", videoId)
                 .addQueryParameter("part", "snippet,contentDetails,statistics")
-                .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,title,description,channelTitle),contentDetails(duration),statistics(viewCount, likeCount, dislikeCount, favouriteCount, commentCount))")
+                .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,title,description,channelTitle),contentDetails(duration),statistics(viewCount, likeCount, dislikeCount, commentCount))")
                 .addQueryParameter("key", API_KEY);
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApply(video -> Json.fromJson(video, Videos.class))
-                .thenApply(video -> video.items.get(0).statistics.viewCount)
+                .thenApply(video -> (video.items != null && !video.items.isEmpty()) ? video.items.get(0).statistics.viewCount : "No Data")
                 .toCompletableFuture();
     }
 
