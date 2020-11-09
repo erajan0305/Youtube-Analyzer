@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
  */
 public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
     public WSClient wsClient;
-    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
+    // private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
+    private final String API_KEY = "AIzaSyCnECnkJrVZIjtA_1_zvbiBqkHTwfaBDlk";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     public YouTubeApiClient(WSClient wsClient) {
