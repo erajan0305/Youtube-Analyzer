@@ -72,7 +72,7 @@ public class EmojiAnalyzer {
         Map<String, Long> emojiCounts = EmojiParser.extractEmojis(comments).parallelStream()
                 .collect(Collectors.groupingBy(EmojiAnalyzer::encodeEmojiSentiment,
                         Collectors.counting()));
-        System.out.println(emojiCounts);
+        // System.out.println(emojiCounts);
         Long totalCounts = emojiCounts.values().parallelStream().reduce(0L, Long::sum);
         Map<String, Float> result = emojiCounts.entrySet().parallelStream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> (e.getValue() * 100.0f) / totalCounts));
