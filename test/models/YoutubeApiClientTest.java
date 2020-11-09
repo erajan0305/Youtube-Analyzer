@@ -108,33 +108,33 @@ public class YoutubeApiClientTest {
         Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
 
         SearchResults actualNoResult = youTubeApiClient.fetchVideos("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
-        Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
+        SearchResults expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), SearchResults.class);
         assert Objects.requireNonNull(expectedEmptyJson).items == null;
         assert Objects.requireNonNull(actualNoResult).items == null;
     }
 
     @Test
     public void getVideoJsonByVideoId() throws Exception {
-        String actualJava = youTubeApiClient.getViewCountByVideoId("uhp3GbQiSRs").toCompletableFuture().get();
+        String actualJavaViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("uhp3GbQiSRs").toCompletableFuture().get();
         Videos expectedJavaVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Java_uhp3GbQiSRs.json"), Videos.class);
         assert expectedJavaVideoItems != null;
-        Assert.assertEquals(expectedJavaVideoItems.items.get(0).statistics.viewCount, actualJava);
+        Assert.assertEquals(expectedJavaVideoItems.items.get(0).statistics.viewCount, actualJavaViewCountByVideoId);
 
-        String actualPython = youTubeApiClient.getViewCountByVideoId("OsKQw3qTMMk").toCompletableFuture().get();
+        String actualPythonViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("OsKQw3qTMMk").toCompletableFuture().get();
         Videos expectedPythonVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Python_OsKQw3qTMMk.json"), Videos.class);
         assert expectedPythonVideoItems != null;
-        Assert.assertEquals(expectedPythonVideoItems.items.get(0).statistics.viewCount, actualPython);
+        Assert.assertEquals(expectedPythonVideoItems.items.get(0).statistics.viewCount, actualPythonViewCountByVideoId);
 
-        String actualGolang = youTubeApiClient.getViewCountByVideoId("FxxkOfvY39c").toCompletableFuture().get();
+        String actualGolangViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("FxxkOfvY39c").toCompletableFuture().get();
         Videos expectedGolangVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Golang_FxxkOfvY39c.json"), Videos.class);
         assert expectedGolangVideoItems != null;
-        Assert.assertEquals(expectedGolangVideoItems.items.get(0).statistics.viewCount, actualGolang);
+        Assert.assertEquals(expectedGolangVideoItems.items.get(0).statistics.viewCount, actualGolangViewCountByVideoId);
 
-        // TODO: write after getVideoJsonByVideoId result viewCount/videos can be appended to search results.
-        /*String actualNoResult = youTubeApiClient.getVideoJsonByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
+        String actualNoResult = youTubeApiClient.getViewCountByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
         Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
-        assert expectedEmptyJson == null;
-        assert actualNoResult == null;*/
+        assert Objects.requireNonNull(expectedEmptyJson).items == null;
+        String noData = "No Data";
+        Assert.assertEquals(actualNoResult, noData);
     }
 
     @Test
