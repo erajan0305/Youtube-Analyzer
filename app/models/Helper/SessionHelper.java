@@ -12,8 +12,6 @@ import java.util.LinkedHashMap;
  */
 public class SessionHelper {
     private static final HashMap<String, LinkedHashMap<String, SearchResults>> sessionSearchResultsBySearchKeywordHashMap = new HashMap<>();
-    private static final HashMap<String, HashMap<String, ChannelResultItems>> sessionChannelItemHashMap = new HashMap<>();
-    private static final HashMap<String, HashMap<String, SearchResults>> sessionVideosForChannelId = new HashMap<>();
     public static final String SESSION_KEY = "sessionId";
 
     /**
@@ -53,66 +51,6 @@ public class SessionHelper {
         }
         searchResultsLinkedHashMap.put(searchKeyword, searchResults);
         sessionSearchResultsBySearchKeywordHashMap.put(key, searchResultsLinkedHashMap);
-    }
-
-    /**
-     * This method returns the {@link ChannelResultItems} stored for the current session
-     *
-     * @param request Http Request
-     * @return {@link HashMap} of ChannelId and {@link ChannelResultItems}
-     * @author Rajan Shah
-     */
-    public static HashMap<String, ChannelResultItems> getChannelItemFromSession(Http.Request request) {
-        String key = getSessionValue(request);
-        return sessionChannelItemHashMap.get(key);
-    }
-
-    /**
-     * This method stores the ChannelInformation for the current session by channelId
-     *
-     * @param request            Http Request
-     * @param channelId          keyword for which SearchResults are fetched.
-     * @param channelResultItems Response from {@link YouTubeApiClient} {@see getChannelInformationByChannelId}
-     * @author Rajan Shah
-     */
-    public static void setSessionChannelItemHashMap(Http.Request request, String channelId, ChannelResultItems channelResultItems) {
-        String key = getSessionValue(request);
-        HashMap<String, ChannelResultItems> channelResultItemsHashMap = getChannelItemFromSession(request);
-        if (channelResultItemsHashMap == null) {
-            channelResultItemsHashMap = new HashMap<>();
-        }
-        channelResultItemsHashMap.put(channelId, channelResultItems);
-        sessionChannelItemHashMap.put(key, channelResultItemsHashMap);
-    }
-
-    /**
-     * This method returns the {@link SearchResults} stored for the current session for channelId and keyword
-     *
-     * @param request Http Request
-     * @return {@link HashMap} of ChannelId and {@link SearchResults}
-     * @author Rajan Shah
-     */
-    public static HashMap<String, SearchResults> getVideosByChannelIdFromSession(Http.Request request) {
-        String key = getSessionValue(request);
-        return sessionVideosForChannelId.get(key);
-    }
-
-    /**
-     * This method stores the Videos for the current session by channelId and keyword
-     *
-     * @param request       Http Request
-     * @param channelId     keyword for which SearchResults are fetched.
-     * @param searchResults Response from {@link YouTubeApiClient} {@see fetchVideos}
-     * @author Rajan Shah
-     */
-    public static void setSessionVideosForChannelIdHashMap(Http.Request request, String channelId, String keyword, SearchResults searchResults) {
-        String key = getSessionValue(request);
-        HashMap<String, SearchResults> videosByChannelIdHashMap = getVideosByChannelIdFromSession(request);
-        if (videosByChannelIdHashMap == null) {
-            videosByChannelIdHashMap = new HashMap<>();
-        }
-        videosByChannelIdHashMap.put(channelId + keyword, searchResults);
-        sessionVideosForChannelId.put(key, videosByChannelIdHashMap);
     }
 
     /**

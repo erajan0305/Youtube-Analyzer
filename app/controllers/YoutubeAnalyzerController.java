@@ -17,7 +17,6 @@ import views.html.index;
 import views.html.similarContent;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -111,10 +110,6 @@ public class YoutubeAnalyzerController extends Controller {
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         String searchKeyword = requestBody.get("searchKeyword")[0];
         LinkedHashMap<String, SearchResults> searchResultsSessionHashMap = SessionHelper.getSearchResultsHashMapFromSession(request);
-        if (searchResultsSessionHashMap != null && searchResultsSessionHashMap.containsKey(searchKeyword)) {
-            // Search Result already exists in Session Cache
-            return CompletableFuture.completedFuture(ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request))));
-        }
         CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
 
         return searchResponsePromise.thenApply(searchResults -> {
@@ -185,36 +180,16 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-        HashMap<String, ChannelResultItems> sessionChannelResultItems = SessionHelper.getChannelItemFromSession(request);
-        HashMap<String, SearchResults> sessionVideosByChannelId = SessionHelper.getVideosByChannelIdFromSession(request);
-        CompletionStage<ChannelResultItems> channelItemPromise;
-        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise;
-
-        if (sessionChannelResultItems != null && sessionChannelResultItems.containsKey(id)) {
-            System.out.println("Returning channel result items from session");
-            channelItemPromise = CompletableFuture.completedFuture(sessionChannelResultItems.get(id));
-        } else {
-            channelItemPromise = this.youtubeAnalyzer.getChannelInformationByChannelId(id);
-        }
-
-        if (sessionVideosByChannelId != null && sessionVideosByChannelId.containsKey(id + keyword)) {
-            System.out.println("Returning top 10 videos search results from session");
-            videosJsonByChannelIdSearchPromise = CompletableFuture.completedFuture(sessionVideosByChannelId.get(id + keyword));
-        } else {
-            videosJsonByChannelIdSearchPromise = this.youtubeAnalyzer.getVideosJsonByChannelId(id, keyword);
-        }
+        CompletionStage<ChannelResultItems> channelItemPromise = this.youtubeAnalyzer.getChannelInformationByChannelId(id);
+        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = this.youtubeAnalyzer.getVideosJsonByChannelId(id, keyword);
 
         return channelItemPromise.thenCompose(channelResultItems -> videosJsonByChannelIdSearchPromise
                 .thenApply(videoJsonByChannelId -> {
                     if (channelResultItems.items == null) {
                         return notFound(channelInfo.render(null, null, messagesApi.preferred(request)));
                     }
-                    SessionHelper.setSessionChannelItemHashMap(request, id, channelResultItems);
-                    SessionHelper.setSessionVideosForChannelIdHashMap(request, id, keyword, videoJsonByChannelId);
                     return ok(channelInfo.render(videoJsonByChannelId, channelResultItems.items.get(0), messagesApi.preferred(request)));
                 })
         );
-
-
     }
 }

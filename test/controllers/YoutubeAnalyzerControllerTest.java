@@ -65,7 +65,6 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         youtubeAnalyzerController.setFormFactory(_mockFormFactory);
         youtubeAnalyzerController.setMessagesApi(messagesApi);
         searchResults = new SearchResults();
-        when(youtubeAnalyzerMock.fetchVideos(anyString())).thenReturn(CompletableFuture.supplyAsync(() -> searchResults));
         when(youtubeAnalyzerMock.getViewCountByVideoId(anyString())).thenReturn(CompletableFuture.supplyAsync(ArgumentMatchers::anyString));
         when(youtubeAnalyzerMock.getSentimentPerVideo(anyString())).thenReturn(CompletableFuture.supplyAsync(ArgumentMatchers::anyString));
         when(youtubeAnalyzerMock.getSimilarityStats(any(LinkedHashMap.class), anyString())).thenReturn(new HashMap<String, Long>());
@@ -82,6 +81,15 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
 
     @Test
     public void fetchVideosByKeywordsTest() throws ExecutionException, InterruptedException {
+        SearchResults searchResults1 = new SearchResults();
+        SearchResultItem searchResultItem = new SearchResultItem();
+        searchResultItem.id = new Id("abcXyz");
+        searchResultItem.viewCount = "123";
+        searchResultItem.snippet = new Snippet("123", "channelTitle", "title", "description", "publishedAt", "publishTime");
+        searchResults1.items = new ArrayList<SearchResultItem>() {{
+            add(searchResultItem);
+        }};
+        when(youtubeAnalyzerMock.fetchVideos("hello world")).thenReturn(CompletableFuture.supplyAsync(() -> searchResults1));
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchVideosByKeywords());
         requestBuilder.header("User-Agent", "chrome");
         requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
@@ -166,13 +174,6 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         requestBuilder.header("User-Agent", "chrome");
         requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
         CompletionStage<Result> resultCompletionStage = youtubeAnalyzerController.fetchChannelInformationAndTop10Videos(requestBuilder.build(), "abcXyz", "hello world");
-        Assert.assertEquals(200, resultCompletionStage.toCompletableFuture().get().status());
-
-        // returning from session
-        requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos("abcXyz", "hello world"));
-        requestBuilder.header("User-Agent", "chrome");
-        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
-        resultCompletionStage = youtubeAnalyzerController.fetchChannelInformationAndTop10Videos(requestBuilder.build(), "abcXyz", "hello world");
         Assert.assertEquals(200, resultCompletionStage.toCompletableFuture().get().status());
     }
 }
