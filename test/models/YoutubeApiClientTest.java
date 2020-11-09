@@ -1,8 +1,10 @@
 package models;
 
+import com.vdurmont.emoji.EmojiManager;
 import dataset.DatasetHelper;
 import models.Helper.YouTubeApiClient;
 import models.POJO.Channel.ChannelResultItems;
+import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;
 import models.POJO.VideoSearch.Videos;
 import org.junit.After;
@@ -181,6 +183,25 @@ public class YoutubeApiClientTest {
         ChannelResultItems expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), ChannelResultItems.class);
         assert Objects.requireNonNull(expectedEmptyJson).items == null;
         assert Objects.requireNonNull(actualNoResult).items == null;
+    }
+
+    @Test
+    public void testSentimentAnalysis() {
+        CommentResults happyResults = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/happy_video.json"), CommentResults.class);
+        assert happyResults != null;
+        assert happyResults.getAnalysisResult().equals(EmojiManager.getForAlias("grin").getUnicode());
+
+        CommentResults sadResults = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/sad_video.json"), CommentResults.class);
+        assert sadResults != null;
+        assert sadResults.getAnalysisResult().equals(EmojiManager.getForAlias("pensive").getUnicode());
+
+        CommentResults neutralResults = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/neutral_video.json"), CommentResults.class);
+        assert neutralResults != null;
+        assert neutralResults.getAnalysisResult().equals(EmojiManager.getForAlias("neutral_face").getUnicode());
+
+        CommentResults emptyResults = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/zero_comments.json"), CommentResults.class);
+        assert emptyResults != null;
+        assert emptyResults.getAnalysisResult().equals(EmojiManager.getForAlias("neutral_face").getUnicode());
     }
 
     @After

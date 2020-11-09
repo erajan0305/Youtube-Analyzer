@@ -1,0 +1,43 @@
+{
+  "kind": "youtube#commentThreadListResponse",
+  "etag": "1KtXsyvtnccvAjwkv9jJoRZS-y4",
+  "nextPageToken": "QURTSl9pMDNqWElkeW5SUjc2Z3BCWG8tRGQ2OFZYaHlxSV9ROUlURFAtNmQyZkpCeEkyaVBSRzRUd1B1NEV4WmE2S0JaOF96bHQwZEFvWWdoUWVvWnB0Q054WExSZU9XS2c=",
+  "pageInfo": {
+    "totalResults": 100,
+    "resultsPerPage": 100
+  },
+  "items": [
+    {
+      "kind": "youtube#commentThread",
+      "etag": "8cZjDnNafYRyPJzFUXid5X_i72w",
+      "id": "UgxArxf7Y859oNsR_6Z4AaABAg",
+      "snippet": {
+        "videoId": "Bi7f1JSSlh8",
+        "topLevelComment": {
+          "kind": "youtube#comment",
+          "etag": "heiFQnUx4dXI1kLGGFYAwKtNHQ4",
+          "id": "UgxArxf7Y859oNsR_6Z4AaABAg",
+          "snippet": {
+            "videoId": "Bi7f1JSSlh8",
+            "textDisplay": "Watch the full episode with Jeremy Howard here: \u003ca href=\"http://bit.ly/2NG4qwr\"\u003ehttp://bit.ly/2NG4qwr\u003c/a\u003e If you enjoy it, consider subscribing, sharing, and commenting.",
+            "textOriginal": "Watch the full episode with Jeremy Howard here: http://bit.ly/2NG4qwr If you enjoy it, consider subscribing, sharing, and commenting.",
+            "authorDisplayName": "Lex Fridman",
+            "authorProfileImageUrl": "https://yt3.ggpht.com/a/AATXAJyaoejpg2cKqP4rszXXUfVUvhpMkjCjRVDTV0VYFw=s48-c-k-c0xffffffff-no-rj-mo",
+            "authorChannelUrl": "http://www.youtube.com/channel/UCSHZKyawb77ixDdsGog4iWA",
+            "authorChannelId": {
+              "value": "UCSHZKyawb77ixDdsGog4iWA"
+            },
+            "canRate": true,
+            "viewerRating": "none",
+            "likeCount": 46,
+            "publishedAt": "2019-09-09T00:53:34Z",
+            "updatedAt": "2019-09-09T00:53:34Z"
+          }
+        },
+        "canReply": true,
+        "totalReplyCount": 6,
+        "isPublic": true
+      }
+    }
+  ]
+}

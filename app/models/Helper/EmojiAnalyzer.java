@@ -41,10 +41,6 @@ public class EmojiAnalyzer {
             .parallelStream()
             .map(Emoji::getUnicode).collect(Collectors.toList());
 
-    private static final List<String> SAD_EMOJI_UNICODE_SET = SAD_EMOJI_SET
-            .parallelStream()
-            .map(Emoji::getUnicode).collect(Collectors.toList());
-
     public static String processCommentStream(Stream<String> stream) {
         return stream
                 .filter(comment -> EmojiParser.extractEmojis(comment).size() != 0)
@@ -62,10 +58,8 @@ public class EmojiAnalyzer {
         String parsedEmoji = EmojiParser.parseToUnicode(emoji);
         if (HAPPY_EMOJI_UNICODE_SET.contains(parsedEmoji))
             return "happy";
-        else if (SAD_EMOJI_UNICODE_SET.contains(parsedEmoji))
-            return "sad";
         else
-            return "NA";
+            return "sad";
     }
 
     public static String generateReport(String comments) {
@@ -76,7 +70,7 @@ public class EmojiAnalyzer {
         Long totalCounts = emojiCounts.values().parallelStream().reduce(0L, Long::sum);
         Map<String, Float> result = emojiCounts.entrySet().parallelStream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> (e.getValue() * 100.0f) / totalCounts));
-        System.out.println(result);
+        // System.out.println(result);
         if (result.getOrDefault("happy", 0.0f) >= 70.0f)
             return EmojiManager.getForAlias("grin").getUnicode();
         else if (result.getOrDefault("sad", 0.0f) >= 70.0f)
