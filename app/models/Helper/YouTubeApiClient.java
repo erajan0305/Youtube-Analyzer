@@ -142,38 +142,4 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .thenApplyAsync(wsResponse -> Json.fromJson(wsResponse, CommentResults.class))
                 .thenApplyAsync(CommentResults::getAnalysisResult).toCompletableFuture().exceptionally(throwable -> EmojiManager.getForAlias("neutral_face").getUnicode());
     }
-
-    /**
-     * This method makes request to the <code>channels</code> API of Youtube and fetches the channel information
-     * for <code>channelId</code>
-     *
-     * @param searchKey key used to get {@link models.POJO.SearchResults.SearchResultItem}s from {@link SearchResults}
-     * @return {@link CompletableFuture} of {@link List<String>}
-     * @author Umang J Patel
-     */
-    public CompletableFuture<List<String>> getSentimentForVideos(String searchKey) {
-        WSRequest request = this.wsClient
-                .url("https://www.googleapis.com/youtube/v3/search")
-                .addQueryParameter("part", "snippet")
-                .addQueryParameter("maxResults", "10")
-                .addQueryParameter("type", "video")
-                .addQueryParameter("q", searchKey)
-                .addQueryParameter("fields", "items(id,snippet(publishedAt,channelId,channelTitle,title,description,publishTime))")
-                .addQueryParameter("key", API_KEY);
-        CompletableFuture<List<String>> result = null;
-        try {
-            result = request.stream().thenApplyAsync(wsResponse -> Json.parse(wsResponse.getBody()))
-                    .thenApplyAsync(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
-                    .thenApplyAsync(SearchResults::getVideoIds)
-                    .thenApplyAsync(videoIds -> {
-                        List<CompletableFuture<String>> comments = videoIds.parallelStream().map(this::getSentimentByVideoId).collect(Collectors.toList());
-                        CompletableFuture<Void> futures = CompletableFuture.allOf(comments.toArray(new CompletableFuture[0]));
-                        return futures.thenApplyAsync(future -> comments.parallelStream().map(CompletableFuture::join).collect(Collectors.toList()));
-                    }).toCompletableFuture().get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        System.out.println(result);
-        return result;
-    }
 }
