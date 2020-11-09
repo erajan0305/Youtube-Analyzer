@@ -1,8 +1,6 @@
 package models;
 
-
 import models.Helper.SessionHelper;
-import models.POJO.Channel.ChannelResultItems;
 import models.POJO.SearchResults.SearchResults;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +10,6 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.test.WithApplication;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertEquals;
@@ -51,26 +48,6 @@ public class SessionHelperTest extends WithApplication {
         }};
         SessionHelper.setSessionSearchResultsHashMap(request.build(), "searchKeyword", searchResults);
         assertEquals(searchResultsLinkedHashMap.get("searchKeyword"), SessionHelper.getSearchResultsHashMapFromSession(request.build()).get("searchKeyword"));
-    }
-
-    @Test
-    public void testChannelInformationSessionData() {
-        ChannelResultItems channelResultItems = new ChannelResultItems();
-        HashMap<String, ChannelResultItems> channelItemHashMap = new HashMap<String, ChannelResultItems>() {{
-            put("abcxyz", channelResultItems);
-        }};
-        SessionHelper.setSessionChannelItemHashMap(request.build(), "abcxyz", channelResultItems);
-        assertEquals(channelItemHashMap.get("abcxyz"), SessionHelper.getChannelItemFromSession(request.build()).get("abcxyz"));
-    }
-
-    @Test
-    public void testVideosByChannelIdSessionData() {
-        SearchResults searchResults = new SearchResults();
-        LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = new LinkedHashMap<String, SearchResults>() {{
-            put("abcxyz" + "searchKeyword", searchResults);
-        }};
-        SessionHelper.setSessionVideosForChannelIdHashMap(request.build(), "abcxyz", "searchKeyword", searchResults);
-        assertEquals(searchResultsLinkedHashMap.get("abcxyz"), SessionHelper.getVideosByChannelIdFromSession(request.build()).get("abcxyz"));
     }
 
     @Test
