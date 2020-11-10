@@ -9,6 +9,7 @@ import models.POJO.SearchResults.Id;
 import models.POJO.SearchResults.SearchResultItem;
 import models.POJO.SearchResults.SearchResults;
 import models.POJO.SearchResults.Snippet;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,6 +41,11 @@ import static org.mockito.Mockito.when;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
 
+/**
+ * YoutubeAnalyzerController Test Class
+ * This class tests only the Result Status and not the response body.
+ */
+
 @RunWith(MockitoJUnitRunner.class)
 public class YoutubeAnalyzerControllerTest extends WithApplication {
 
@@ -54,8 +60,15 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
     YoutubeAnalyzer youtubeAnalyzerMock;
     SearchResults searchResults;
 
+    /**
+     * This is an initialization method which Injects dependencies using {@link GuiceApplicationBuilder},
+     * initializes {@link YoutubeAnalyzerController} Object, mocks {@link YoutubeAnalyzer} Object and
+     * mocks the {@link YoutubeAnalyzer}'s methods.
+     *
+     * @author Rajan Shah
+     */
     @Before
-    public void setup() {
+    public void init() {
         MockitoAnnotations.openMocks(this);
         youtubeAnalyzerController = new YoutubeAnalyzerController();
         _mockFormFactory = new GuiceApplicationBuilder().injector().instanceOf(FormFactory.class);
@@ -70,6 +83,13 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         when(youtubeAnalyzerMock.getSimilarityStats(any(LinkedHashMap.class), anyString())).thenReturn(new HashMap<String, Long>());
     }
 
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/</code>, to Index page of the application
+     * with valid Session and expects
+     * {@link Result} 200
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void indexTestWithSession() {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.index());
@@ -79,6 +99,14 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(OK, result.status());
     }
 
+    /**
+     * This method tests the <code>POST</code> request with a path of <code>/</code>, to Index page of the application
+     * with valid Session and expects {@link Result} 200.
+     *
+     * @throws ExecutionException   Exception might occur on calling get() on {@link CompletableFuture}.
+     * @throws InterruptedException Exception might occur on calling get() on {@link CompletableFuture}.
+     * @author Rajan Shah
+     */
     @Test
     public void fetchVideosByKeywordsTest() throws ExecutionException, InterruptedException {
         SearchResults searchResults1 = new SearchResults();
@@ -101,7 +129,14 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(OK, resultCompletionStage.toCompletableFuture().get().status());
     }
 
-    @Test   // returns 404 as no search words present to find similar stats for.
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/:keyword</code>, to Similarity States page
+     * of the application with valid Session and expects {@link Result} 404 since this method requires at least one
+     * search result to find similarity stats for.
+     *
+     * @author Rajan Shah
+     */
+    @Test
     public void getSimilarityStatsTest0() {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchSimilarityStats("hello world"));
         requestBuilder.header("User-Agent", "chrome");
@@ -110,6 +145,15 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(NOT_FOUND, result.status());
     }
 
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/:keyword</code>, to Similarity States page
+     * of the application with valid Session and a call to {@link YoutubeAnalyzerController}'s
+     * <code>fetchVideosByKeywords</code> and expects {@link Result} 200.
+     *
+     * @throws ExecutionException   Exception might occur on calling get() on {@link CompletableFuture}.
+     * @throws InterruptedException Exception might occur on calling get() on {@link CompletableFuture}.
+     * @author Rajan Shah
+     */
     @Test
     public void getSimilarityStatsTest1() throws ExecutionException, InterruptedException {
         SearchResults searchResults1 = new SearchResults();
@@ -139,7 +183,15 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(OK, result.status());
     }
 
-    @Test   // returns 404 as no channel information is available
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/:id/:keyword</code>, to Channel Information
+     * page of the application with valid Session and expects {@link Result} 404 when no channel information is available.
+     *
+     * @throws ExecutionException   Exception might occur on calling get() on {@link CompletableFuture}.
+     * @throws InterruptedException Exception might occur on calling get() on {@link CompletableFuture}.
+     * @author Rajan Shah
+     */
+    @Test
     public void fetchChannelInformationAndTop10VideosTest0() throws ExecutionException, InterruptedException {
         when(youtubeAnalyzerMock.getChannelInformationByChannelId(anyString())).thenReturn(CompletableFuture.supplyAsync(ChannelResultItems::new));
         when(youtubeAnalyzerMock.getVideosJsonByChannelId(anyString(), anyString())).thenReturn(CompletableFuture.supplyAsync(SearchResults::new));
@@ -150,6 +202,15 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(NOT_FOUND, resultCompletionStage.toCompletableFuture().get().status());
     }
 
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/:id/:keyword</code>, to Channel Information
+     * page of the application with valid Session and expects {@link Result} 200 when channel information and
+     * videos for channel id and keyword is available.
+     *
+     * @throws ExecutionException   Exception might occur on calling get() on {@link CompletableFuture}.
+     * @throws InterruptedException Exception might occur on calling get() on {@link CompletableFuture}.
+     * @author Rajan Shah
+     */
     @Test
     public void fetchChannelInformationAndTop10VideosTest1() throws ExecutionException, InterruptedException {
         ChannelResultItems channelResultItems = new ChannelResultItems();
@@ -175,5 +236,47 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
         CompletionStage<Result> resultCompletionStage = youtubeAnalyzerController.fetchChannelInformationAndTop10Videos(requestBuilder.build(), "abcXyz", "hello world");
         Assert.assertEquals(200, resultCompletionStage.toCompletableFuture().get().status());
+    }
+
+/*
+    */
+/**
+     * This method tests the <code>GET</code> request with a path of <code>/:id/:keyword</code>, to Channel Information
+     * page of the application with valid Session and expects {@link Result} 404 when no videos for channel id and keyword
+     * is available.
+     *
+     * @throws ExecutionException   Exception might occur on calling get() on {@link CompletableFuture}.
+     * @throws InterruptedException Exception might occur on calling get() on {@link CompletableFuture}.
+     * @author Rajan Shah
+     *//*
+
+    @Test
+    public void fetchChannelInformationAndTop10VideosTest2() throws ExecutionException, InterruptedException {
+        ChannelResultItems channelResultItems = new ChannelResultItems();
+        ChannelItem channelItem = new ChannelItem();
+        channelItem.id = "abcXyz";
+        channelItem.snippet = new models.POJO.Channel.Snippet("title", "description", "country", "customUrl", "publishedAt");
+        channelItem.channelStatistics = new ChannelStatistics("123", "456", "11");
+        channelResultItems.items = new ArrayList<ChannelItem>() {{
+            add(channelItem);
+        }};
+        SearchResults searchResults1 = new SearchResults();
+        when(youtubeAnalyzerMock.getChannelInformationByChannelId(anyString())).thenReturn(CompletableFuture.supplyAsync(() -> channelResultItems));
+        when(youtubeAnalyzerMock.getVideosJsonByChannelId(anyString(), anyString())).thenReturn(CompletableFuture.supplyAsync(() -> searchResults1));
+        Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos("abcXyz", "hello world"));
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
+        CompletionStage<Result> resultCompletionStage = youtubeAnalyzerController.fetchChannelInformationAndTop10Videos(requestBuilder.build(), "abcXyz", "hello world");
+        Assert.assertEquals(404, resultCompletionStage.toCompletableFuture().get().status());
+    }
+*/
+
+    @After
+    public void destroy() {
+        youtubeAnalyzerController = null;
+        youtubeAnalyzerMock = null;
+        messagesApi = null;
+        _mockFormFactory = null;
+        searchResults = null;
     }
 }

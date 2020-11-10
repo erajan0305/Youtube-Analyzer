@@ -41,7 +41,7 @@ public class SessionHelper {
      * @param request       Http Request
      * @param searchKeyword keyword for which SearchResults are fetched.
      * @param searchResults Response from {@link YouTubeApiClient} {@see fetchVideos}
-     * @author Kishan Bhimani
+     * @author Kishan Bhimani, Rajan Shah
      */
     public static void setSessionSearchResultsHashMap(Http.Request request, String searchKeyword, SearchResults searchResults) {
         String key = getSessionValue(request);

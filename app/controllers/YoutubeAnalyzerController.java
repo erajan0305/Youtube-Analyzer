@@ -186,6 +186,9 @@ public class YoutubeAnalyzerController extends Controller {
                     if (channelResultItems.items == null) {
                         return notFound(channelInfo.render(null, null, messagesApi.preferred(request)));
                     }
+//                    if (videoJsonByChannelId.items == null) {
+//                        return notFound(channelInfo.render(null, channelResultItems.items.get(0), messagesApi.preferred(request)));
+//                    }
                     return ok(channelInfo.render(videoJsonByChannelId, channelResultItems.items.get(0), messagesApi.preferred(request)));
                 })
         );
