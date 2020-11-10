@@ -26,7 +26,10 @@ public class YoutubeAnalyzer {
     }
 
     /**
+     * Instantiates {@link WSClient} and {@link YouTubeApiClient}
+     *
      * @param wsClient WSClient Object to make External API calls
+     * @author Rajan Shah
      */
     public void setWsClient(WSClient wsClient) {
         this.wsClient = wsClient;
@@ -37,6 +40,7 @@ public class YoutubeAnalyzer {
      * Instantiates {@link YouTubeApiClient}
      *
      * @param youTubeApiClient YoutubeApiClient Object
+     * @author Rajan Shah
      */
     public void setYouTubeApiClient(YouTubeApiClient youTubeApiClient) {
         this.youTubeApiClient = youTubeApiClient;
@@ -137,6 +141,14 @@ public class YoutubeAnalyzer {
                 .exceptionally(throwable -> EmojiManager.getForAlias("neutral_face").getUnicode());
     }
 
+    /**
+     * This method processes the {@link CommentResults} to filter out the emojis.
+     * Use {@link #getAnalysisResult(CommentResults)} to get sentiment analysis report of the comments.
+     *
+     * @param commentResults {@link CommentResults} object containing list of 100 Comments for video
+     * @return String of filtered emojis.
+     * @author Umang J Patel
+     */
     public String getCommentsString(CommentResults commentResults) {
         if (commentResults.items == null) {
             return "";  //Empty String
@@ -146,6 +158,13 @@ public class YoutubeAnalyzer {
         return EmojiAnalyzer.processCommentStream(commentStream);
     }
 
+    /**
+     * This method processes the {@link CommentResults} to generate sentiment analysis report of comments.
+     *
+     * @param commentResults {@link CommentResults} object containing list of 100 Comments for video
+     * @return Sentiment emoji as a string (happy: grin emoji, sad: pensive emoji, neutral: neutral_face emoji).
+     * @author Umang J Patel
+     */
     public String getAnalysisResult(CommentResults commentResults) {
         return EmojiAnalyzer.generateReport(getCommentsString(commentResults));
     }
