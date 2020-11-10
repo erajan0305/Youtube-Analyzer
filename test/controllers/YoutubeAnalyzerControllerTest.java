@@ -238,39 +238,6 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(200, resultCompletionStage.toCompletableFuture().get().status());
     }
 
-/*
-    */
-/**
-     * This method tests the <code>GET</code> request with a path of <code>/:id/:keyword</code>, to Channel Information
-     * page of the application with valid Session and expects {@link Result} 404 when no videos for channel id and keyword
-     * is available.
-     *
-     * @throws ExecutionException   Exception might occur on calling get() on {@link CompletableFuture}.
-     * @throws InterruptedException Exception might occur on calling get() on {@link CompletableFuture}.
-     * @author Rajan Shah
-     *//*
-
-    @Test
-    public void fetchChannelInformationAndTop10VideosTest2() throws ExecutionException, InterruptedException {
-        ChannelResultItems channelResultItems = new ChannelResultItems();
-        ChannelItem channelItem = new ChannelItem();
-        channelItem.id = "abcXyz";
-        channelItem.snippet = new models.POJO.Channel.Snippet("title", "description", "country", "customUrl", "publishedAt");
-        channelItem.channelStatistics = new ChannelStatistics("123", "456", "11");
-        channelResultItems.items = new ArrayList<ChannelItem>() {{
-            add(channelItem);
-        }};
-        SearchResults searchResults1 = new SearchResults();
-        when(youtubeAnalyzerMock.getChannelInformationByChannelId(anyString())).thenReturn(CompletableFuture.supplyAsync(() -> channelResultItems));
-        when(youtubeAnalyzerMock.getVideosJsonByChannelId(anyString(), anyString())).thenReturn(CompletableFuture.supplyAsync(() -> searchResults1));
-        Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos("abcXyz", "hello world"));
-        requestBuilder.header("User-Agent", "chrome");
-        requestBuilder.session(SessionHelper.SESSION_KEY, requestBuilder.getHeaders().get("User-Agent").get());
-        CompletionStage<Result> resultCompletionStage = youtubeAnalyzerController.fetchChannelInformationAndTop10Videos(requestBuilder.build(), "abcXyz", "hello world");
-        Assert.assertEquals(404, resultCompletionStage.toCompletableFuture().get().status());
-    }
-*/
-
     @After
     public void destroy() {
         youtubeAnalyzerController = null;
