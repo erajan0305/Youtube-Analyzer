@@ -20,4 +20,14 @@ public class CommentSnippet {
     public TopLevelComment getTopLevelComment() {
         return topLevelComment;
     }
+
+    public void setTopLevelComment(TopLevelComment topLevelComment) {
+        this.topLevelComment = topLevelComment;
+    }
+
+    @Override
+    public String toString() {
+        return "CommentSnippet{" +
+                "toLevelComment='" + topLevelComment + "}";
+    }
 }

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Model Class for Search Results.
@@ -29,9 +28,5 @@ public class SearchResults {
         return "SearchResults{" +
                 "items=" + items +
                 '}';
-    }
-
-    public List<String> getVideoIds() {
-        return items.parallelStream().map(video -> video.id.videoId).collect(Collectors.toList());
     }
 }

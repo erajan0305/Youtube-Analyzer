@@ -17,4 +17,15 @@ public class CommentResultItem {
     public CommentSnippet getSnippet() {
         return snippet;
     }
+
+    public void setCommentSnippet(CommentSnippet commentSnippet) {
+        this.snippet = commentSnippet;
+    }
+
+    @Override
+    public String toString() {
+        return "CommentResultItem{" +
+                ", CommentSnippet=" + snippet +
+                '}';
+    }
 }

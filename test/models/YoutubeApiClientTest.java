@@ -3,6 +3,7 @@ package models;
 import dataset.DatasetHelper;
 import models.Helper.YouTubeApiClient;
 import models.POJO.Channel.ChannelResultItems;
+import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;
 import models.POJO.VideoSearch.Videos;
 import org.junit.After;
@@ -16,6 +17,7 @@ import play.server.Server;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import static play.mvc.Results.ok;
 
@@ -84,6 +86,20 @@ public class YoutubeApiClientTest {
                                     return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/empty.json"))));
                             }
                         })
+                        .GET("/commentThreads")
+                        .routingTo(request -> {
+                            String videoId = request.queryString("videoId").get();
+                            switch (videoId) {
+                                case "X2lIovmNsUY":
+                                    return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/comments/happy_video.json"))));
+                                case "iupakooy3pU":
+                                    return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/comments/sad_video.json"))));
+                                case "Bi7f1JSSlh8":
+                                    return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/comments/neutral_video.json"))));
+                                default:
+                                    return ok(Objects.requireNonNull(DatasetHelper.jsonNodeFromJsonFile(new File("test/dataset/comments/zero_comments.json"))));
+                            }
+                        })
                         .build());
         wsTestClient = play.test.WSTestClient.newClient(server.httpPort());
         youTubeApiClient = new YouTubeApiClient(wsTestClient);
@@ -114,7 +130,7 @@ public class YoutubeApiClientTest {
     }
 
     @Test
-    public void getVideoJsonByVideoId() throws Exception {
+    public void getViewCountByVideoId() throws Exception {
         String actualJavaViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("uhp3GbQiSRs").toCompletableFuture().get();
         Videos expectedJavaVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Java_uhp3GbQiSRs.json"), Videos.class);
         assert expectedJavaVideoItems != null;
@@ -181,6 +197,30 @@ public class YoutubeApiClientTest {
         ChannelResultItems expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), ChannelResultItems.class);
         assert Objects.requireNonNull(expectedEmptyJson).items == null;
         assert Objects.requireNonNull(actualNoResult).items == null;
+    }
+
+    @Test
+    public void testSentimentAnalysis() throws ExecutionException, InterruptedException {
+        CommentResults actualHappyComments = youTubeApiClient.getSentimentByVideoId("X2lIovmNsUY").toCompletableFuture().get();
+        CommentResults expectedHappyComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/happy_video.json"), CommentResults.class);
+        assert expectedHappyComments != null;
+        Assert.assertEquals(expectedHappyComments.toString(), actualHappyComments.toString());
+
+        CommentResults actualSadComments = youTubeApiClient.getSentimentByVideoId("iupakooy3pU").toCompletableFuture().get();
+        CommentResults expectedSadComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/sad_video.json"), CommentResults.class);
+        assert expectedSadComments != null;
+        Assert.assertEquals(expectedSadComments.toString(), actualSadComments.toString());
+
+        CommentResults actualNeutralComments = youTubeApiClient.getSentimentByVideoId("Bi7f1JSSlh8").toCompletableFuture().get();
+        CommentResults expectedNeutralComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/neutral_video.json"), CommentResults.class);
+        assert expectedNeutralComments != null;
+        Assert.assertEquals(expectedNeutralComments.toString(), actualNeutralComments.toString());
+
+        CommentResults actualNoComments = youTubeApiClient.getSentimentByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
+        CommentResults expectedNoComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/zero_comments.json"), CommentResults.class);
+        assert expectedNoComments != null;
+        assert actualNoComments != null;
+        Assert.assertEquals(expectedNoComments.toString(), actualNoComments.toString());
     }
 
     @After
