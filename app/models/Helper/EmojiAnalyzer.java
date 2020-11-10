@@ -48,12 +48,6 @@ public class EmojiAnalyzer {
             .parallelStream()
             .map(Emoji::getUnicode).collect(Collectors.toList());
 
-    // Set of sad emojis in unicode format
-    private static final List<String> SAD_EMOJI_UNICODE_SET = SAD_EMOJI_SET
-            .parallelStream()
-            .map(Emoji::getUnicode).collect(Collectors.toList());
-
-
     /**
      * Process the Youtube comment stream.
      * 1. Extracting only emojis from the comments.
@@ -82,13 +76,10 @@ public class EmojiAnalyzer {
      */
     public static String encodeEmojiSentiment(String emoji) {
         String parsedEmoji = EmojiParser.parseToUnicode(emoji);
-        if (HAPPY_EMOJI_UNICODE_SET.contains(parsedEmoji)) {
+        if (HAPPY_EMOJI_UNICODE_SET.contains(parsedEmoji))
             return "happy";
-        } else if (SAD_EMOJI_UNICODE_SET.contains(parsedEmoji)) {
+        else
             return "sad";
-        } else {
-            return "neutral";
-        }
     }
 
     /**
