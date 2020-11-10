@@ -1,6 +1,5 @@
 package models.Helper;
 
-import com.vdurmont.emoji.EmojiManager;
 import models.POJO.Channel.ChannelResultItems;
 import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;
@@ -11,11 +10,8 @@ import play.libs.ws.WSBodyWritables;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 /**
  * This class makes requests to YOUTUBE API V3 to fetch content based on parameters.
@@ -122,24 +118,24 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
     }
 
     /**
-     * This method makes request to the <code>channels</code> API of Youtube and fetches the channel information
-     * for <code>channelId</code>
+     * This method makes request to the <code>commentThreads</code> API of Youtube and fetches the comments
+     * for <code>videoId</code>
      *
      * @param videoId id for which sentiment is to be calculated.
-     * @return {@link CompletableFuture} of {@link String}
+     * @return {@link CompletableFuture} of {@link CommentResults}
      * @author Umang J Patel
      */
-    public CompletableFuture<String> getSentimentByVideoId(String videoId) {
+    public CompletableFuture<CommentResults> getSentimentByVideoId(String videoId) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "commentThreads")
                 .addQueryParameter("part", "snippet")
                 .addQueryParameter("maxResults", "100")
                 .addQueryParameter("order", "relevance")
-                .addQueryParameter("video_id", videoId)
+                .addQueryParameter("videoId", videoId)
                 .addQueryParameter("fields", "items(snippet(topLevelComment(snippet(textDisplay,textOriginal))))")
                 .addQueryParameter("key", API_KEY);
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApplyAsync(wsResponse -> Json.fromJson(wsResponse, CommentResults.class))
-                .thenApplyAsync(CommentResults::getAnalysisResult).toCompletableFuture().exceptionally(throwable -> EmojiManager.getForAlias("neutral_face").getUnicode());
+                .toCompletableFuture();
     }
 }

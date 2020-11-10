@@ -1,12 +1,15 @@
 package models.Helper;
 
+import com.vdurmont.emoji.EmojiManager;
 import models.POJO.Channel.ChannelResultItems;
+import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;
 import play.libs.ws.WSClient;
 
 import java.util.*;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.reverseOrder;
 import static java.util.function.UnaryOperator.identity;
@@ -48,7 +51,7 @@ public class YoutubeAnalyzer {
      * @author Kishan Bhimani, Rajan Shah, Umang J Patel
      */
     public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
-        return youTubeApiClient.getVideosJsonByChannelId(channelId, keyword);
+        return this.youTubeApiClient.getVideosJsonByChannelId(channelId, keyword);
     }
 
     /**
@@ -59,7 +62,7 @@ public class YoutubeAnalyzer {
      * @author Rajan Shah, Kishan Bhimani, Umang J Patel
      */
     public CompletionStage<SearchResults> fetchVideos(String searchKeyword) {
-        return youTubeApiClient.fetchVideos(searchKeyword);
+        return this.youTubeApiClient.fetchVideos(searchKeyword);
     }
 
     /**
@@ -83,9 +86,9 @@ public class YoutubeAnalyzer {
                 .items
                 .stream()
                 .map(searchResultItem -> searchResultItem.snippet.title)
-                .flatMap(title -> Arrays.stream(title.split("\\s+").clone()))    // split into words
-                .map(s -> s.replaceAll("[^a-zA-Z0-9]", ""))          // discarding special characters
-                .filter(s -> !s.matches("[0-9]+"))                              // discarding only number strings
+                .flatMap(title -> Arrays.stream(title.split("\\s+").clone()))       // split into words
+                .map(s -> s.replaceAll("[^a-zA-Z0-9]", ""))                      // discarding special characters
+                .filter(s -> !s.matches("[0-9]+"))                                  // discarding only number strings
                 .filter(s -> !s.isEmpty() && s.length() > 1)                          // accept only non empty string with length more than 1
                 .collect(toList());
 
@@ -106,7 +109,7 @@ public class YoutubeAnalyzer {
      * @author Rajan Shah
      */
     public CompletionStage<String> getViewCountByVideoId(String videoId) {
-        return youTubeApiClient.getViewCountByVideoId(videoId);
+        return this.youTubeApiClient.getViewCountByVideoId(videoId);
     }
 
     /**
@@ -117,7 +120,7 @@ public class YoutubeAnalyzer {
      * @author Rajan Shah
      */
     public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
-        return youTubeApiClient.getChannelInformationByChannelId(channelId);
+        return this.youTubeApiClient.getChannelInformationByChannelId(channelId);
     }
 
     /**
@@ -128,6 +131,22 @@ public class YoutubeAnalyzer {
      * @author Umang J Patel
      */
     public CompletionStage<String> getSentimentPerVideo(String videoId) {
-        return youTubeApiClient.getSentimentByVideoId(videoId);
+        return youTubeApiClient.getSentimentByVideoId(videoId)
+                .thenApplyAsync(this::getAnalysisResult)
+                .toCompletableFuture()
+                .exceptionally(throwable -> EmojiManager.getForAlias("neutral_face").getUnicode());
+    }
+
+    public String getCommentsString(CommentResults commentResults) {
+        if (commentResults.items == null) {
+            return "";  //Empty String
+        }
+        Stream<String> commentStream = commentResults.items.parallelStream()
+                .map(commentResultItem -> commentResultItem.getSnippet().getTopLevelComment().getSnippet().getTextOriginal().trim());
+        return EmojiAnalyzer.processCommentStream(commentStream);
+    }
+
+    public String getAnalysisResult(CommentResults commentResults) {
+        return EmojiAnalyzer.generateReport(getCommentsString(commentResults));
     }
 }

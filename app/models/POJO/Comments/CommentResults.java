@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import models.Helper.EmojiAnalyzer;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Model Class for Comment Results.
@@ -20,17 +18,16 @@ import java.util.stream.Stream;
 public class CommentResults {
 
     @JsonProperty("items")
-    private List<CommentResultItem> items;
+    public List<CommentResultItem> items = null;
 
-    private String getComments() {
-        Stream<String> commentStream = items.parallelStream()
-                .map(commentResultItem -> commentResultItem.getSnippet().getTopLevelComment().getSnippet().getTextOriginal().trim().strip());
-        return EmojiAnalyzer.processCommentStream(commentStream);
+    public CommentResults() {
     }
 
-    public String getAnalysisResult() {
-        return EmojiAnalyzer.generateReport(getComments());
+    @Override
+    public String toString() {
+        return "CommentResults{" +
+                "items=" + items +
+                '}';
     }
-
 
 }

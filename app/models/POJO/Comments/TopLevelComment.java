@@ -18,4 +18,14 @@ public class TopLevelComment {
     public Snippet getSnippet() {
         return snippet;
     }
+
+    public void setSnippet(Snippet snippet) {
+        this.snippet = snippet;
+    }
+
+    @Override
+    public String toString() {
+        return "Snippet{" +
+                "publishedAt='" + snippet + "}";
+    }
 }

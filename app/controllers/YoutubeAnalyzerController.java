@@ -17,7 +17,6 @@ import views.html.index;
 import views.html.similarContent;
 
 import javax.inject.Inject;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -109,7 +108,6 @@ public class YoutubeAnalyzerController extends Controller {
         Form<Search> searchForm = formFactory.form(Search.class);
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         String searchKeyword = requestBody.get("searchKeyword")[0];
-        LinkedHashMap<String, SearchResults> searchResultsSessionHashMap = SessionHelper.getSearchResultsHashMapFromSession(request);
         CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
 
         return searchResponsePromise.thenApply(searchResults -> {

@@ -20,4 +20,14 @@ public class Snippet {
     public String getTextOriginal() {
         return textOriginal;
     }
+
+    public void setTextOriginal(String textOriginal) {
+        this.textOriginal = textOriginal;
+    }
+
+    @Override
+    public String toString() {
+        return "Snippet{" +
+                "textOriginal='" + textOriginal + '}';
+    }
 }
