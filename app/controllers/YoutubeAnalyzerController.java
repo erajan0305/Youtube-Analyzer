@@ -112,18 +112,21 @@ public class YoutubeAnalyzerController extends Controller {
 
         return searchResponsePromise.thenApply(searchResults -> {
             searchResults.items.parallelStream()
-                    .map(searchResultItem -> CompletableFuture.allOf(
+                    .map(searchResultItem ->
                             youtubeAnalyzer.getViewCountByVideoId(searchResultItem.id.videoId)
                                     .thenApply(countString -> {
                                         searchResultItem.viewCount = countString;
                                         return searchResultItem;
-                                    }).toCompletableFuture(),
+                                    }).toCompletableFuture()
+                    ).map(CompletableFuture::join).collect(toList());
+            searchResults.items.parallelStream()
+                    .map(searchResultItem ->
                             youtubeAnalyzer.getSentimentPerVideo(searchResultItem.id.videoId)
                                     .thenApply(commentSentiment -> {
                                         searchResultItem.commentSentiment = commentSentiment;
                                         return searchResultItem;
                                     }).toCompletableFuture()
-                    )).map(CompletableFuture::join).collect(toList());
+                    ).map(CompletableFuture::join).collect(toList());
             SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResults);
             return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
         });
