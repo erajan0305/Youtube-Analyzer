@@ -17,6 +17,9 @@ import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.*;
 
+/**
+ * This is test class for {@link SessionHelper}
+ */
 public class SessionHelperTest extends WithApplication {
 
     @Override
@@ -26,6 +29,11 @@ public class SessionHelperTest extends WithApplication {
 
     Http.RequestBuilder request;
 
+    /**
+     * This method initializes necessary testing environment for this class.
+     *
+     * @author Kishan Bhimani
+     */
     @Before
     public void init() {
         request = fakeRequest(GET, "/");
@@ -35,11 +43,23 @@ public class SessionHelperTest extends WithApplication {
         assertEquals(OK, result.status());
     }
 
+    /**
+     * This method is testing method for {@link SessionHelper#isSessionExist(Http.Request)}, matches
+     * actual result with expected result.
+     *
+     * @author Kishan Bhimani
+     */
     @Test
     public void testIsSessionExist() {
         assertTrue(SessionHelper.isSessionExist(request.build()));
     }
 
+    /**
+     * This method is testing method for {@link SessionHelper#setSessionSearchResultsHashMap(Http.Request, String, SearchResults)}, matches
+     * actual result with expected result.
+     *
+     * @author Kishan Bhimani
+     */
     @Test
     public void testSearchResultsSessionData() {
         SearchResults searchResults = new SearchResults();
@@ -50,11 +70,22 @@ public class SessionHelperTest extends WithApplication {
         assertEquals(searchResultsLinkedHashMap.get("searchKeyword"), SessionHelper.getSearchResultsHashMapFromSession(request.build()).get("searchKeyword"));
     }
 
+    /**
+     * This method is testing method for {@link SessionHelper#getSessionValue(Http.Request)}, matches
+     * actual result with expected result.
+     *
+     * @author Kishan Bhimani
+     */
     @Test
     public void getSessionValueTest() {
         assertEquals(request.getHeaders().get("User-Agent").get(), SessionHelper.getSessionValue(request.build()));
     }
 
+    /**
+     * This method is testing method for {@link SessionHelper#getUserAgentNameFromRequest(Http.Request)}
+     *
+     * @author Kishan Bhimani
+     */
     @Test
     public void getUserAgentNameFromRequestTest() {
         System.out.println(SessionHelper.getUserAgentNameFromRequest(request.build()));
