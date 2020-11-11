@@ -12,6 +12,8 @@ import java.util.stream.Stream;
 
 /**
  * Helper class for analyzing emojis.
+ *
+ * @author Umang J Patel
  */
 public class EmojiAnalyzer {
 
