@@ -38,7 +38,7 @@ public class SessionHelperTest extends WithApplication {
     public void init() {
         request = fakeRequest(GET, "/");
         request.header("User-Agent", "chrome");
-        request.session(SessionHelper.SESSION_KEY, request.getHeaders().get("User-Agent").get());
+        request.session(SessionHelper.getSessionKey(), request.getHeaders().get("User-Agent").get());
         Result result = route(app, request);
         assertEquals(OK, result.status());
     }

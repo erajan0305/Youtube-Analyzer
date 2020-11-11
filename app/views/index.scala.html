@@ -18,21 +18,21 @@
                 <div>
                 @if(searchResultsMap != null && searchResultsMap.size > 0) {
                     @for((searchWords, searchResults) <- searchResultsMap) {
-                        @if(searchResults != null && searchResults.items != null) {
+                        @if(searchResults != null && searchResults.getItems() != null) {
                             <span>
                                 <b>Search Terms: </b>
                                 <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchWords)'>@searchWords</a>
                             </span>
                             <ol>
-                            @for(item <- searchResults.items) {
+                            @for(item <- searchResults.getItems()) {
                                 <hr style="width: 75%;
                                     text-align: left;
                                     margin-left: 0">
                                 @if(item != null) {
-                                    <li><a href="https://www.youtube.com/watch?v=@item.id.videoId" target="_blank">@item.snippet.title</a>
+                                    <li><a href="https://www.youtube.com/watch?v=@item.getId().getVideoId()" target="_blank">@item.getSnippet().getTitle()</a>
                                         ,
-                                        <a href="@routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(item.snippet.channelId, searchWords)"><b>@item.snippet.channelTitle</b></a>
-                                        ,@item.viewCount, @item.commentSentiment,@item.snippet.publishTime,
+                                        <a href="@routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(item.getSnippet().getChannelId(), searchWords)"><b>@item.getSnippet().getChannelTitle()</b></a>
+                                        ,@item.getViewCount(), @item.getCommentSentiment(),@item.getSnippet().getPublishTime(),
                                     </li>
                                 }
                             }

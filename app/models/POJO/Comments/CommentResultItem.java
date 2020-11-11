@@ -7,17 +7,26 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * Model Class for {@link CommentResults} Item.
  */
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"snippet"})
 public class CommentResultItem {
     @JsonProperty("snippet")
     private CommentSnippet snippet;
 
-    public CommentSnippet getSnippet() {
+    /**
+     * Gets comment snippet.
+     *
+     * @return the comment snippet
+     */
+    public CommentSnippet getCommentSnippet() {
         return snippet;
     }
 
+    /**
+     * Sets comment snippet.
+     *
+     * @param commentSnippet the comment snippet
+     */
     public void setCommentSnippet(CommentSnippet commentSnippet) {
         this.snippet = commentSnippet;
     }

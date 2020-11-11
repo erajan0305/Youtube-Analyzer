@@ -7,18 +7,43 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * Model Class for {@link SearchResultItem} Id.
  */
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"videoId"})
 
 public class Id {
     @JsonProperty("videoId")
-    public String videoId;
+    private String videoId;
 
+    /**
+     * Instantiates a new Id.
+     */
     public Id() {
     }
 
+    /**
+     * Instantiates a new Id.
+     *
+     * @param videoId the video id
+     */
     public Id(String videoId) {
+        this.videoId = videoId;
+    }
+
+    /**
+     * Gets video id.
+     *
+     * @return the video id
+     */
+    public String getVideoId() {
+        return videoId;
+    }
+
+    /**
+     * Sets video id.
+     *
+     * @param videoId the video id
+     */
+    public void setVideoId(String videoId) {
         this.videoId = videoId;
     }
 

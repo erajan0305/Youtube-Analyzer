@@ -10,7 +10,6 @@ import java.util.List;
 /**
  * Model Class for Comment Results.
  */
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"items"})
@@ -18,8 +17,29 @@ import java.util.List;
 public class CommentResults {
 
     @JsonProperty("items")
-    public List<CommentResultItem> items = null;
+    private List<CommentResultItem> items = null;
 
+    /**
+     * Gets items.
+     *
+     * @return the items
+     */
+    public List<CommentResultItem> getItems() {
+        return items;
+    }
+
+    /**
+     * Sets items.
+     *
+     * @param items the items
+     */
+    public void setItems(List<CommentResultItem> items) {
+        this.items = items;
+    }
+
+    /**
+     * Instantiates a new Comment results.
+     */
     public CommentResults() {
     }
 

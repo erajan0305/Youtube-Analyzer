@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * Model Class for Search Results Item.
  */
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "id",
@@ -18,15 +17,90 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 public class SearchResultItem {
     @JsonProperty("id")
-    public Id id;
+    private Id id;
     @JsonProperty("snippet")
-    public Snippet snippet;
+    private Snippet snippet;
     @JsonProperty("viewCount")
-    public String viewCount;
+    private String viewCount;
     @JsonProperty("commentSentiment")
-    public String commentSentiment;
+    private String commentSentiment;
 
+    /**
+     * Instantiates a new Search result item.
+     */
     public SearchResultItem() {
+    }
+
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
+    public Id getId() {
+        return id;
+    }
+
+    /**
+     * Sets id.
+     *
+     * @param id the id
+     */
+    public void setId(Id id) {
+        this.id = id;
+    }
+
+    /**
+     * Gets snippet.
+     *
+     * @return the snippet
+     */
+    public Snippet getSnippet() {
+        return snippet;
+    }
+
+    /**
+     * Sets snippet.
+     *
+     * @param snippet the snippet
+     */
+    public void setSnippet(Snippet snippet) {
+        this.snippet = snippet;
+    }
+
+    /**
+     * Gets view count.
+     *
+     * @return the view count
+     */
+    public String getViewCount() {
+        return viewCount;
+    }
+
+    /**
+     * Sets view count.
+     *
+     * @param viewCount the view count
+     */
+    public void setViewCount(String viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    /**
+     * Gets comment sentiment.
+     *
+     * @return the comment sentiment
+     */
+    public String getCommentSentiment() {
+        return commentSentiment;
+    }
+
+    /**
+     * Sets comment sentiment.
+     *
+     * @param commentSentiment the comment sentiment
+     */
+    public void setCommentSentiment(String commentSentiment) {
+        this.commentSentiment = commentSentiment;
     }
 
     @Override
