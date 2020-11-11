@@ -21,11 +21,19 @@ import java.util.concurrent.ExecutionException;
 
 import static play.mvc.Results.ok;
 
+/**
+ * This is test class for {@link YouTubeApiClient}
+ */
 public class YoutubeApiClientTest {
     private YouTubeApiClient youTubeApiClient;
     private WSClient wsTestClient;
     private Server server;
 
+    /**
+     * This methods sets up Fake Youtube Server. It uses data from {@link dataset} to generate responses.
+     *
+     * @author Kishan Bhimani
+     */
     @Before
     public void setup() {
         server = Server.forRouter(
@@ -106,6 +114,12 @@ public class YoutubeApiClientTest {
         youTubeApiClient.BASE_URL = "/";
     }
 
+    /**
+     * This method is test method for {@link YouTubeApiClient#fetchVideos(String)}
+     *
+     * @throws Exception
+     * @author Kishan Bhimani
+     */
     @Test
     public void fetchVideos() throws Exception {
         SearchResults actualJava = youTubeApiClient.fetchVideos("java").toCompletableFuture().get();
@@ -129,6 +143,12 @@ public class YoutubeApiClientTest {
         assert Objects.requireNonNull(actualNoResult).items == null;
     }
 
+    /**
+     * This method is test method for {@link YouTubeApiClient#getViewCountByVideoId(String)}
+     *
+     * @throws Exception
+     * @author Kishan Bhimani
+     */
     @Test
     public void getViewCountByVideoId() throws Exception {
         String actualJavaViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("uhp3GbQiSRs").toCompletableFuture().get();
@@ -153,6 +173,12 @@ public class YoutubeApiClientTest {
         Assert.assertEquals(actualNoResult, noData);
     }
 
+    /**
+     * This method is test method for {@link YouTubeApiClient#getVideosJsonByChannelId(String, String)}
+     *
+     * @throws Exception
+     * @author Kishan Bhimani
+     */
     @Test
     public void getVideosJsonByChannelId() throws Exception {
         SearchResults actualJava = youTubeApiClient.getVideosJsonByChannelId("UC0RhatS1pyxInC00YKjjBqQ", "java").toCompletableFuture().get();
@@ -176,6 +202,12 @@ public class YoutubeApiClientTest {
         assert Objects.requireNonNull(actualNoResult).items == null;
     }
 
+    /**
+     * This method is test method for {@link YouTubeApiClient#getChannelInformationByChannelId(String)}
+     *
+     * @throws Exception
+     * @author Kishan Bhimani
+     */
     @Test
     public void getChannelInformationByChannelId() throws Exception {
         ChannelResultItems actualJava = youTubeApiClient.getChannelInformationByChannelId("UC0RhatS1pyxInC00YKjjBqQ").toCompletableFuture().get();
@@ -199,6 +231,12 @@ public class YoutubeApiClientTest {
         assert Objects.requireNonNull(actualNoResult).items == null;
     }
 
+    /**
+     * This method is test method for {@link YouTubeApiClient#getSentimentByVideoId(String)}
+     *
+     * @throws Exception
+     * @author Kishan Bhimani
+     */
     @Test
     public void testSentimentAnalysis() throws ExecutionException, InterruptedException {
         CommentResults actualHappyComments = youTubeApiClient.getSentimentByVideoId("X2lIovmNsUY").toCompletableFuture().get();
@@ -223,6 +261,12 @@ public class YoutubeApiClientTest {
         Assert.assertEquals(expectedNoComments.toString(), actualNoComments.toString());
     }
 
+    /**
+     * This method destroys resources used by {@link YoutubeAnalyzerTest} for testing.
+     *
+     * @throws Exception
+     * @author Kishan Bhimani
+     */
     @After
     public void destroy() throws IOException {
         try {
