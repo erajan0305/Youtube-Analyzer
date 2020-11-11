@@ -1,10 +1,42 @@
-<!DOCTYPE html>
+@(similarityStatsMap: Map[String, Long])
+
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Similar Content</title>
-</head>
-<body>
-<h1>Similar Content</h1>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Similar Content</title>
+        <style>
+                table {
+                    font-family: arial, sans-serif;
+                    border-collapse: collapse;
+                    width: 50%;
+                }
+
+                td, th {
+                    border: 1px solid #dddddd;
+                    text-align: left;
+                    padding: 8px;
+                }
+
+                tr:nth-child(even) {
+                    background-color: #dddddd;
+                }
+        </style>
+    </head>
+    <body>
+        <h1>Similar Content</h1>
+        <table>
+            @if(similarityStatsMap != null && similarityStatsMap.size() > 0) {
+                <tr>
+                    <th><b>Word</b></th>
+                    <th>Count</th>
+                </tr>
+                @for((token, count) <- similarityStatsMap) {
+                    <tr><td>@token </td>
+                        <td> @count</td></tr>
+                }
+            } else {
+                <h2 style="color: red">Error: Not Found</h2>
+            }
+        </table>
+    </body>
 </html>

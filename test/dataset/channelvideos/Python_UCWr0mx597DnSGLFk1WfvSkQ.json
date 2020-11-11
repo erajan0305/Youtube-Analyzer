@@ -1,0 +1,144 @@
+{
+  "items": [
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "OsKQw3qTMMk"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-31T20:00:06Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "Automating My Workflow With Python",
+        "description": "Automating My Workflow With Python Here is the link to the repository in case you want to take a look at it for yourself: ...",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-10-31T20:00:06Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "OHueMJPSTLk"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-29T11:00:08Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "How To Do A Day Of Meetings",
+        "description": "How To Do A Day Of Meetings LiveCoder channel: https://www.youtube.com/channel/UCxv8jMd-ABJboKo1a_LtuNA \"Clean Code Friday\" If you want to receive ...",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-10-29T11:00:08Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "5ZakfxddPk0"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-28T14:00:03Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "Programmer Breaks Down Hacks From Watch Dogs 2",
+        "description": "Programmer Breaks Down Hacks From Watch Dogs 2 LiveCoder channel: https://www.youtube.com/channel/UCxv8jMd-ABJboKo1a_LtuNA \"Clean Code ...",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-10-28T14:00:03Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "8GAl3CTLVMw"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-27T14:00:01Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "What Do I Actually Do For A Living?",
+        "description": "What I Actually Do For A Living? LiveCoder channel: https://www.youtube.com/channel/UCxv8jMd-ABJboKo1a_LtuNA \"Clean Code Friday\" If you want to ...",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-10-27T14:00:01Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "2e3IJ2FWz6Q"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-22T15:00:02Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "Can I Make My Own Cryptocurrency?",
+        "description": "Can I Make My Own Cryptocurrency? If you want to know how to make a cryptocurrency then this video is your chance to live vicariously through me as I attempt ...",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-10-22T15:00:02Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "d4BGr-lgA28"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-17T18:00:09Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "How To Choose A Programming Monitor",
+        "description": "How To Choose A Programming Monitor Check out 2020 LG UltraWide Festival here: https://bit.ly/2GIQalJ Find out more about LG UltraWide Monitors (LG.com) ...",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-10-17T18:00:09Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "eC0SpF7wwns"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-05T11:00:14Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "My Real Morning Routine",
+        "description": "My Real Morning Routine LiveCoder channel: https://www.youtube.com/channel/UCxv8jMd-ABJboKo1a_LtuNA \"Clean Code Friday\" If you want to receive one ...",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-10-05T11:00:14Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "T8xvMIiFzD0"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-02T11:00:07Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "How To Create An MVP",
+        "description": "How To Create An MVP Join the Trends Community today. Get your first two weeks for just ONE dollar. Go to https://trends.co/kallehallden to get started.",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-10-02T11:00:07Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "1_iCh7X1ykw"
+      },
+      "snippet": {
+        "publishedAt": "2020-09-25T11:00:00Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "7 Tools That Help Me Code",
+        "description": "7 Tools I Use To Code Best Thing I've Discovered Using Linux! (After One Month) The first 100 people to go to https://blinkist.com/kallehallden are going to get ...",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-09-25T11:00:00Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "6GOqCU2VA0g"
+      },
+      "snippet": {
+        "publishedAt": "2020-09-18T15:30:01Z",
+        "channelId": "UCWr0mx597DnSGLFk1WfvSkQ",
+        "title": "Why I&#39;m Switching Text Editor To Vim",
+        "description": "Why I'm Switching Text Editor To Vim Get complete access to Codecademy's interactive curriculum for more than 35% off the regular price: ...",
+        "channelTitle": "Kalle Hallden",
+        "publishTime": "2020-09-18T15:30:01Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "items": [
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "uhp3GbQiSRs"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-31T13:37:41Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Workshop on Java Backend Development - DAY 1 | GeeksforGeeks",
+        "description": "Vote Here: https://www.menti.com/7ad4q4uem1 Ask Queries: https://forms.gle/yoy1zZTAfm89JRGm6 In this seminar, we are going to introduce you to Java ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-31T13:37:41Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "3NDTaC4scMM"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-30T16:34:14Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Minimum Element in a Sorted &amp; Rotated Array | DSA | Programming Tutorials | GeeksforGeeks",
+        "description": "Our courses : https://practice.geeksforgeeks.org/courses/ This video is contributed by Rahul Singla Please Like, Comment, and Share the Video among your ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-30T16:34:14Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "41YClEVwwd8"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-29T03:53:50Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Check if Array is Sorted &amp; Rotated | DSA | Programming Tutorials | GeeksforGeeks",
+        "description": "Our courses : https://practice.geeksforgeeks.org/courses/ This video is contributed by Rahul Singla Please Like, Comment and Share the Video among your ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-29T03:53:50Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "fX6qw3JtTD8"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-28T12:03:15Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Workshop on Java Backend Development - DAY 2 | GeeksforGeeks",
+        "description": "In this workshop, we are going to introduce you to Java backend development and the various career opportunities that this field entails. Not just this, we will also ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-28T12:03:15Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "czJe_yO1ruI"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-23T08:47:38Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Maximum Occurred Integer in N Ranges | DSA | Programming Tutorials | GeeksforGeeks",
+        "description": "Our courses : https://practice.geeksforgeeks.org/courses/ This video is contributed by Rahul Singla Please Like, Comment, and Share the Video among your ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-23T08:47:38Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "Y3T03b8cQ2k"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-22T14:15:35Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Check if String is Isogram | Data Structures &amp; Algorithms | Programming Tutorials | GeeksforGeeks",
+        "description": "Our courses : https://practice.geeksforgeeks.org/courses/ This video is contributed by Rahul Singla Please Like, Comment and Share the Video among your ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-22T14:15:35Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "d30n99TcfDU"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-18T12:41:51Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Webinar - How to shape your career with DSA  | GeekWeek Special",
+        "description": "Query form: https://forms.gle/vBFCBDjrHuWrbfN59 Voting Link: https://www.menti.com/amfc8oc1b1 Check out Coder's Playlist: ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-18T12:41:51Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "-FcBdtZkxzI"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-16T15:35:59Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Webinar - Why should learning ML be your top priority? | GeekWeek Special",
+        "description": "Submit your queries here - https://forms.gle/yAq2DWLjjhUPXoKJ9 From a Software Engineer at Cisco to a Data Scientist at Fractal Analytics, a Google ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-16T15:35:59Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "NRD_VvA9j6E"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-13T14:39:53Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Webinar - The future of ethical hacking in India | GeekWeek Special",
+        "description": "Founder of Metaxone Solutions OPC Pvt. ltd and owner of his YouTube channel 'Technical Navigator' with a following of 133k, Nitesh is an ethical hacker ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-13T14:39:53Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "KVlngV9AjCY"
+      },
+      "snippet": {
+        "publishedAt": "2020-10-12T14:44:36Z",
+        "channelId": "UC0RhatS1pyxInC00YKjjBqQ",
+        "title": "Webinar - Myths of Competitive Programming | GeekWeek Special",
+        "description": "An ACM ICPC World Finalist 2018 and 2019, represented India at the Asia Pacific Informatics Olympiad (APIO 2014), a finalist in the International Olympiad in ...",
+        "channelTitle": "GeeksforGeeks",
+        "publishTime": "2020-10-12T14:44:36Z"
+      }
+    }
+  ]
+}

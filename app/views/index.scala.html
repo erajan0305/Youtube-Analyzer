@@ -1,18 +1,46 @@
+@import models.POJO.SearchResults.SearchResults
+@(searchForm: Form[Search], searchResultsMap: Map[String, SearchResults])(implicit messages: play.i18n.Messages)
+
+
 <html>
-<head>
-    <title>Youtube Analyzer</title>
-</head>
-<body>
-<section id="content">
-    <h1>Youtube Analyzer</h1>
-    <a href="">Channel Information</a>
-    <a href="">Similar Content</a>
-    <br/><br/>
-    <div class="wrapper doc">
-        <input type="text" placeholder="Search..">
-        <button onclick="">Search</button>
-    </div>
-    <div></div>
-</section>
-</body>
+    <head>
+        <title>Youtube Analyzer</title>
+    </head>
+    <body>
+        <section id="content">
+            <h1>Youtube Analyzer</h1>
+            <br/>
+            <br/>
+            @helper.form(action = routes.YoutubeAnalyzerController.fetchVideosByKeywords()) {
+                @helper.inputText(searchForm("searchKeyword"))
+                <input type="submit" value="Search">
+            }
+                <div>
+                @if(searchResultsMap != null && searchResultsMap.size > 0) {
+                    @for((searchWords, searchResults) <- searchResultsMap) {
+                        @if(searchResults != null && searchResults.items != null) {
+                            <span>
+                                <b>Search Terms: </b>
+                                <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchWords)'>@searchWords</a>
+                            </span>
+                            <ol>
+                            @for(item <- searchResults.items) {
+                                <hr style="width: 75%;
+                                    text-align: left;
+                                    margin-left: 0">
+                                @if(item != null) {
+                                    <li><a href="https://www.youtube.com/watch?v=@item.id.videoId" target="_blank">@item.snippet.title</a>
+                                        ,
+                                        <a href="@routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(item.snippet.channelId, searchWords)"><b>@item.snippet.channelTitle</b></a>
+                                        ,@item.viewCount, @item.commentSentiment,@item.snippet.publishTime,
+                                    </li>
+                                }
+                            }
+                            </ol>
+                        }
+                    }
+                }
+        </div>
+        </section>
+    </body>
 </html>
