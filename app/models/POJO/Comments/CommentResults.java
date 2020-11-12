@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Model Class for Comment Results.
+ *
+ * @author Umang J Patel
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

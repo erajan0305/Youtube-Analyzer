@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Model Class for {@link ChannelItem} Snippet.
+ *
+ * @author Rajan Shah
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({

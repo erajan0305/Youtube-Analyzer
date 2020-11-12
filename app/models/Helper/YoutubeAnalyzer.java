@@ -17,6 +17,8 @@ import static java.util.stream.Collectors.*;
 
 /**
  * Helper class to make requests to {@link YouTubeApiClient} and perform calculations on data.
+ *
+ * @author Rajan Shah, Kishan Bhimani, Umang J Patel
  */
 public class YoutubeAnalyzer {
     private WSClient wsClient;

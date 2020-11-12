@@ -2,6 +2,8 @@ package models;
 
 /**
  * Model Class for Search Input.
+ *
+ * @author Rajan Shah
  */
 public class Search {
     /**

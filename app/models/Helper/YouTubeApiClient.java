@@ -15,6 +15,8 @@ import java.util.concurrent.CompletionStage;
 
 /**
  * This class makes requests to YOUTUBE API V3 to fetch content based on parameters.
+ *
+ * @author Rajan Shah, Kishan Bhimani, Umang J Patel
  */
 public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;

@@ -19,6 +19,8 @@ import static play.test.Helpers.*;
 
 /**
  * This is test class for {@link SessionHelper}
+ *
+ * @author Kishan Bhimani
  */
 public class SessionHelperTest extends WithApplication {
 

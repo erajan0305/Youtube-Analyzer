@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Model Class for {@link VideoSearchResultItem} Statistics.
+ *
+ * @author Kishan Bhimani
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"viewCount", "likeCount", "dislikeCount", "favouriteCount", "commentCount"})

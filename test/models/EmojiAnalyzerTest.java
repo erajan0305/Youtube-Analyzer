@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 
 /**
  * EmojiAnalyzer Test Class
+ *
+ * @author Rajan Shah, Umang J Patel
  */
 
 public class EmojiAnalyzerTest {

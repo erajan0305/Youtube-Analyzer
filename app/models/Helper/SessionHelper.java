@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 
 /**
  * This class manages session for the Application.
+ *
+ * @author Kishan Bhimani
  */
 public class SessionHelper {
     private static final HashMap<String, LinkedHashMap<String, SearchResults>> sessionSearchResultsBySearchKeywordHashMap = new HashMap<>();

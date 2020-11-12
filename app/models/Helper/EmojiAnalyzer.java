@@ -17,7 +17,9 @@ import java.util.stream.Stream;
  */
 public class EmojiAnalyzer {
 
-    // Set of happy emojis
+    /**
+     * Set of Happy Emojis
+     */
     private static final List<Emoji> HAPPY_EMOJI_SET = Arrays.asList(
             EmojiManager.getForAlias("smiley"),
             EmojiManager.getForAlias("heart_eyes"),
@@ -30,7 +32,9 @@ public class EmojiAnalyzer {
             EmojiManager.getForAlias("relaxed")
     );
 
-    // Set of sad emojis
+    /**
+     * Set of Sad Emojis
+     */
     private static final List<Emoji> SAD_EMOJI_SET = Arrays.asList(
             EmojiManager.getForAlias("pensive"),
             EmojiManager.getForAlias("disappointed"),
@@ -40,12 +44,16 @@ public class EmojiAnalyzer {
             EmojiManager.getForAlias("worried")
     );
 
-    // Set of all emojis of our domain of interest
+    /**
+     * Set of all the Emojis, Happy and Sad.
+     */
     private static final List<Emoji> EMOJIS_SET = Stream.concat(
             HAPPY_EMOJI_SET.parallelStream(), SAD_EMOJI_SET.parallelStream())
             .collect(Collectors.toList());
 
-    // Set of happy emojis in unicode format
+    /**
+     * Set of Happy Emojis in Unicode Format
+     */
     private static final List<String> HAPPY_EMOJI_UNICODE_SET = HAPPY_EMOJI_SET
             .parallelStream()
             .map(Emoji::getUnicode).collect(Collectors.toList());

@@ -8,6 +8,8 @@ import java.util.List;
 
 /**
  * Model Class for Videos.
+ *
+ * @author Kishan Bhimani
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"items"})

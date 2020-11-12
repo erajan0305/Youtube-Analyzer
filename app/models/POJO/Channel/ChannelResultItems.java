@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Model Class for Channel Result Items.
+ *
+ * @author Rajan Shah
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
