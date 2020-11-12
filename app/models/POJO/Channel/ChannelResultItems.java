@@ -10,17 +10,37 @@ import java.util.List;
 /**
  * Model Class for Channel Result Items.
  */
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"items"})
 
 public class ChannelResultItems {
+    @JsonProperty("items")
+    private List<ChannelItem> items = null;
+
+    /**
+     * Instantiates a new Channel result items.
+     */
     public ChannelResultItems() {
     }
 
-    @JsonProperty("items")
-    public List<ChannelItem> items = null;
+    /**
+     * Gets items.
+     *
+     * @return the items
+     */
+    public List<ChannelItem> getItems() {
+        return items;
+    }
+
+    /**
+     * Sets items.
+     *
+     * @param items the items
+     */
+    public void setItems(List<ChannelItem> items) {
+        this.items = items;
+    }
 
     @Override
     public String toString() {

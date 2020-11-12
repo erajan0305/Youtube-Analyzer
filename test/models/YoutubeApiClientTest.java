@@ -139,8 +139,8 @@ public class YoutubeApiClientTest {
 
         SearchResults actualNoResult = youTubeApiClient.fetchVideos("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
         SearchResults expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), SearchResults.class);
-        assert Objects.requireNonNull(expectedEmptyJson).items == null;
-        assert Objects.requireNonNull(actualNoResult).items == null;
+        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
+        assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 
     /**
@@ -154,21 +154,21 @@ public class YoutubeApiClientTest {
         String actualJavaViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("uhp3GbQiSRs").toCompletableFuture().get();
         Videos expectedJavaVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Java_uhp3GbQiSRs.json"), Videos.class);
         assert expectedJavaVideoItems != null;
-        Assert.assertEquals(expectedJavaVideoItems.items.get(0).statistics.viewCount, actualJavaViewCountByVideoId);
+        Assert.assertEquals(expectedJavaVideoItems.getItems().get(0).getStatistics().getViewCount(), actualJavaViewCountByVideoId);
 
         String actualPythonViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("OsKQw3qTMMk").toCompletableFuture().get();
         Videos expectedPythonVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Python_OsKQw3qTMMk.json"), Videos.class);
         assert expectedPythonVideoItems != null;
-        Assert.assertEquals(expectedPythonVideoItems.items.get(0).statistics.viewCount, actualPythonViewCountByVideoId);
+        Assert.assertEquals(expectedPythonVideoItems.getItems().get(0).getStatistics().getViewCount(), actualPythonViewCountByVideoId);
 
         String actualGolangViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("FxxkOfvY39c").toCompletableFuture().get();
         Videos expectedGolangVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Golang_FxxkOfvY39c.json"), Videos.class);
         assert expectedGolangVideoItems != null;
-        Assert.assertEquals(expectedGolangVideoItems.items.get(0).statistics.viewCount, actualGolangViewCountByVideoId);
+        Assert.assertEquals(expectedGolangVideoItems.getItems().get(0).getStatistics().getViewCount(), actualGolangViewCountByVideoId);
 
         String actualNoResult = youTubeApiClient.getViewCountByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
         Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
-        assert Objects.requireNonNull(expectedEmptyJson).items == null;
+        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
         String noData = "No Data";
         Assert.assertEquals(actualNoResult, noData);
     }
@@ -198,8 +198,8 @@ public class YoutubeApiClientTest {
 
         SearchResults actualNoResult = youTubeApiClient.getVideosJsonByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5", "").toCompletableFuture().get();
         Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
-        assert Objects.requireNonNull(expectedEmptyJson).items == null;
-        assert Objects.requireNonNull(actualNoResult).items == null;
+        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
+        assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 
     /**
@@ -227,8 +227,8 @@ public class YoutubeApiClientTest {
 
         ChannelResultItems actualNoResult = youTubeApiClient.getChannelInformationByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
         ChannelResultItems expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), ChannelResultItems.class);
-        assert Objects.requireNonNull(expectedEmptyJson).items == null;
-        assert Objects.requireNonNull(actualNoResult).items == null;
+        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
+        assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 
     /**

@@ -49,8 +49,8 @@ public class EmojiAnalyzerTest {
      */
     @Test
     public void processCommentsStreamTest0() {
-        Stream<String> commentStream = commentResults.items.parallelStream()
-                .map(commentResultItem -> commentResultItem.getSnippet().getTopLevelComment().getSnippet().getTextOriginal().trim());
+        Stream<String> commentStream = commentResults.getItems().parallelStream()
+                .map(commentResultItem -> commentResultItem.getCommentSnippet().getTopLevelComment().getSnippet().getTextOriginal().trim());
         String happyEmojiUnicode = EmojiManager.getForAlias("heart_eyes").getUnicode();
         String expectedFilteredCommentString = String.join("", Collections.nCopies(5, happyEmojiUnicode));
         Assert.assertEquals(expectedFilteredCommentString, EmojiAnalyzer.processCommentStream(commentStream));

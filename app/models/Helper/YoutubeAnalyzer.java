@@ -19,8 +19,8 @@ import static java.util.stream.Collectors.*;
  * Helper class to make requests to {@link YouTubeApiClient} and perform calculations on data.
  */
 public class YoutubeAnalyzer {
-    public WSClient wsClient;
-    public YouTubeApiClient youTubeApiClient;
+    private WSClient wsClient;
+    private YouTubeApiClient youTubeApiClient;
 
     public YoutubeAnalyzer() {
     }
@@ -34,6 +34,13 @@ public class YoutubeAnalyzer {
     public void setWsClient(WSClient wsClient) {
         this.wsClient = wsClient;
         this.youTubeApiClient = new YouTubeApiClient(this.wsClient);
+    }
+
+    /**
+     * @return WSClient object
+     */
+    public WSClient getWsClient() {
+        return this.wsClient;
     }
 
     /**
@@ -81,15 +88,15 @@ public class YoutubeAnalyzer {
      */
     public Map<String, Long> getSimilarityStats(LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap, String keyword) {
         SearchResults searchResults = searchResultsLinkedHashMap.get(keyword);
-        if (searchResults == null || (searchResults.items == null || searchResults.items.size() == 0)) {
+        if (searchResults == null || (searchResults.getItems() == null || searchResults.getItems().size() == 0)) {
             return new HashMap<String, Long>() {{
                 put(keyword, (long) 0);
             }};
         }
         List<String> tokens = searchResults
-                .items
+                .getItems()
                 .stream()
-                .map(searchResultItem -> searchResultItem.snippet.title)
+                .map(searchResultItem -> searchResultItem.getSnippet().getTitle())
                 .flatMap(title -> Arrays.stream(title.split("\\s+").clone()))       // split into words
                 .map(s -> s.replaceAll("[^a-zA-Z0-9]", ""))                      // discarding special characters
                 .filter(s -> !s.matches("[0-9]+"))                                  // discarding only number strings
@@ -150,11 +157,11 @@ public class YoutubeAnalyzer {
      * @author Umang J Patel
      */
     public String getCommentsString(CommentResults commentResults) {
-        if (commentResults.items == null) {
+        if (commentResults.getItems() == null) {
             return "";  //Empty String
         }
-        Stream<String> commentStream = commentResults.items.parallelStream()
-                .map(commentResultItem -> commentResultItem.getSnippet().getTopLevelComment().getSnippet().getTextOriginal().trim());
+        Stream<String> commentStream = commentResults.getItems().parallelStream()
+                .map(commentResultItem -> commentResultItem.getCommentSnippet().getTopLevelComment().getSnippet().getTextOriginal().trim());
         return EmojiAnalyzer.processCommentStream(commentStream);
     }
 

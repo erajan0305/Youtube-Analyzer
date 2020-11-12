@@ -20,8 +20,7 @@ import javax.inject.Inject;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-
-import static java.util.stream.Collectors.toList;
+import java.util.stream.Collectors;
 
 /**
  * This controller contains an action to handle HTTP requests
@@ -78,12 +77,12 @@ public class YoutubeAnalyzerController extends Controller {
      */
     public Result index(Http.Request request) {
         Form<Search> searchForm = formFactory.form(Search.class);
-        if (this.youtubeAnalyzer.wsClient == null) {
+        if (this.youtubeAnalyzer.getWsClient() == null) {
             this.youtubeAnalyzer.setWsClient(wsClient);
         }
         if (!SessionHelper.isSessionExist(request)) {
             return ok(index.render(searchForm, null, messagesApi.preferred(request)))
-                    .addingToSession(request, SessionHelper.SESSION_KEY, SessionHelper.getUserAgentNameFromRequest(request));
+                    .addingToSession(request, SessionHelper.getSessionKey(), SessionHelper.getUserAgentNameFromRequest(request));
         }
         return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
     }
@@ -111,19 +110,19 @@ public class YoutubeAnalyzerController extends Controller {
         CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
 
         return searchResponsePromise.thenApply(searchResults -> {
-            searchResults.items.parallelStream()
+            searchResults.getItems().parallelStream()
                     .map(searchResultItem -> CompletableFuture.allOf(
-                            youtubeAnalyzer.getViewCountByVideoId(searchResultItem.id.videoId)
+                            youtubeAnalyzer.getViewCountByVideoId(searchResultItem.getId().getVideoId())
                                     .thenApply(countString -> {
-                                        searchResultItem.viewCount = countString;
+                                        searchResultItem.setViewCount(countString);
                                         return searchResultItem;
                                     }).toCompletableFuture(),
-                            youtubeAnalyzer.getSentimentPerVideo(searchResultItem.id.videoId)
+                            youtubeAnalyzer.getSentimentPerVideo(searchResultItem.getId().getVideoId())
                                     .thenApply(commentSentiment -> {
-                                        searchResultItem.commentSentiment = commentSentiment;
+                                        searchResultItem.setCommentSentiment(commentSentiment);
                                         return searchResultItem;
                                     }).toCompletableFuture()
-                    )).map(CompletableFuture::join).collect(toList());
+                    )).map(CompletableFuture::join).collect(Collectors.toList());
             SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResults);
             return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
         });
@@ -131,7 +130,7 @@ public class YoutubeAnalyzerController extends Controller {
 
     /**
      * <p>
-     * An action that renders an HTML page with a search form.
+     * An action that renders an HTML page with a similarity stats results.
      * The configuration in the <code>routes</code> file means that
      * this method will be called when the application receives a
      * <code>GET</code> request with a path of <code>/stats/:keyword</code>.<br>
@@ -183,10 +182,10 @@ public class YoutubeAnalyzerController extends Controller {
 
         return channelItemPromise.thenCompose(channelResultItems -> videosJsonByChannelIdSearchPromise
                 .thenApply(videoJsonByChannelId -> {
-                    if (channelResultItems.items == null) {
+                    if (channelResultItems.getItems() == null) {
                         return notFound(channelInfo.render(null, null, messagesApi.preferred(request)));
                     }
-                    return ok(channelInfo.render(videoJsonByChannelId, channelResultItems.items.get(0), messagesApi.preferred(request)));
+                    return ok(channelInfo.render(videoJsonByChannelId, channelResultItems.getItems().get(0), messagesApi.preferred(request)));
                 })
         );
     }

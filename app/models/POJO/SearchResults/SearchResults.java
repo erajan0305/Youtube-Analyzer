@@ -10,7 +10,6 @@ import java.util.List;
 /**
  * Model Class for Search Results.
  */
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"items"})
@@ -18,9 +17,30 @@ import java.util.List;
 public class SearchResults {
 
     @JsonProperty("items")
-    public List<SearchResultItem> items = null;
+    private List<SearchResultItem> items = null;
 
+    /**
+     * Instantiates a new Search results.
+     */
     public SearchResults() {
+    }
+
+    /**
+     * Gets items.
+     *
+     * @return the items
+     */
+    public List<SearchResultItem> getItems() {
+        return items;
+    }
+
+    /**
+     * Sets items.
+     *
+     * @param items the items
+     */
+    public void setItems(List<SearchResultItem> items) {
+        this.items = items;
     }
 
     @Override

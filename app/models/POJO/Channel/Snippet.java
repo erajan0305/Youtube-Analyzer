@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * Model Class for {@link ChannelItem} Snippet.
  */
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "publishedAt",
@@ -19,25 +18,129 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 public class Snippet {
     @JsonProperty("title")
-    public String title;
+    private String title;
     @JsonProperty("description")
-    public String description;
+    private String description;
     @JsonProperty("customUrl")
-    public String customUrl;
+    private String customUrl;
     @JsonProperty("publishedAt")
-    public String publishedAt;
-    @JsonProperty("country")
-    public String country;
+    private String publishedAt;
 
+    /**
+     * Instantiates a new Snippet.
+     */
     public Snippet() {
     }
 
+    /**
+     * Instantiates a new Snippet.
+     *
+     * @param title       the title
+     * @param description the description
+     * @param country     the country
+     * @param customUrl   the custom url
+     * @param publishedAt the published at
+     */
     public Snippet(String title, String description, String country, String customUrl, String publishedAt) {
         this.title = title;
         this.description = description;
         this.country = country;
         this.customUrl = customUrl;
         this.publishedAt = publishedAt;
+    }
+
+    @JsonProperty("country")
+    private String country;
+
+
+    /**
+     * Gets title.
+     *
+     * @return the title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * Sets title.
+     *
+     * @param title the title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * Gets description.
+     *
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Sets description.
+     *
+     * @param description the description
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Gets custom url.
+     *
+     * @return the custom url
+     */
+    public String getCustomUrl() {
+        return customUrl;
+    }
+
+    /**
+     * Sets custom url.
+     *
+     * @param customUrl the custom url
+     */
+    public void setCustomUrl(String customUrl) {
+        this.customUrl = customUrl;
+    }
+
+    /**
+     * Gets published at.
+     *
+     * @return the published at
+     */
+    public String getPublishedAt() {
+        return publishedAt;
+    }
+
+    /**
+     * Sets published at.
+     *
+     * @param publishedAt the published at
+     */
+    public void setPublishedAt(String publishedAt) {
+        this.publishedAt = publishedAt;
+    }
+
+    /**
+     * Gets country.
+     *
+     * @return the country
+     */
+    public String getCountry() {
+        return country;
+    }
+
+    /**
+     * Sets country.
+     *
+     * @param country the country
+     */
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     @Override

@@ -17,8 +17,7 @@ import java.util.concurrent.CompletionStage;
  * This class makes requests to YOUTUBE API V3 to fetch content based on parameters.
  */
 public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
-    public WSClient wsClient;
-    // private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
+    private final WSClient wsClient;
     private final String API_KEY = "AIzaSyCnECnkJrVZIjtA_1_zvbiBqkHTwfaBDlk";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
@@ -68,7 +67,8 @@ public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
                 .addQueryParameter("key", API_KEY);
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApply(video -> Json.fromJson(video, Videos.class))
-                .thenApply(video -> (video.items != null && !video.items.isEmpty()) ? video.items.get(0).statistics.viewCount : "No Data")
+                .thenApply(video -> (video.getItems() != null && !video.getItems().isEmpty()) ?
+                        video.getItems().get(0).getStatistics().getViewCount() : "No Data")
                 .toCompletableFuture();
     }
 

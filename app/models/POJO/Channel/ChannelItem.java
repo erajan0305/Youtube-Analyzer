@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * Model Class for Channel Item.
  */
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "id",
@@ -17,11 +16,65 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 public class ChannelItem {
     @JsonProperty("id")
-    public String id;
+    private String id;
     @JsonProperty("snippet")
-    public Snippet snippet;
+    private Snippet snippet;
     @JsonProperty("statistics")
-    public ChannelStatistics channelStatistics;
+    private ChannelStatistics channelStatistics;
+
+    /**
+     * Gets id.
+     *
+     * @return the id
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets id.
+     *
+     * @param id the id
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    /**
+     * Gets snippet.
+     *
+     * @return the snippet
+     */
+    public Snippet getSnippet() {
+        return snippet;
+    }
+
+    /**
+     * Sets snippet.
+     *
+     * @param snippet the snippet
+     */
+    public void setSnippet(Snippet snippet) {
+        this.snippet = snippet;
+    }
+
+    /**
+     * Gets channel statistics.
+     *
+     * @return the channel statistics
+     */
+    public ChannelStatistics getChannelStatistics() {
+        return channelStatistics;
+    }
+
+    /**
+     * Sets channel statistics.
+     *
+     * @param channelStatistics the channel statistics
+     */
+    public void setChannelStatistics(ChannelStatistics channelStatistics) {
+        this.channelStatistics = channelStatistics;
+    }
 
     @Override
     public String toString() {

@@ -1,6 +1,5 @@
 package models.Helper;
 
-import models.POJO.Channel.ChannelResultItems;
 import models.POJO.SearchResults.SearchResults;
 import play.mvc.Http;
 
@@ -12,7 +11,11 @@ import java.util.LinkedHashMap;
  */
 public class SessionHelper {
     private static final HashMap<String, LinkedHashMap<String, SearchResults>> sessionSearchResultsBySearchKeywordHashMap = new HashMap<>();
-    public static final String SESSION_KEY = "sessionId";
+    private static final String SESSION_KEY = "sessionId";
+
+    public static String getSessionKey() {
+        return SESSION_KEY;
+    }
 
     /**
      * @param request Http Request

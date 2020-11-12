@@ -11,15 +11,15 @@
 <h1>Channel Information</h1>
 <div>
     @if(channelItem != null){
-    <h4>Channel Id: @channelItem.id</h4>
-    <h4>Title: @channelItem.snippet.title</h4>
-    <h4>Description : @channelItem.snippet.description</h4>
-    <h4>Custom URL: @channelItem.snippet.customUrl</h4>
-    <h4>Published At: @channelItem.snippet.publishedAt</h4>
-    <h4>Country: @channelItem.snippet.country</h4>
-    <h4>View Count: @channelItem.channelStatistics.viewCount</h4>
-    <h4>Subscriber Count: @channelItem.channelStatistics.subscriberCount</h4>
-    <h4>Video Count: @channelItem.channelStatistics.videoCount</h4>
+    <h4>Channel Id: @channelItem.getId()</h4>
+    <h4>Title: @channelItem.getSnippet().getTitle()</h4>
+    <h4>Description : @channelItem.getSnippet().getDescription()</h4>
+    <h4>Custom URL: @channelItem.getSnippet().getCustomUrl()</h4>
+    <h4>Published At: @channelItem.getSnippet().getPublishedAt()</h4>
+    <h4>Country: @channelItem.getSnippet().getCountry()</h4>
+    <h4>View Count: @channelItem.getChannelStatistics().getViewCount()</h4>
+    <h4>Subscriber Count: @channelItem.getChannelStatistics().getSubscriberCount()</h4>
+    <h4>Video Count: @channelItem.getChannelStatistics().getVideoCount()</h4>
     } else {
     <h2 style="color: red">Error: Not Found</h2>
     }
@@ -27,12 +27,12 @@
     <h2>Top 10 Videos</h2>
     @if(searchResults != null){
     <ul>
-        @for(item <- searchResults.items) {
+        @for(item <- searchResults.getItems()) {
         <hr style="width:50%;text-align:left;margin-left:0">
         @if(item != null) {
-        <li><a href="https://www.youtube.com/watch?v=@item.id.videoId" target="_blank">@item.snippet.title</a></li>
-        <li><b>Description: </b> @item.snippet.description</li>
-        <li><b>Publish Time: </b>@item.snippet.publishedAt</li>
+        <li><a href="https://www.youtube.com/watch?v=@item.getId().getVideoId()" target="_blank">@item.getSnippet().getTitle()</a></li>
+        <li><b>Description: </b> @item.getSnippet().getDescription()</li>
+        <li><b>Publish Time: </b>@item.getSnippet().getPublishedAt()</li>
         }
         }
     </ul>
