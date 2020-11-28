@@ -1,10 +1,14 @@
 package controllers;
 
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
 import models.Helper.SessionHelper;
 import models.Helper.YoutubeAnalyzer;
 import models.POJO.Channel.ChannelResultItems;
 import models.POJO.SearchResults.SearchResults;
 import models.Search;
+import models.Actors.SessionActor;
+import models.Actors.YoutubeApiClientActor;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
@@ -12,15 +16,19 @@ import play.libs.ws.WSClient;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import scala.compat.java8.FutureConverters;
 import views.html.channelInfo;
 import views.html.index;
 import views.html.similarContent;
 
 import javax.inject.Inject;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
+
+import static akka.pattern.Patterns.ask;
 
 /**
  * This controller contains an action to handle HTTP requests
@@ -38,12 +46,17 @@ public class YoutubeAnalyzerController extends Controller {
     WSClient wsClient;
 
     YoutubeAnalyzer youtubeAnalyzer;
+    ActorSystem actorSystem = ActorSystem.create("ActorSystem");
+    ActorRef sessionActor;
+    ActorRef youtubeApiClientActor;
 
     /**
      * Controller Constructor
      */
     public YoutubeAnalyzerController() {
         this.youtubeAnalyzer = new YoutubeAnalyzer();
+        this.sessionActor = actorSystem.actorOf(SessionActor.props());
+        this.youtubeApiClientActor = actorSystem.actorOf(YoutubeApiClientActor.props(wsClient));
     }
 
     /**
@@ -82,11 +95,22 @@ public class YoutubeAnalyzerController extends Controller {
         if (this.youtubeAnalyzer.getWsClient() == null) {
             this.youtubeAnalyzer.setWsClient(wsClient);
         }
+        youtubeApiClientActor.tell(new YoutubeApiClientActor.SetWSClient(wsClient), ActorRef.noSender());
         if (!SessionHelper.isSessionExist(request)) {
+            System.out.println("\n\nCreating session");
+            sessionActor.tell(new SessionActor.CreateUser(SessionHelper.getUserAgentNameFromRequest(request)), ActorRef.noSender());
             return ok(index.render(searchForm, null, messagesApi.preferred(request)))
                     .addingToSession(request, SessionHelper.getSessionKey(), SessionHelper.getUserAgentNameFromRequest(request));
         }
-        return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
+
+        System.out.println("\n\nSession Exist");
+        LinkedHashMap<String, SearchResults> existingSearchResults = FutureConverters.toJava(
+                ask(sessionActor, new SessionActor.GetUserSearchResults(SessionHelper.getUserAgentNameFromRequest(request)), 1000))
+                .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
+                .toCompletableFuture()
+                .join();
+
+        return ok(index.render(searchForm, existingSearchResults, messagesApi.preferred(request)));
     }
 
     /**
@@ -110,6 +134,9 @@ public class YoutubeAnalyzerController extends Controller {
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         String searchKeyword = requestBody.get("searchKeyword")[0];
         CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
+//      CompletionStage<SearchResults> searchResponsePromise = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos(searchKeyword), 5000))
+//                .thenApply(o -> (SearchResults) o);
+
 
         return searchResponsePromise.thenApply(searchResults -> {
             searchResults.getItems().parallelStream()
@@ -125,8 +152,20 @@ public class YoutubeAnalyzerController extends Controller {
                                         return searchResultItem;
                                     }).toCompletableFuture()
                     )).map(CompletableFuture::join).collect(Collectors.toList());
-            SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResults);
-            return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
+
+            sessionActor.tell(new SessionActor.AddSearchResultsToUser(SessionHelper.getUserAgentNameFromRequest(request)
+                    , searchKeyword, searchResults), ActorRef.noSender());
+
+            System.out.println("getting searchResults");
+            LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = FutureConverters.toJava(
+                    ask(sessionActor, new SessionActor.GetUserSearchResults(SessionHelper.getUserAgentNameFromRequest(request)), 1000))
+                    .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
+                    .toCompletableFuture()
+                    .join();
+
+            //SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResults);
+            //return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
+            return ok(index.render(searchForm, searchResultsLinkedHashMap, messagesApi.preferred(request)));
         });
     }
 
