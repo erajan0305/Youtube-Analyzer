@@ -2,13 +2,15 @@ package controllers;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import models.Actors.SessionActor;
+import models.Actors.SimilarityContentActor;
+import models.Actors.SupervisorActor;
+import models.Actors.YoutubeApiClientActor;
 import models.Helper.SessionHelper;
 import models.Helper.YoutubeAnalyzer;
 import models.POJO.Channel.ChannelResultItems;
 import models.POJO.SearchResults.SearchResults;
 import models.Search;
-import models.Actors.SessionActor;
-import models.Actors.YoutubeApiClientActor;
 import play.data.Form;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
@@ -48,7 +50,8 @@ public class YoutubeAnalyzerController extends Controller {
     YoutubeAnalyzer youtubeAnalyzer;
     ActorSystem actorSystem = ActorSystem.create("ActorSystem");
     ActorRef sessionActor;
-    ActorRef youtubeApiClientActor;
+    ActorRef supervisorActor;
+    ActorRef similarityContentActor;
 
     /**
      * Controller Constructor
@@ -56,7 +59,8 @@ public class YoutubeAnalyzerController extends Controller {
     public YoutubeAnalyzerController() {
         this.youtubeAnalyzer = new YoutubeAnalyzer();
         this.sessionActor = actorSystem.actorOf(SessionActor.props());
-        this.youtubeApiClientActor = actorSystem.actorOf(YoutubeApiClientActor.props(wsClient));
+        this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(wsClient));
+        this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor));
     }
 
     /**
@@ -95,7 +99,7 @@ public class YoutubeAnalyzerController extends Controller {
         if (this.youtubeAnalyzer.getWsClient() == null) {
             this.youtubeAnalyzer.setWsClient(wsClient);
         }
-        youtubeApiClientActor.tell(new YoutubeApiClientActor.SetWSClient(wsClient), ActorRef.noSender());
+        supervisorActor.tell(new YoutubeApiClientActor.SetWSClient(wsClient), ActorRef.noSender());
         if (!SessionHelper.isSessionExist(request)) {
             System.out.println("\n\nCreating session");
             sessionActor.tell(new SessionActor.CreateUser(SessionHelper.getUserAgentNameFromRequest(request)), ActorRef.noSender());
@@ -105,7 +109,7 @@ public class YoutubeAnalyzerController extends Controller {
 
         System.out.println("\n\nSession Exist");
         LinkedHashMap<String, SearchResults> existingSearchResults = FutureConverters.toJava(
-                ask(sessionActor, new SessionActor.GetUserSearchResults(SessionHelper.getUserAgentNameFromRequest(request)), 1000))
+                ask(sessionActor, new SessionActor.GetUserSearchResults(SessionHelper.getUserAgentNameFromRequest(request)), 2000))
                 .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
                 .toCompletableFuture()
                 .join();
@@ -134,7 +138,7 @@ public class YoutubeAnalyzerController extends Controller {
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         String searchKeyword = requestBody.get("searchKeyword")[0];
         CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
-//      CompletionStage<SearchResults> searchResponsePromise = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos(searchKeyword), 5000))
+//        CompletionStage<SearchResults> searchResponsePromise = FutureConverters.toJava(ask(supervisorActor, new YoutubeApiClientActor.FetchVideos(searchKeyword), 5000))
 //                .thenApply(o -> (SearchResults) o);
 
 
@@ -189,12 +193,16 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return unauthorized("No Session Exist");
         }
-        if (SessionHelper.getSearchResultsHashMapFromSession(request) == null
-                || SessionHelper.getSearchResultsHashMapFromSession(request).get(keyword) == null) {
-            return notFound(similarContent.render(null));
-        }
-        Map<String, Long> similarityStatsMap = this.youtubeAnalyzer
-                .getSimilarityStats(SessionHelper.getSearchResultsHashMapFromSession(request), keyword);
+//      if (SessionHelper.getSearchResultsHashMapFromSession(request) == null
+//                || SessionHelper.getSearchResultsHashMapFromSession(request).get(keyword) == null) {
+//            return notFound(similarContent.render(null));
+//      }
+//      Map<String, Long> similarityStatsMap = this.youtubeAnalyzer
+//               .getSimilarityStats(SessionHelper.getSearchResultsHashMapFromSession(request), keyword);
+
+        Map<String, Long> similarityStatsMap = FutureConverters.toJava(ask(similarityContentActor, new SimilarityContentActor.SimilarContentByKeyword(SessionHelper.getUserAgentNameFromRequest(request), keyword), 2000))
+                .thenApply(o -> (LinkedHashMap<String, Long>) o)
+                .toCompletableFuture().join();
         return ok(similarContent.render(similarityStatsMap));
     }
 
