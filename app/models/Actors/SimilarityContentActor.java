@@ -48,7 +48,6 @@ public class SimilarityContentActor extends AbstractActor {
         String userId = similarContentByKeyword.userId;
         final LinkedHashMap<String, Long> computedSimilarityStatsLinkedHashmap;
 
-        System.out.println("\n\n Here");
         LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = FutureConverters.toJava(
                 ask(sessionActor, new SessionActor.GetUserSearchResults(userId), 1000))
                 .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
@@ -59,7 +58,6 @@ public class SimilarityContentActor extends AbstractActor {
         if (searchResults == null || (searchResults.getItems() == null || searchResults.getItems().size() == 0)) {
             getSender().tell(new LinkedHashMap<String, Long>(), getSelf());
         }
-        System.out.println("\n\n Here 1");
         List<String> tokens = searchResults
                 .getItems()
                 .stream()
