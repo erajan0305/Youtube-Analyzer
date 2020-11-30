@@ -9,6 +9,7 @@ import java.util.concurrent.TimeoutException;
 
 public class SupervisorActor extends AbstractActor {
     private final ActorRef youtubeApiClientActor;
+    private final ActorRef channelInfoActor;
     private final SupervisorStrategy strategy = new OneForOneStrategy(10,
             Duration.ofSeconds(5),
             DeciderBuilder
@@ -20,7 +21,8 @@ public class SupervisorActor extends AbstractActor {
     }
 
     public SupervisorActor(WSClient wsClient) {
-        youtubeApiClientActor = getContext().actorOf(Props.create(YoutubeApiClientActor.class, wsClient));
+        youtubeApiClientActor = getContext().actorOf(YoutubeApiClientActor.props(wsClient));
+        channelInfoActor = getContext().actorOf(ChannelInfoActor.props(youtubeApiClientActor));
     }
 
     @Override
@@ -35,7 +37,7 @@ public class SupervisorActor extends AbstractActor {
                 .match(YoutubeApiClientActor.FetchVideos.class, t -> youtubeApiClientActor.tell(t, getSender()))
                 .match(YoutubeApiClientActor.GetViewCountByVideoId.class, t -> youtubeApiClientActor.tell(t, getSender()))
                 .match(YoutubeApiClientActor.GetVideosJsonByChannelId.class, t -> youtubeApiClientActor.tell(t, getSender()))
-                .match(YoutubeApiClientActor.GetChannelInformationByChannelId.class, t -> youtubeApiClientActor.tell(t, getSender()))
+                .match(ChannelInfoActor.ChannelInfo.class, t -> channelInfoActor.tell(t, getSender()))
                 .match(YoutubeApiClientActor.GetSentimentByVideoId.class, t -> youtubeApiClientActor.tell(t, getSender()))
                 .build();
     }

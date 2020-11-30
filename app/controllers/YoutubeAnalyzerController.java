@@ -2,10 +2,7 @@ package controllers;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import models.Actors.SessionActor;
-import models.Actors.SimilarityContentActor;
-import models.Actors.SupervisorActor;
-import models.Actors.YoutubeApiClientActor;
+import models.Actors.*;
 import models.Helper.SessionHelper;
 import models.Helper.YoutubeAnalyzer;
 import models.POJO.Channel.ChannelResultItems;
@@ -24,6 +21,7 @@ import views.html.index;
 import views.html.similarContent;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +36,7 @@ import static akka.pattern.Patterns.ask;
  *
  * @author Rajan Shah, Kishan Bhimani, Umang J Patel
  */
+@Singleton
 public class YoutubeAnalyzerController extends Controller {
 
     @Inject
@@ -226,6 +225,9 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
+        CompletionStage<ChannelResultItems> channelItemPromise1 = FutureConverters
+                .toJava(ask(supervisorActor, new ChannelInfoActor.ChannelInfo(id), 5000))
+                .thenApply(o -> (ChannelResultItems) o);
         CompletionStage<ChannelResultItems> channelItemPromise = this.youtubeAnalyzer.getChannelInformationByChannelId(id);
         CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = this.youtubeAnalyzer.getVideosJsonByChannelId(id, keyword);
 
