@@ -188,9 +188,9 @@ public class YoutubeAnalyzerController extends Controller {
      * count of type {@link Long} as a value.
      * @author Kishan Bhimani
      */
-    public Result fetchSimilarityStats(Http.Request request, String keyword) {
+    public CompletionStage<Result> fetchSimilarityStats(Http.Request request, String keyword) {
         if (!SessionHelper.isSessionExist(request)) {
-            return unauthorized("No Session Exist");
+            return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
 //      if (SessionHelper.getSearchResultsHashMapFromSession(request) == null
 //                || SessionHelper.getSearchResultsHashMapFromSession(request).get(keyword) == null) {
@@ -199,10 +199,9 @@ public class YoutubeAnalyzerController extends Controller {
 //      Map<String, Long> similarityStatsMap = this.youtubeAnalyzer
 //               .getSimilarityStats(SessionHelper.getSearchResultsHashMapFromSession(request), keyword);
 
-        Map<String, Long> similarityStatsMap = FutureConverters.toJava(ask(similarityContentActor, new SimilarityContentActor.SimilarContentByKeyword(SessionHelper.getUserAgentNameFromRequest(request), keyword), 2000))
+        return FutureConverters.toJava(ask(similarityContentActor, new SimilarityContentActor.SimilarContentByKeyword(SessionHelper.getUserAgentNameFromRequest(request), keyword), 2000))
                 .thenApply(o -> (LinkedHashMap<String, Long>) o)
-                .toCompletableFuture().join();
-        return ok(similarContent.render(similarityStatsMap));
+                .thenApply(similarityStatsMap ->  ok(similarContent.render(similarityStatsMap)));
     }
 
     /**
