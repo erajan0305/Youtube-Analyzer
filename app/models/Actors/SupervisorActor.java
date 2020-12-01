@@ -20,7 +20,7 @@ public class SupervisorActor extends AbstractActor {
     }
 
     public SupervisorActor(WSClient wsClient) {
-        youtubeApiClientActor = getContext().actorOf(Props.create(YoutubeApiClientActor.class, wsClient));
+        youtubeApiClientActor = getContext().actorOf(YoutubeApiClientActor.props(wsClient));
     }
 
     @Override

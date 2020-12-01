@@ -2,10 +2,7 @@ package controllers;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import models.Actors.SessionActor;
-import models.Actors.SimilarityContentActor;
-import models.Actors.SupervisorActor;
-import models.Actors.YoutubeApiClientActor;
+import models.Actors.*;
 import models.Helper.SessionHelper;
 import models.Helper.YoutubeAnalyzer;
 import models.POJO.Channel.ChannelResultItems;
@@ -24,6 +21,7 @@ import views.html.index;
 import views.html.similarContent;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +36,7 @@ import static akka.pattern.Patterns.ask;
  *
  * @author Rajan Shah, Kishan Bhimani, Umang J Patel
  */
+@Singleton
 public class YoutubeAnalyzerController extends Controller {
 
     @Inject
@@ -52,15 +51,19 @@ public class YoutubeAnalyzerController extends Controller {
     ActorRef sessionActor;
     ActorRef supervisorActor;
     ActorRef similarityContentActor;
+    ActorRef channelInfoActor;
+    ActorRef videosByChannelIdAndKeywordActor;
 
     /**
      * Controller Constructor
      */
     public YoutubeAnalyzerController() {
         this.youtubeAnalyzer = new YoutubeAnalyzer();
-        this.sessionActor = actorSystem.actorOf(SessionActor.props());
-        this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(wsClient));
-        this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor));
+        this.sessionActor = actorSystem.actorOf(SessionActor.props(), "sessionActor");
+        this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(wsClient), "supervisorActor");
+        this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor), "similarityContentActor");
+        this.channelInfoActor = actorSystem.actorOf(ChannelInfoActor.props(supervisorActor), "channelInfoActor");
+        this.videosByChannelIdAndKeywordActor = actorSystem.actorOf(VideosActor.props(supervisorActor), "videosByChannelIdActor");
     }
 
     /**
@@ -94,7 +97,8 @@ public class YoutubeAnalyzerController extends Controller {
      * @return Result <code>OK</code>: 200.
      * @author Kishan Bhimani, Rajan Shah, Umang Patel
      */
-    public Result index(Http.Request request) {
+    public CompletableFuture<Result> index(Http.Request request) {
+        String userAgentName = SessionHelper.getUserAgentNameFromRequest(request);
         Form<Search> searchForm = formFactory.form(Search.class);
         if (this.youtubeAnalyzer.getWsClient() == null) {
             this.youtubeAnalyzer.setWsClient(wsClient);
@@ -102,19 +106,18 @@ public class YoutubeAnalyzerController extends Controller {
         supervisorActor.tell(new YoutubeApiClientActor.SetWSClient(wsClient), ActorRef.noSender());
         if (!SessionHelper.isSessionExist(request)) {
             System.out.println("\n\nCreating session");
-            sessionActor.tell(new SessionActor.CreateUser(SessionHelper.getUserAgentNameFromRequest(request)), ActorRef.noSender());
-            return ok(index.render(searchForm, null, messagesApi.preferred(request)))
-                    .addingToSession(request, SessionHelper.getSessionKey(), SessionHelper.getUserAgentNameFromRequest(request));
+            sessionActor.tell(new SessionActor.CreateUser(userAgentName), ActorRef.noSender());
+            return CompletableFuture.completedFuture(ok(index.render(searchForm, null, messagesApi.preferred(request)))
+                    .addingToSession(request, SessionHelper.getSessionKey(), userAgentName));
         }
 
-        System.out.println("\n\nSession Exist");
-        LinkedHashMap<String, SearchResults> existingSearchResults = FutureConverters.toJava(
-                ask(sessionActor, new SessionActor.GetUserSearchResults(SessionHelper.getUserAgentNameFromRequest(request)), 2000))
+        System.out.println("\n\nSession Exist/Created");
+        CompletableFuture<LinkedHashMap<String, SearchResults>> linkedHashMapCompletableFuture = FutureConverters.toJava(
+                ask(sessionActor, new SessionActor.GetUserSearchResults(userAgentName), 2000))
                 .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
-                .toCompletableFuture()
-                .join();
+                .toCompletableFuture();
 
-        return ok(index.render(searchForm, existingSearchResults, messagesApi.preferred(request)));
+        return linkedHashMapCompletableFuture.thenApply(existingSearchResults -> ok(index.render(searchForm, existingSearchResults, messagesApi.preferred(request))));
     }
 
     /**
@@ -131,16 +134,15 @@ public class YoutubeAnalyzerController extends Controller {
      * @author Rajan Shah, Kishan Bhimani, Umang Patel
      */
     public CompletionStage<Result> fetchVideosByKeywords(Http.Request request) {
+        String userAgentName = SessionHelper.getUserAgentNameFromRequest(request);
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
         Form<Search> searchForm = formFactory.form(Search.class);
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         String searchKeyword = requestBody.get("searchKeyword")[0];
-        CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
-//        CompletionStage<SearchResults> searchResponsePromise = FutureConverters.toJava(ask(supervisorActor, new YoutubeApiClientActor.FetchVideos(searchKeyword), 5000))
-//                .thenApply(o -> (SearchResults) o);
-
+        CompletionStage<SearchResults> searchResponsePromise = FutureConverters.toJava(ask(supervisorActor, new YoutubeApiClientActor.FetchVideos(searchKeyword), 5000))
+                .thenApply(o -> (SearchResults) o);
 
         return searchResponsePromise.thenApply(searchResults -> {
             searchResults.getItems().parallelStream()
@@ -157,17 +159,13 @@ public class YoutubeAnalyzerController extends Controller {
                                     }).toCompletableFuture()
                     )).map(CompletableFuture::join).collect(Collectors.toList());
 
-            sessionActor.tell(new SessionActor.AddSearchResultsToUser(SessionHelper.getUserAgentNameFromRequest(request)
-                    , searchKeyword, searchResults), ActorRef.noSender());
+            sessionActor.tell(new SessionActor.AddSearchResultsToUser(userAgentName, searchKeyword, searchResults), ActorRef.noSender());
 
             LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = FutureConverters.toJava(
-                    ask(sessionActor, new SessionActor.GetUserSearchResults(SessionHelper.getUserAgentNameFromRequest(request)), 1000))
+                    ask(sessionActor, new SessionActor.GetUserSearchResults(userAgentName), 1000))
                     .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
                     .toCompletableFuture()
                     .join();
-
-            //SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResults);
-            //return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
             return ok(index.render(searchForm, searchResultsLinkedHashMap, messagesApi.preferred(request)));
         });
     }
@@ -189,9 +187,16 @@ public class YoutubeAnalyzerController extends Controller {
      * @author Kishan Bhimani
      */
     public CompletionStage<Result> fetchSimilarityStats(Http.Request request, String keyword) {
+        String userAgentName = SessionHelper.getUserAgentNameFromRequest(request);
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
+//      if (CheckSession.getSearchResultsHashMapFromSession(request) == null
+//                || CheckSession.getSearchResultsHashMapFromSession(request).get(keyword) == null) {
+//            return notFound(similarContent.render(null));
+//      }
+//      Map<String, Long> similarityStatsMap = this.youtubeAnalyzer
+//               .getSimilarityStats(CheckSession.getSearchResultsHashMapFromSession(request), keyword);
         return FutureConverters.toJava(ask(similarityContentActor, new SimilarityContentActor.SimilarContentByKeyword(SessionHelper.getUserAgentNameFromRequest(request), keyword), 2000))
                 .thenApply(o -> (LinkedHashMap<String, Long>) o)
                 .thenApply(similarityStatsMap -> ok(similarContent.render(similarityStatsMap)));
@@ -217,8 +222,12 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-        CompletionStage<ChannelResultItems> channelItemPromise = this.youtubeAnalyzer.getChannelInformationByChannelId(id);
-        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = this.youtubeAnalyzer.getVideosJsonByChannelId(id, keyword);
+        CompletionStage<ChannelResultItems> channelItemPromise = FutureConverters
+                .toJava(ask(channelInfoActor, new ChannelInfoActor.ChannelInfo(id), 5000))
+                .thenApply(o -> (ChannelResultItems) o);
+        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = FutureConverters
+                .toJava(ask(videosByChannelIdAndKeywordActor, new VideosActor.VideosList(id, keyword), 5000))
+                .thenApply(o -> (SearchResults) o);
 
         return channelItemPromise.thenCompose(channelResultItems -> videosJsonByChannelIdSearchPromise
                 .thenApply(videoJsonByChannelId -> {

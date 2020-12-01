@@ -19,7 +19,7 @@ public class YoutubeApiClientActor extends AbstractActor {
     private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
-    public static class SetWSClient{
+    public static class SetWSClient {
         private final WSClient wsClient;
 
         public SetWSClient(WSClient wsClient) {
@@ -27,7 +27,7 @@ public class YoutubeApiClientActor extends AbstractActor {
         }
     }
 
-    public static class FetchVideos{
+    public static class FetchVideos {
         private final String searchKey;
 
         public FetchVideos(String searchKey) {
@@ -35,7 +35,7 @@ public class YoutubeApiClientActor extends AbstractActor {
         }
     }
 
-    public static class GetViewCountByVideoId{
+    public static class GetViewCountByVideoId {
         private final String videoId;
 
         public GetViewCountByVideoId(String videoId) {
@@ -43,7 +43,7 @@ public class YoutubeApiClientActor extends AbstractActor {
         }
     }
 
-    public static class GetVideosJsonByChannelId{
+    public static class GetVideosJsonByChannelId {
         private final String channelId;
         private final String keyword;
 
@@ -53,7 +53,7 @@ public class YoutubeApiClientActor extends AbstractActor {
         }
     }
 
-    public static class GetChannelInformationByChannelId{
+    public static class GetChannelInformationByChannelId {
         private final String channelId;
 
         public GetChannelInformationByChannelId(String channelId) {
@@ -61,7 +61,7 @@ public class YoutubeApiClientActor extends AbstractActor {
         }
     }
 
-    public static class GetSentimentByVideoId{
+    public static class GetSentimentByVideoId {
         private final String videoId;
 
         public GetSentimentByVideoId(String videoId) {
@@ -69,7 +69,7 @@ public class YoutubeApiClientActor extends AbstractActor {
         }
     }
 
-    public static Props props(WSClient wsClient){
+    public static Props props(WSClient wsClient) {
         return Props.create(YoutubeApiClientActor.class, wsClient);
     }
 
@@ -81,16 +81,16 @@ public class YoutubeApiClientActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(SetWSClient.class , t-> {
-                    if(this.wsClient == null){
+                .match(SetWSClient.class, t -> {
+                    if (this.wsClient == null) {
                         this.wsClient = t.wsClient;
                     }
                 })
-                .match(FetchVideos.class , t-> getSender().tell(this.fetchVideos(t.searchKey), getSelf()))
-                .match(GetViewCountByVideoId.class , t-> getSender().tell(this.getViewCountByVideoId(t.videoId), getSelf()))
-                .match(GetVideosJsonByChannelId.class , t-> getSender().tell(this.getVideosJsonByChannelId(t.channelId, t.keyword), getSelf()))
-                .match(GetChannelInformationByChannelId.class , t-> getSender().tell(this.getChannelInformationByChannelId(t.channelId), getSelf()))
-                .match(GetSentimentByVideoId.class , t-> getSender().tell(this.getSentimentByVideoId(t.videoId), getSelf()))
+                .match(FetchVideos.class, t -> getSender().tell(this.fetchVideos(t.searchKey), getSelf()))
+                .match(GetViewCountByVideoId.class, t -> getSender().tell(this.getViewCountByVideoId(t.videoId), getSelf()))
+                .match(GetVideosJsonByChannelId.class, t -> getSender().tell(this.getVideosJsonByChannelId(t.channelId, t.keyword), getSelf()))
+                .match(GetChannelInformationByChannelId.class, t -> getSender().tell(this.getChannelInformationByChannelId(t.channelId), getSelf()))
+                .match(GetSentimentByVideoId.class, t -> getSender().tell(this.getSentimentByVideoId(t.videoId), getSelf()))
                 .build();
     }
 
@@ -98,7 +98,7 @@ public class YoutubeApiClientActor extends AbstractActor {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "search")
                 .addQueryParameter("part", "snippet")
-                .addQueryParameter("maxResults", "2")
+                .addQueryParameter("maxResults", "10")
                 .addQueryParameter("type", "videos")
                 .addQueryParameter("order", "date")
                 .addQueryParameter("q", searchKey)
@@ -140,12 +140,12 @@ public class YoutubeApiClientActor extends AbstractActor {
      * @return {@link CompletionStage} of {@link SearchResults}
      * @author Rajan Shah
      */
-    public CompletionStage<SearchResults> getVideosJsonByChannelId(String channelId, String keyword) {
+    public SearchResults getVideosJsonByChannelId(String channelId, String keyword) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "search")
                 .addQueryParameter("channelId", channelId)
                 .addQueryParameter("q", keyword)
-                .addQueryParameter("maxResults", "2")
+                .addQueryParameter("maxResults", "10")
                 .addQueryParameter("type", "videos")
                 .addQueryParameter("order", "date")
                 .addQueryParameter("part", "snippet")
@@ -153,7 +153,8 @@ public class YoutubeApiClientActor extends AbstractActor {
                 .addQueryParameter("key", API_KEY);
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApply(wsResponse -> Json.fromJson(wsResponse, SearchResults.class))
-                .toCompletableFuture();
+                .toCompletableFuture()
+                .join();
     }
 
     /**
@@ -164,7 +165,7 @@ public class YoutubeApiClientActor extends AbstractActor {
      * @return {@link CompletionStage} of {@link ChannelResultItems}
      * @author Rajan Shah
      */
-    public CompletionStage<ChannelResultItems> getChannelInformationByChannelId(String channelId) {
+    public ChannelResultItems getChannelInformationByChannelId(String channelId) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "channels")
                 .addQueryParameter("id", channelId)
@@ -173,7 +174,8 @@ public class YoutubeApiClientActor extends AbstractActor {
                 .addQueryParameter("key", API_KEY);
         return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApply(channelJsonNode -> Json.fromJson(channelJsonNode, ChannelResultItems.class))
-                .toCompletableFuture();
+                .toCompletableFuture()
+                .join();
     }
 
     /**
@@ -197,6 +199,4 @@ public class YoutubeApiClientActor extends AbstractActor {
                 .thenApplyAsync(wsResponse -> Json.fromJson(wsResponse, CommentResults.class))
                 .toCompletableFuture();
     }
-
-
 }

@@ -93,11 +93,11 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
      * @author Rajan Shah
      */
     @Test
-    public void indexTestWithSession() {
+    public void indexTestWithSession() throws ExecutionException, InterruptedException {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.index());
         requestBuilder.header("User-Agent", "chrome");
         requestBuilder.session(SessionHelper.getSessionKey(), requestBuilder.getHeaders().get("User-Agent").get());
-        Result result = youtubeAnalyzerController.index(requestBuilder.build());
+        Result result = youtubeAnalyzerController.index(requestBuilder.build()).get();
         Assert.assertEquals(OK, result.status());
     }
 
@@ -139,11 +139,11 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
      * @author Rajan Shah
      */
     @Test
-    public void getSimilarityStatsTest0() {
+    public void getSimilarityStatsTest0() throws ExecutionException, InterruptedException {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchSimilarityStats("hello world"));
         requestBuilder.header("User-Agent", "chrome");
         requestBuilder.session(SessionHelper.getSessionKey(), requestBuilder.getHeaders().get("User-Agent").get());
-        Result result = youtubeAnalyzerController.fetchSimilarityStats(requestBuilder.build(), "hello world");
+        Result result = youtubeAnalyzerController.fetchSimilarityStats(requestBuilder.build(), "hello world").toCompletableFuture().get();
         Assert.assertEquals(NOT_FOUND, result.status());
     }
 
@@ -181,7 +181,7 @@ public class YoutubeAnalyzerControllerTest extends WithApplication {
         requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchSimilarityStats("hello world"));
         requestBuilder.header("User-Agent", "chrome");
         requestBuilder.session(SessionHelper.getSessionKey(), requestBuilder.getHeaders().get("User-Agent").get());
-        Result result = youtubeAnalyzerController.fetchSimilarityStats(requestBuilder.build(), "hello world");
+        Result result = youtubeAnalyzerController.fetchSimilarityStats(requestBuilder.build(), "hello world").toCompletableFuture().get();
         Assert.assertEquals(OK, result.status());
     }
 

@@ -1,7 +1,6 @@
 package models;
 
 import models.Helper.SessionHelper;
-import models.POJO.SearchResults.SearchResults;
 import org.junit.Before;
 import org.junit.Test;
 import play.Application;
@@ -9,8 +8,6 @@ import play.inject.guice.GuiceApplicationBuilder;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.WithApplication;
-
-import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -54,33 +51,6 @@ public class SessionHelperTest extends WithApplication {
     @Test
     public void testIsSessionExist() {
         assertTrue(SessionHelper.isSessionExist(request.build()));
-    }
-
-    /**
-     * This method is testing method for {@link SessionHelper#setSessionSearchResultsHashMap(Http.Request, String, SearchResults)}, matches
-     * actual result with expected result.
-     *
-     * @author Kishan Bhimani
-     */
-    @Test
-    public void testSearchResultsSessionData() {
-        SearchResults searchResults = new SearchResults();
-        LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = new LinkedHashMap<String, SearchResults>() {{
-            put("searchKeyword", searchResults);
-        }};
-        SessionHelper.setSessionSearchResultsHashMap(request.build(), "searchKeyword", searchResults);
-        assertEquals(searchResultsLinkedHashMap.get("searchKeyword"), SessionHelper.getSearchResultsHashMapFromSession(request.build()).get("searchKeyword"));
-    }
-
-    /**
-     * This method is testing method for {@link SessionHelper#getSessionValue(Http.Request)}, matches
-     * actual result with expected result.
-     *
-     * @author Kishan Bhimani
-     */
-    @Test
-    public void getSessionValueTest() {
-        assertEquals(request.getHeaders().get("User-Agent").get(), SessionHelper.getSessionValue(request.build()));
     }
 
     /**
