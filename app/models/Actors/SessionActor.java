@@ -11,7 +11,7 @@ public class SessionActor extends AbstractActor {
     private final HashMap<String, ActorRef> activeUsers = new HashMap<>();
 
     public static class CreateUser {
-        public final String userId;
+        private final String userId;
 
         public CreateUser(String userId) {
             this.userId = userId;
@@ -53,10 +53,10 @@ public class SessionActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(CreateUser.class, t -> this.addUserToCurrentRecord(t))
-                .match(AddSearchResultsToUser.class, t -> this.addSearchResultsToUserRecord(t))
-                .match(GetUser.class, t -> this.getUser(t))
-                .match(GetUserSearchResults.class, t-> this.getUserSearchResults(t))
+                .match(CreateUser.class, this::addUserToCurrentRecord)
+                .match(AddSearchResultsToUser.class, this::addSearchResultsToUserRecord)
+                .match(GetUser.class, this::getUser)
+                .match(GetUserSearchResults.class, this::getUserSearchResults)
                 .build();
     }
 
@@ -79,7 +79,7 @@ public class SessionActor extends AbstractActor {
         getSender().tell(user,getSelf());
     }
 
-    private void getUserSearchResults(GetUserSearchResults getUserSearchResults){
+    private void getUserSearchResults(GetUserSearchResults getUserSearchResults) {
         ActorRef user = activeUsers.get(getUserSearchResults.userId);
         user.tell(new UserActor.GetSearchResults(getUserSearchResults.userId), getSender());
 //        pipe(FutureConverters.toJava(

@@ -6,7 +6,7 @@ import akka.actor.Props;
 
 public class ChannelInfoActor extends AbstractActor {
 
-    private final ActorRef youtubeApiClientActor;
+    private final ActorRef supervisorActor;
 
     public static final class ChannelInfo {
         private final String channelId;
@@ -16,19 +16,19 @@ public class ChannelInfoActor extends AbstractActor {
         }
     }
 
-    public static Props props(ActorRef youtubeApiClientActor) {
-        return Props.create(ChannelInfoActor.class, youtubeApiClientActor);
+    public static Props props(ActorRef supervisorActor) {
+        return Props.create(ChannelInfoActor.class, supervisorActor);
     }
 
-    public ChannelInfoActor(ActorRef youtubeApiClientActor) {
-        this.youtubeApiClientActor = youtubeApiClientActor;
+    public ChannelInfoActor(ActorRef supervisorActor) {
+        this.supervisorActor = supervisorActor;
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(ChannelInfo.class, t ->
-                        youtubeApiClientActor.tell(new YoutubeApiClientActor.GetChannelInformationByChannelId(t.channelId), getSender()))
+                        supervisorActor.tell(new YoutubeApiClientActor.GetChannelInformationByChannelId(t.channelId), getSender()))
                 .build();
     }
 }
