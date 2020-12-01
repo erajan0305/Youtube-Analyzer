@@ -161,7 +161,6 @@ public class YoutubeAnalyzerController extends Controller {
 
             sessionActor.tell(new SessionActor.AddSearchResultsToUser(userAgentName, searchKeyword, searchResults), ActorRef.noSender());
 
-            System.out.println("getting searchResults");
             LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = FutureConverters.toJava(
                     ask(sessionActor, new SessionActor.GetUserSearchResults(userAgentName), 1000))
                     .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
@@ -198,8 +197,7 @@ public class YoutubeAnalyzerController extends Controller {
 //      }
 //      Map<String, Long> similarityStatsMap = this.youtubeAnalyzer
 //               .getSimilarityStats(CheckSession.getSearchResultsHashMapFromSession(request), keyword);
-
-        return FutureConverters.toJava(ask(similarityContentActor, new SimilarityContentActor.SimilarContentByKeyword(userAgentName, keyword), 2000))
+        return FutureConverters.toJava(ask(similarityContentActor, new SimilarityContentActor.SimilarContentByKeyword(SessionHelper.getUserAgentNameFromRequest(request), keyword), 2000))
                 .thenApply(o -> (LinkedHashMap<String, Long>) o)
                 .thenApply(similarityStatsMap -> ok(similarContent.render(similarityStatsMap)));
     }
