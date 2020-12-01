@@ -54,17 +54,6 @@ public class SessionHelperTest extends WithApplication {
     }
 
     /**
-     * This method is testing method for {@link SessionHelper#getSessionValue(Http.Request)}, matches
-     * actual result with expected result.
-     *
-     * @author Kishan Bhimani
-     */
-    @Test
-    public void getSessionValueTest() {
-        assertEquals(request.getHeaders().get("User-Agent").get(), SessionHelper.getSessionValue(request.build()));
-    }
-
-    /**
      * This method is testing method for {@link SessionHelper#getUserAgentNameFromRequest(Http.Request)}
      *
      * @author Kishan Bhimani

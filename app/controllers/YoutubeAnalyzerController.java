@@ -59,11 +59,11 @@ public class YoutubeAnalyzerController extends Controller {
      */
     public YoutubeAnalyzerController() {
         this.youtubeAnalyzer = new YoutubeAnalyzer();
-        this.sessionActor = actorSystem.actorOf(SessionActor.props());
-        this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(wsClient));
-        this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor));
-        this.channelInfoActor = actorSystem.actorOf(ChannelInfoActor.props(supervisorActor));
-        this.videosByChannelIdAndKeywordActor = actorSystem.actorOf(VideosActor.props(supervisorActor));
+        this.sessionActor = actorSystem.actorOf(SessionActor.props(), "sessionActor");
+        this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(wsClient), "supervisorActor");
+        this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor), "similarityContentActor");
+        this.channelInfoActor = actorSystem.actorOf(ChannelInfoActor.props(supervisorActor), "channelInfoActor");
+        this.videosByChannelIdAndKeywordActor = actorSystem.actorOf(VideosActor.props(supervisorActor), "videosByChannelIdActor");
     }
 
     /**
@@ -141,10 +141,8 @@ public class YoutubeAnalyzerController extends Controller {
         Form<Search> searchForm = formFactory.form(Search.class);
         Map<String, String[]> requestBody = request.body().asFormUrlEncoded();
         String searchKeyword = requestBody.get("searchKeyword")[0];
-        CompletionStage<SearchResults> searchResponsePromise = this.youtubeAnalyzer.fetchVideos(searchKeyword);
-//        CompletionStage<SearchResults> searchResponsePromise = FutureConverters.toJava(ask(supervisorActor, new YoutubeApiClientActor.FetchVideos(searchKeyword), 5000))
-//                .thenApply(o -> (SearchResults) o);
-
+        CompletionStage<SearchResults> searchResponsePromise = FutureConverters.toJava(ask(supervisorActor, new YoutubeApiClientActor.FetchVideos(searchKeyword), 5000))
+                .thenApply(o -> (SearchResults) o);
 
         return searchResponsePromise.thenApply(searchResults -> {
             searchResults.getItems().parallelStream()
@@ -169,9 +167,6 @@ public class YoutubeAnalyzerController extends Controller {
                     .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
                     .toCompletableFuture()
                     .join();
-
-            //SessionHelper.setSessionSearchResultsHashMap(request, searchKeyword, searchResults);
-            //return ok(index.render(searchForm, SessionHelper.getSearchResultsHashMapFromSession(request), messagesApi.preferred(request)));
             return ok(index.render(searchForm, searchResultsLinkedHashMap, messagesApi.preferred(request)));
         });
     }
@@ -229,13 +224,12 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-//        CompletionStage<Object> channelItemPromise1 = FutureConverters
-//                .toJava(ask(channelInfoActor, new ChannelInfoActor.ChannelInfo(id), 5000));
-//        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise1 = FutureConverters
-//                .toJava(ask(videosByChannelIdAndKeywordActor, new VideosActor.VideosList(id, keyword), 2000))
-//                .thenApply(o -> (SearchResults) o);
-        CompletionStage<ChannelResultItems> channelItemPromise = this.youtubeAnalyzer.getChannelInformationByChannelId(id);
-        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = this.youtubeAnalyzer.getVideosJsonByChannelId(id, keyword);
+        CompletionStage<ChannelResultItems> channelItemPromise = FutureConverters
+                .toJava(ask(channelInfoActor, new ChannelInfoActor.ChannelInfo(id), 5000))
+                .thenApply(o -> (ChannelResultItems) o);
+        CompletionStage<SearchResults> videosJsonByChannelIdSearchPromise = FutureConverters
+                .toJava(ask(videosByChannelIdAndKeywordActor, new VideosActor.VideosList(id, keyword), 5000))
+                .thenApply(o -> (SearchResults) o);
 
         return channelItemPromise.thenCompose(channelResultItems -> videosJsonByChannelIdSearchPromise
                 .thenApply(videoJsonByChannelId -> {

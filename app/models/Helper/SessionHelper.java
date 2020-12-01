@@ -31,13 +31,4 @@ public class SessionHelper {
     public static boolean isSessionExist(Http.Request request) {
         return request.session().get(SESSION_KEY).orElse(null) != null;
     }
-
-    /**
-     * @param request Http Request
-     * @return String Session value or null.
-     * @author Kishan Bhimani
-     */
-    public static String getSessionValue(Http.Request request) {
-        return request.session().get(SESSION_KEY).orElse(null);
-    }
 }

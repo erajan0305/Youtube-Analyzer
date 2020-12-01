@@ -30,7 +30,7 @@ public class VideosActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder().
                 match(VideosList.class, t ->
-                        supervisorActor.tell(new YoutubeApiClientActor.GetVideosJsonByChannelId(t.channelId, t.keyword), ActorRef.noSender()))
+                        supervisorActor.tell(new YoutubeApiClientActor.GetVideosJsonByChannelId(t.channelId, t.keyword), getSender()))
                 .build();
     }
 }
