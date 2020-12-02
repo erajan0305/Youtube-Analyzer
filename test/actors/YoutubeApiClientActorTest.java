@@ -5,7 +5,10 @@ import akka.actor.ActorSystem;
 import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
 import dataset.DatasetHelper;
 import models.Actors.YoutubeApiClientActor;
+import models.POJO.Channel.ChannelResultItems;
 import models.POJO.SearchResults.SearchResults;
+import models.POJO.VideoSearch.Videos;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -110,8 +113,82 @@ public class YoutubeApiClientActorTest {
 
     @Test
     public void fetchVideosTest() {
-        SearchResults java = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("java"), 5000))
+        SearchResults actualJava = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("java"), 5000))
                 .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
-        System.out.println(java);
+        SearchResults expectedJava = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Java.json"), SearchResults.class);
+        assert expectedJava != null;
+        Assert.assertEquals(expectedJava.toString(), actualJava.toString());
+
+        SearchResults actualPython = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("python"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
+        SearchResults expectedPython = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Python.json"), SearchResults.class);
+        assert expectedPython != null;
+        Assert.assertEquals(expectedPython.toString(), actualPython.toString());
+
+        SearchResults actualGolang = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("golang"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
+        SearchResults expectedGolang = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Golang.json"), SearchResults.class);
+        assert expectedGolang != null;
+        Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
+
+        SearchResults actualNoResult = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("!029 ( 02 _2 (@ 92020** 7&6 ^^5"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
+        SearchResults expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), SearchResults.class);
+        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
+        assert Objects.requireNonNull(actualNoResult).getItems() == null;
+    }
+
+    @Test
+    public void getVideosJsonByChannelId() {
+        SearchResults actualJava = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetVideosJsonByChannelId("UC0RhatS1pyxInC00YKjjBqQ", "java"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
+        SearchResults expectedJava = DatasetHelper.jsonFileToObject(new File("test/dataset/channelvideos/Java_UC0RhatS1pyxInC00YKjjBqQ.json"), SearchResults.class);
+        assert expectedJava != null;
+        Assert.assertEquals(expectedJava.toString(), actualJava.toString());
+
+        SearchResults actualPython = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetVideosJsonByChannelId("UCWr0mx597DnSGLFk1WfvSkQ", "python"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
+        SearchResults expectedPython = DatasetHelper.jsonFileToObject(new File("test/dataset/channelvideos/Python_UCWr0mx597DnSGLFk1WfvSkQ.json"), SearchResults.class);
+        assert expectedPython != null;
+        Assert.assertEquals(expectedPython.toString(), actualPython.toString());
+
+        SearchResults actualGolang = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetVideosJsonByChannelId("UC-R1UuxHVDyNoJN0Tn4nkiQ", "golang"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
+        SearchResults expectedGolang = DatasetHelper.jsonFileToObject(new File("test/dataset/channelvideos/Golang_UC-R1UuxHVDyNoJN0Tn4nkiQ.json"), SearchResults.class);
+        assert expectedGolang != null;
+        Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
+
+        SearchResults actualNoResult = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetVideosJsonByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5", ""), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
+        Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
+        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
+        assert Objects.requireNonNull(actualNoResult).getItems() == null;
+    }
+
+    @Test
+    public void getChannelInformationByChannelId() {
+        ChannelResultItems actualJava = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetChannelInformationByChannelId("UC0RhatS1pyxInC00YKjjBqQ"), 5000))
+                .toCompletableFuture().thenApply(o -> (ChannelResultItems) o).join();
+        ChannelResultItems expectedJava = DatasetHelper.jsonFileToObject(new File("test/dataset/channelinformation/Channel_Java_UC0RhatS1pyxInC00YKjjBqQ.json"), ChannelResultItems.class);
+        assert expectedJava != null;
+        Assert.assertEquals(expectedJava.toString(), actualJava.toString());
+
+        ChannelResultItems actualPython = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetChannelInformationByChannelId("UCWr0mx597DnSGLFk1WfvSkQ"), 5000))
+                .toCompletableFuture().thenApply(o -> (ChannelResultItems) o).join();
+        ChannelResultItems expectedPython = DatasetHelper.jsonFileToObject(new File("test/dataset/channelinformation/Channel_Python_UCWr0mx597DnSGLFk1WfvSkQ.json"), ChannelResultItems.class);
+        assert expectedPython != null;
+        Assert.assertEquals(expectedPython.toString(), actualPython.toString());
+
+        ChannelResultItems actualGolang = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetChannelInformationByChannelId("UC-R1UuxHVDyNoJN0Tn4nkiQ"), 5000))
+                .toCompletableFuture().thenApply(o -> (ChannelResultItems) o).join();
+        ChannelResultItems expectedGolang = DatasetHelper.jsonFileToObject(new File("test/dataset/channelinformation/Channel_Golang_UC-R1UuxHVDyNoJN0Tn4nkiQ.json"), ChannelResultItems.class);
+        assert expectedGolang != null;
+        Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
+
+        ChannelResultItems actualNoResult = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetChannelInformationByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5"), 5000))
+                .toCompletableFuture().thenApply(o -> (ChannelResultItems) o).join();
+        ChannelResultItems expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), ChannelResultItems.class);
+        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
+        assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 }
