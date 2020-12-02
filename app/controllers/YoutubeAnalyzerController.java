@@ -53,6 +53,8 @@ public class YoutubeAnalyzerController extends Controller {
     ActorRef similarityContentActor;
     ActorRef channelInfoActor;
     ActorRef videosByChannelIdAndKeywordActor;
+    ActorRef emojiAnalyserActor;
+    ActorRef viewCountActor;
 
     /**
      * Controller Constructor
@@ -64,6 +66,8 @@ public class YoutubeAnalyzerController extends Controller {
         this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor), "similarityContentActor");
         this.channelInfoActor = actorSystem.actorOf(ChannelInfoActor.props(supervisorActor), "channelInfoActor");
         this.videosByChannelIdAndKeywordActor = actorSystem.actorOf(VideosActor.props(supervisorActor), "videosByChannelIdActor");
+        this.emojiAnalyserActor = actorSystem.actorOf(EmojiAnalyzerActor.props(supervisorActor), "emojiAnalyserActor");
+        this.viewCountActor = actorSystem.actorOf(ViewCountActor.props(supervisorActor), "viewCountActor");
     }
 
     /**
@@ -147,13 +151,19 @@ public class YoutubeAnalyzerController extends Controller {
         return searchResponsePromise.thenApply(searchResults -> {
             searchResults.getItems().parallelStream()
                     .map(searchResultItem -> CompletableFuture.allOf(
-                            youtubeAnalyzer.getViewCountByVideoId(searchResultItem.getId().getVideoId())
-                                    .thenApply(countString -> {
-                                        searchResultItem.setViewCount(countString);
+                            FutureConverters.toJava(
+                                    ask(viewCountActor, new ViewCountActor.GetViewCount(searchResultItem.getId().getVideoId()), 2000))
+                                    .thenApplyAsync(item -> (CompletableFuture<String>) item)
+                                    .thenApplyAsync(CompletableFuture::join)
+                                    .thenApplyAsync(viewCount -> {
+                                        searchResultItem.setViewCount(viewCount);
                                         return searchResultItem;
                                     }).toCompletableFuture(),
-                            youtubeAnalyzer.getSentimentPerVideo(searchResultItem.getId().getVideoId())
-                                    .thenApply(commentSentiment -> {
+                            FutureConverters.toJava(
+                                    ask(emojiAnalyserActor, new EmojiAnalyzerActor.GetComments(searchResultItem.getId().getVideoId()), 2000))
+                                    .thenApplyAsync(item -> (CompletableFuture<String>) item)
+                                    .thenApplyAsync(CompletableFuture::join)
+                                    .thenApplyAsync(commentSentiment -> {
                                         searchResultItem.setCommentSentiment(commentSentiment);
                                         return searchResultItem;
                                     }).toCompletableFuture()
