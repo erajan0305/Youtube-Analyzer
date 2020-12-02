@@ -1,13 +1,14 @@
 @import models.POJO.SearchResults.SearchResults
-@(searchForm: Form[Search], searchResultsMap: Map[String, SearchResults])(implicit messages: play.i18n.Messages)
-
+@(searchForm: Form[Search], searchResultsMap: Map[String, SearchResults], url: String)(implicit messages: play.i18n.Messages)
 
 <html>
     <head>
         <title>Youtube Analyzer</title>
     </head>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <body>
         <section id="content">
+            <div id="message"></div>
             <h1>Youtube Analyzer</h1>
             <br/>
             <br/>
@@ -42,5 +43,48 @@
                 }
         </div>
         </section>
+    <script>
+        var webSocket;
+
+        function init() {
+            init();
+        }
+
+        function init(){
+            webSocket = new WebSocket("@url");
+            webSocket.onopen = onOpen;
+            webSocket.onclose = onClose;
+            webSocket.onmessage = onMessage;
+            webSocket.onerror = onError;
+        }
+
+        function onOpen(evt) {
+            writeToScreen("CONNECTED");
+        }
+
+        function onClose(evt) {
+            writeToScreen("DISCONNECTED");
+            appendMessageToView(":", "DISCONNECTED");
+        }
+
+        function onError(evt) {
+            writeToScreen("ERROR: " + evt.data);
+            writeToScreen("ERROR: " + JSON.stringify(evt));
+        }
+
+        function onMessage(evt) {
+            var receivedData = JSON.parse(evt.data);
+            console.log("New Data: ", receivedData);
+            appendMessageToView("Server", receivedData.body);
+        }
+
+        function appendMessageToView(title, message) {
+            $("#message").append("<p>" + title + ": " + message + "</p>");
+        }
+
+        function writeToScreen(message) {
+            console.log("New message: ", message);
+        }
+    </script>
     </body>
 </html>
