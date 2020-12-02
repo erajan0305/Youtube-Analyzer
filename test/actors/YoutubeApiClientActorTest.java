@@ -6,32 +6,36 @@ import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
 import dataset.DatasetHelper;
 import models.Actors.YoutubeApiClientActor;
 import models.POJO.Channel.ChannelResultItems;
+import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;
 import models.POJO.VideoSearch.Videos;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import play.libs.ws.WSClient;
 import play.routing.RoutingDsl;
 import play.server.Server;
 import scala.compat.java8.FutureConverters;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 import static akka.pattern.Patterns.ask;
 import static play.mvc.Results.ok;
 
 public class YoutubeApiClientActorTest {
     ActorRef youtubeApiClientActor;
+    WSClient wsTestClient;
+    ActorSystem actorSystem;
+    Server server;
 
     @ClassRule
     public static final TestKitJunitResource testKit = new TestKitJunitResource();
 
     @Before
     public void setup() {
-        Server server = Server.forRouter(
+        server = Server.forRouter(
                 (components) -> RoutingDsl.fromComponents(components)
                         .GET("/search")
                         .routingTo(request -> {
@@ -105,8 +109,8 @@ public class YoutubeApiClientActorTest {
                         })
                         .build());
 
-        WSClient wsTestClient = play.test.WSTestClient.newClient(server.httpPort());
-        ActorSystem actorSystem = ActorSystem.create("TestActorSystem");
+        wsTestClient = play.test.WSTestClient.newClient(server.httpPort());
+        actorSystem = ActorSystem.create("TestActorSystem");
         youtubeApiClientActor = actorSystem.actorOf(YoutubeApiClientActor.props(wsTestClient));
         youtubeApiClientActor.tell(new YoutubeApiClientActor.SetBaseUrl("/"), ActorRef.noSender());
     }
@@ -190,5 +194,86 @@ public class YoutubeApiClientActorTest {
         ChannelResultItems expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), ChannelResultItems.class);
         assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
         assert Objects.requireNonNull(actualNoResult).getItems() == null;
+    }
+
+    @Test
+    public void getViewCountByVideoId() {
+        CompletionStage<String> uhp3GbQiSRs = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetViewCountByVideoId("uhp3GbQiSRs"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<String>) o).join();
+        String actualJavaViewCountByVideoId = uhp3GbQiSRs.toCompletableFuture().join();
+        Videos expectedJavaVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Java_uhp3GbQiSRs.json"), Videos.class);
+        assert expectedJavaVideoItems != null;
+        Assert.assertEquals(expectedJavaVideoItems.getItems().get(0).getStatistics().getViewCount(), actualJavaViewCountByVideoId);
+
+        CompletionStage<String> osKQw3qTMMk = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetViewCountByVideoId("OsKQw3qTMMk"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<String>) o).join();
+        String actualPythonViewCountByVideoId = osKQw3qTMMk.toCompletableFuture().join();
+        Videos expectedPythonVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Python_OsKQw3qTMMk.json"), Videos.class);
+        assert expectedPythonVideoItems != null;
+        Assert.assertEquals(expectedPythonVideoItems.getItems().get(0).getStatistics().getViewCount(), actualPythonViewCountByVideoId);
+
+        CompletionStage<String> fxxkOfvY39c = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetViewCountByVideoId("FxxkOfvY39c"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<String>) o).join();
+        String actualGolangViewCountByVideoId = fxxkOfvY39c.toCompletableFuture().join();
+        Videos expectedGolangVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Golang_FxxkOfvY39c.json"), Videos.class);
+        assert expectedGolangVideoItems != null;
+        Assert.assertEquals(expectedGolangVideoItems.getItems().get(0).getStatistics().getViewCount(), actualGolangViewCountByVideoId);
+
+        CompletionStage<String> noDataCompletionStage = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetViewCountByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<String>) o).join();
+        String actualNoResult = noDataCompletionStage.toCompletableFuture().join();
+        Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
+        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
+        String noData = "No Data";
+        Assert.assertEquals(noData, actualNoResult);
+    }
+
+    @Test
+    public void testSentimentAnalysis() throws ExecutionException, InterruptedException {
+        CompletionStage<CommentResults> x2lIovmNsUY = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetSentimentByVideoId("X2lIovmNsUY"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<CommentResults>) o).join();
+        CommentResults actualHappyComments = x2lIovmNsUY.toCompletableFuture().join();
+        CommentResults expectedHappyComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/happy_video.json"), CommentResults.class);
+        assert expectedHappyComments != null;
+        Assert.assertEquals(expectedHappyComments.toString(), actualHappyComments.toString());
+
+        CompletionStage<CommentResults> iupakooy3pU = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetSentimentByVideoId("iupakooy3pU"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<CommentResults>) o).join();
+        CommentResults actualSadComments = iupakooy3pU.toCompletableFuture().join();
+        CommentResults expectedSadComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/sad_video.json"), CommentResults.class);
+        assert expectedSadComments != null;
+        Assert.assertEquals(expectedSadComments.toString(), actualSadComments.toString());
+
+        CompletionStage<CommentResults> Bi7f1JSSlh8 = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetSentimentByVideoId("Bi7f1JSSlh8"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<CommentResults>) o).join();
+        CommentResults actualNeutralComments = Bi7f1JSSlh8.toCompletableFuture().join();
+        CommentResults expectedNeutralComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/neutral_video.json"), CommentResults.class);
+        assert expectedNeutralComments != null;
+        Assert.assertEquals(expectedNeutralComments.toString(), actualNeutralComments.toString());
+
+        CompletionStage<CommentResults> noCommentsCompletionStage = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetSentimentByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<CommentResults>) o).join();
+        CommentResults actualNoComments = noCommentsCompletionStage.toCompletableFuture().join();
+        CommentResults expectedNoComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/zero_comments.json"), CommentResults.class);
+        assert expectedNoComments != null;
+        assert actualNoComments != null;
+        Assert.assertEquals(expectedNoComments.toString(), actualNoComments.toString());
+    }
+
+    /**
+     * This method destroys resources used for testing.
+     *
+     * @throws Exception
+     * @author Kishan Bhimani
+     */
+    @After
+    public void destroy() throws IOException {
+        try {
+            wsTestClient.close();
+            actorSystem = null;
+            youtubeApiClientActor = null;
+        } finally {
+            server.stop();
+        }
     }
 }
