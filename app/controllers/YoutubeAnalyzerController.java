@@ -3,11 +3,9 @@ package controllers;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import models.Actors.*;
-import models.Helper.EmojiAnalyzer;
 import models.Helper.SessionHelper;
 import models.Helper.YoutubeAnalyzer;
 import models.POJO.Channel.ChannelResultItems;
-import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;
 import models.Search;
 import play.data.Form;
@@ -28,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import static akka.pattern.Patterns.ask;
@@ -163,10 +160,9 @@ public class YoutubeAnalyzerController extends Controller {
                                         return searchResultItem;
                                     }).toCompletableFuture(),
                             FutureConverters.toJava(
-                                    ask(emojiAnalyserActor, new EmojiAnalyzerActor.GetAnalysisResult(searchResultItem.getId().getVideoId()), 2000))
-                                    .thenApplyAsync(item -> (CompletableFuture<CommentResults>) item)
+                                    ask(emojiAnalyserActor, new EmojiAnalyzerActor.GetComments(searchResultItem.getId().getVideoId()), 2000))
+                                    .thenApplyAsync(item -> (CompletableFuture<String>) item)
                                     .thenApplyAsync(CompletableFuture::join)
-                                    .thenApplyAsync(EmojiAnalyzer::getAnalysisResult)
                                     .thenApplyAsync(commentSentiment -> {
                                         searchResultItem.setCommentSentiment(commentSentiment);
                                         return searchResultItem;
