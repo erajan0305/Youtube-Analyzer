@@ -27,6 +27,14 @@ public class YoutubeApiClientActor extends AbstractActor {
         }
     }
 
+    public static class SetBaseUrl {
+        private final String baseUrl;
+
+        public SetBaseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
+        }
+    }
+
     public static class FetchVideos {
         private final String searchKey;
 
@@ -85,6 +93,9 @@ public class YoutubeApiClientActor extends AbstractActor {
                     if (this.wsClient == null) {
                         this.wsClient = t.wsClient;
                     }
+                })
+                .match(SetBaseUrl.class, t -> {
+                    BASE_URL = t.baseUrl;
                 })
                 .match(FetchVideos.class, t -> getSender().tell(this.fetchVideos(t.searchKey), getSelf()))
                 .match(GetViewCountByVideoId.class, t -> getSender().tell(this.getViewCountByVideoId(t.videoId), getSelf()))

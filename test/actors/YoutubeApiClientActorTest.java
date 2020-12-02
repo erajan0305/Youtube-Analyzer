@@ -21,16 +21,14 @@ import static akka.pattern.Patterns.ask;
 import static play.mvc.Results.ok;
 
 public class YoutubeApiClientActorTest {
-//    @ClassRule
-//    public static final TestKitJunitResource testKit = new TestKitJunitResource();
-
-    private WSClient wsTestClient;
-    private Server server;
     ActorRef youtubeApiClientActor;
+
+    @ClassRule
+    public static final TestKitJunitResource testKit = new TestKitJunitResource();
 
     @Before
     public void setup() {
-        server = Server.forRouter(
+        Server server = Server.forRouter(
                 (components) -> RoutingDsl.fromComponents(components)
                         .GET("/search")
                         .routingTo(request -> {
@@ -103,9 +101,11 @@ public class YoutubeApiClientActorTest {
                             }
                         })
                         .build());
-        wsTestClient = play.test.WSTestClient.newClient(server.httpPort());
-        ActorSystem actorSystem = ActorSystem.create("Test Actor System");
+
+        WSClient wsTestClient = play.test.WSTestClient.newClient(server.httpPort());
+        ActorSystem actorSystem = ActorSystem.create("TestActorSystem");
         youtubeApiClientActor = actorSystem.actorOf(YoutubeApiClientActor.props(wsTestClient));
+        youtubeApiClientActor.tell(new YoutubeApiClientActor.SetBaseUrl("/"), ActorRef.noSender());
     }
 
     @Test
