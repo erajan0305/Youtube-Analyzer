@@ -3,6 +3,7 @@ package models.Helper;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
 import com.vdurmont.emoji.EmojiParser;
+import models.POJO.Comments.CommentResults;
 
 import java.util.Arrays;
 import java.util.List;
@@ -112,5 +113,32 @@ public class EmojiAnalyzer {
             return EmojiManager.getForAlias("pensive").getUnicode();
         else
             return EmojiManager.getForAlias("neutral_face").getUnicode();
+    }
+
+    /**
+     * This method processes the {@link CommentResults} to filter out the emojis.
+     * Use {@link #getAnalysisResult(CommentResults)} to get sentiment analysis report of the comments.
+     *
+     * @param commentResults {@link CommentResults} object containing list of 100 Comments for video
+     * @return String of filtered emojis.
+     * @author Umang J Patel
+     */
+    private static String getCommentsString(CommentResults commentResults) {
+        if (commentResults.getItems() == null)
+            return "";  //Empty String
+        Stream<String> commentStream = commentResults.getItems().parallelStream()
+                .map(commentResultItem -> commentResultItem.getCommentSnippet().getTopLevelComment().getSnippet().getTextOriginal().trim());
+        return EmojiAnalyzer.processCommentStream(commentStream);
+    }
+
+    /**
+     * This method processes the {@link CommentResults} to generate sentiment analysis report of comments.
+     *
+     * @param commentResults {@link CommentResults} object containing list of 100 Comments for video
+     * @return Sentiment emoji as a string (happy: grin emoji, sad: pensive emoji, neutral: neutral_face emoji).
+     * @author Umang J Patel
+     */
+    public static String getAnalysisResult(CommentResults commentResults) {
+        return EmojiAnalyzer.generateReport(getCommentsString(commentResults));
     }
 }

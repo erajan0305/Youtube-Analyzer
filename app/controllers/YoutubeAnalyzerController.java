@@ -166,7 +166,7 @@ public class YoutubeAnalyzerController extends Controller {
                                     ask(emojiAnalyserActor, new EmojiAnalyzerActor.GetAnalysisResult(searchResultItem.getId().getVideoId()), 2000))
                                     .thenApplyAsync(item -> (CompletableFuture<CommentResults>) item)
                                     .thenApplyAsync(CompletableFuture::join)
-                                    .thenApplyAsync(commentResults -> youtubeAnalyzer.getAnalysisResult(commentResults))
+                                    .thenApplyAsync(EmojiAnalyzer::getAnalysisResult)
                                     .thenApplyAsync(commentSentiment -> {
                                         searchResultItem.setCommentSentiment(commentSentiment);
                                         return searchResultItem;
