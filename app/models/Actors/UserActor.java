@@ -1,14 +1,22 @@
 package models.Actors;
 
 import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
 import akka.actor.Props;
+import models.POJO.SearchResults.SearchResultItem;
 import models.POJO.SearchResults.SearchResults;
+import scala.compat.java8.FutureConverters;
 
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
+
+import static akka.pattern.Patterns.ask;
 
 public class UserActor extends AbstractActor {
     private String userId;
     private final LinkedHashMap<String, SearchResults> userSearchResultsBySearchKeywordHashMap = new LinkedHashMap<>();
+    private final ActorRef supervisorActor;
 
     public static class AddSearchResult {
         public final String userId;
@@ -30,12 +38,33 @@ public class UserActor extends AbstractActor {
         }
     }
 
-    public UserActor(String userId) {
-        this.userId = userId;
+    public static class UpdateSearchResultsRequest {
     }
 
-    public static Props props(String userId) {
-        return Props.create(UserActor.class, userId);
+    private void updateSearchResults() {
+        Set<String> strings = this.userSearchResultsBySearchKeywordHashMap.keySet();
+        strings.parallelStream().forEach(keyword -> {
+            SearchResults keywordSearchResults = FutureConverters.toJava(
+                    ask(supervisorActor, new YoutubeApiClientActor.FetchVideos(keyword), 5000))
+                    .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
+            // TODO: think how to append only new data to existing data.
+            // 1) Append everything (because any part of existing data might have been updated
+            // 2) Append only new data (but how)?
+            if (!keywordSearchResults.toString().equals(userSearchResultsBySearchKeywordHashMap.get(keyword).toString())) {
+                List<SearchResultItem> tempSearchResultItem = userSearchResultsBySearchKeywordHashMap.get(keyword).getItems();
+                tempSearchResultItem.addAll(keywordSearchResults.getItems());
+            }
+        });
+        getSender().tell("", getSelf());
+    }
+
+    public UserActor(String userId, ActorRef supervisorActor) {
+        this.userId = userId;
+        this.supervisorActor = supervisorActor;
+    }
+
+    public static Props props(String userId, ActorRef supervisorActor) {
+        return Props.create(UserActor.class, userId, supervisorActor);
     }
 
     @Override
@@ -53,6 +82,7 @@ public class UserActor extends AbstractActor {
             } else {
                 throw new Exception("Unauthorized");
             }
-        }).build();
+        }).match(UpdateSearchResultsRequest.class, t -> this.updateSearchResults())
+                .build();
     }
 }

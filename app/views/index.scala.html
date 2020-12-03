@@ -7,14 +7,15 @@
     </head>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <body>
+        <div id="message"></div>
         <section id="content">
-            <div id="message"></div>
             <h1>Youtube Analyzer</h1>
             <br/>
             <br/>
             @helper.form(action = routes.YoutubeAnalyzerController.fetchVideosByKeywords()) {
                 @helper.inputText(searchForm("searchKeyword"))
                 <input type="submit" value="Search">
+                <input type="button" onclick="send()" value="Button">
             }
                 <div>
                 @if(searchResultsMap != null && searchResultsMap.size > 0) {
@@ -47,15 +48,20 @@
         var webSocket;
 
         function init() {
-            init();
+            initWs();
         }
-
-        function init(){
+        init();
+        function initWs(){
             webSocket = new WebSocket("@url");
             webSocket.onopen = onOpen;
             webSocket.onclose = onClose;
             webSocket.onmessage = onMessage;
             webSocket.onerror = onError;
+        }
+
+        function send(){
+            console.log("Send");
+            webSocket.send(JSON.stringify("Hello, Please send me something"));
         }
 
         function onOpen(evt) {
@@ -64,7 +70,7 @@
 
         function onClose(evt) {
             writeToScreen("DISCONNECTED");
-            appendMessageToView(":", "DISCONNECTED");
+            appendMessageToView("DISCONNECTED");
         }
 
         function onError(evt) {
@@ -75,16 +81,16 @@
         function onMessage(evt) {
             var receivedData = JSON.parse(evt.data);
             console.log("New Data: ", receivedData);
-            appendMessageToView("Server", receivedData.body);
+            appendMessageToView(receivedData);
         }
 
-        function appendMessageToView(title, message) {
-            $("#message").append("<p>" + title + ": " + message + "</p>");
+        function appendMessageToView(json) {
+            $("#message").append("<p>" + json.name+ " "+ json.age + "</p>");
         }
 
         function writeToScreen(message) {
             console.log("New message: ", message);
         }
-    </script>
-    </body>
+</script>
+</body>
 </html>

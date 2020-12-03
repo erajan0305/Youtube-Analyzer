@@ -16,7 +16,8 @@ import java.util.concurrent.CompletionStage;
 
 public class YoutubeApiClientActor extends AbstractActor {
     private WSClient wsClient;
-    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
+    //    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
+    private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     public static class SetWSClient {
@@ -97,7 +98,10 @@ public class YoutubeApiClientActor extends AbstractActor {
                 .match(SetBaseUrl.class, t -> {
                     BASE_URL = t.baseUrl;
                 })
-                .match(FetchVideos.class, t -> getSender().tell(this.fetchVideos(t.searchKey), getSelf()))
+                .match(FetchVideos.class, t -> {
+                    System.out.println("---Sender" + getSender());
+                    getSender().tell(this.fetchVideos(t.searchKey), getSelf());
+                })
                 .match(GetViewCountByVideoId.class, t -> getSender().tell(this.getViewCountByVideoId(t.videoId), getSelf()))
                 .match(GetVideosJsonByChannelId.class, t -> getSender().tell(this.getVideosJsonByChannelId(t.channelId, t.keyword), getSelf()))
                 .match(GetChannelInformationByChannelId.class, t -> getSender().tell(this.getChannelInformationByChannelId(t.channelId), getSelf()))

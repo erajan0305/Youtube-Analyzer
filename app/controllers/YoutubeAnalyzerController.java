@@ -32,7 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 
 import static akka.pattern.Patterns.ask;
 
@@ -70,7 +69,7 @@ public class YoutubeAnalyzerController extends Controller {
     public YoutubeAnalyzerController() {
         this.youtubeAnalyzer = new YoutubeAnalyzer();
         this.sessionActor = actorSystem.actorOf(SessionActor.props(), "sessionActor");
-        this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(null, wsClient), "supervisorActor");
+        this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(wsClient), "supervisorActor");
         this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor), "similarityContentActor");
         this.channelInfoActor = actorSystem.actorOf(ChannelInfoActor.props(supervisorActor), "channelInfoActor");
         this.videosByChannelIdAndKeywordActor = actorSystem.actorOf(VideosActor.props(supervisorActor), "videosByChannelIdActor");
@@ -100,19 +99,24 @@ public class YoutubeAnalyzerController extends Controller {
     }
 
     public WebSocket ws() {
+        System.out.println("inside ws");
         return WebSocket.Json.acceptOrResult(this::createFlow);
     }
 
     private CompletionStage<F.Either<Result, Flow<JsonNode, JsonNode, ?>>> createFlow(Http.RequestHeader requestHeader) {
+        System.out.println("inside createFlow");
         return CompletableFuture.completedFuture(
                 requestHeader.session().get("sessionId")
                         .map(user -> F.Either.<Result, Flow<JsonNode, JsonNode, ?>>Right(
-                                createFlowOfResults()))
+                                createFlowOfResults(user)))
                         .orElseGet(() -> F.Either.Left(forbidden())));
     }
 
-    private Flow<JsonNode, JsonNode, ?> createFlowOfResults() {
-        return ActorFlow.actorRef(actorRef -> SupervisorActor.props(actorRef, wsClient), actorSystem, materializer);
+    private Flow<JsonNode, JsonNode, ?> createFlowOfResults(String userName) {
+        System.out.println("inside create flow for results");
+        ActorRef userActor = FutureConverters.toJava(ask(sessionActor, new SessionActor.GetUser(userName), 5000))
+                .toCompletableFuture().thenApply(o -> (ActorRef) o).join();
+        return ActorFlow.actorRef(actorRef -> WebSocketActor.props(actorRef, userActor), actorSystem, materializer);
     }
 
     /**
@@ -135,7 +139,7 @@ public class YoutubeAnalyzerController extends Controller {
         supervisorActor.tell(new YoutubeApiClientActor.SetWSClient(wsClient), ActorRef.noSender());
         if (!SessionHelper.isSessionExist(request)) {
             System.out.println("\n\nCreating session");
-            sessionActor.tell(new SessionActor.CreateUser(userAgentName), ActorRef.noSender());
+            sessionActor.tell(new SessionActor.CreateUser(userAgentName, supervisorActor), ActorRef.noSender());
             return CompletableFuture.completedFuture(ok(index.render(searchForm, null, url, messagesApi.preferred(request)))
                     .addingToSession(request, SessionHelper.getSessionKey(), userAgentName));
         }

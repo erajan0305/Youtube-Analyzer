@@ -12,9 +12,11 @@ public class SessionActor extends AbstractActor {
 
     public static class CreateUser {
         private final String userId;
+        private final ActorRef supervisorActor;
 
-        public CreateUser(String userId) {
+        public CreateUser(String userId, ActorRef supervisorActor) {
             this.userId = userId;
+            this.supervisorActor = supervisorActor;
         }
     }
 
@@ -61,7 +63,7 @@ public class SessionActor extends AbstractActor {
     }
 
     private void addUserToCurrentRecord(CreateUser createUser) {
-        ActorRef user = getContext().actorOf(UserActor.props(createUser.userId));
+        ActorRef user = getContext().actorOf(UserActor.props(createUser.userId, createUser.supervisorActor));
         activeUsers.put(createUser.userId, user);
         System.out.println("\n\nAdding to Hashmap");
         activeUsers.entrySet().forEach(System.out::println);
@@ -76,17 +78,11 @@ public class SessionActor extends AbstractActor {
 
     private void getUser(GetUser getUser) {
         ActorRef user = activeUsers.get(getUser.userId);
-        getSender().tell(user,getSelf());
+        getSender().tell(user, getSelf());
     }
 
     private void getUserSearchResults(GetUserSearchResults getUserSearchResults) {
         ActorRef user = activeUsers.get(getUserSearchResults.userId);
         user.tell(new UserActor.GetSearchResults(getUserSearchResults.userId), getSender());
-//        pipe(FutureConverters.toJava(
-//                ask(user, new UserActor.GetSearchResults(getUser.userId), 1000))
-//                .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
-//                .toCompletableFuture(), context().dispatcher()).to(sender());
-//
     }
-
 }
