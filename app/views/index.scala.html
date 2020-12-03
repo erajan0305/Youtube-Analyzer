@@ -15,7 +15,6 @@
             @helper.form(action = routes.YoutubeAnalyzerController.fetchVideosByKeywords()) {
                 @helper.inputText(searchForm("searchKeyword"))
                 <input type="submit" value="Search">
-                <input type="button" onclick="send()" value="Button">
             }
             <div>
             @if(searchResultsMap != null && searchResultsMap.size > 0) {
@@ -59,11 +58,6 @@
                     webSocket.onclose = onClose;
                     webSocket.onmessage = onMessage;
                     webSocket.onerror = onError;
-                }
-
-                function send() {
-                    console.log("Send");
-                    webSocket.send(JSON.stringify("Hello, Please send me something"));
                 }
 
                 function onOpen(evt) {

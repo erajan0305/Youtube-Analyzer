@@ -95,13 +95,8 @@ public class YoutubeApiClientActor extends AbstractActor {
                         this.wsClient = t.wsClient;
                     }
                 })
-                .match(SetBaseUrl.class, t -> {
-                    BASE_URL = t.baseUrl;
-                })
-                .match(FetchVideos.class, t -> {
-                    System.out.println("---Sender" + getSender());
-                    getSender().tell(this.fetchVideos(t.searchKey), getSelf());
-                })
+                .match(SetBaseUrl.class, t -> BASE_URL = t.baseUrl)
+                .match(FetchVideos.class, t -> getSender().tell(this.fetchVideos(t.searchKey), getSelf()))
                 .match(GetViewCountByVideoId.class, t -> getSender().tell(this.getViewCountByVideoId(t.videoId), getSelf()))
                 .match(GetVideosJsonByChannelId.class, t -> getSender().tell(this.getVideosJsonByChannelId(t.channelId, t.keyword), getSelf()))
                 .match(GetChannelInformationByChannelId.class, t -> getSender().tell(this.getChannelInformationByChannelId(t.channelId), getSelf()))
