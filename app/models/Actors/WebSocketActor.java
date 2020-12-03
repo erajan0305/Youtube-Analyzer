@@ -26,13 +26,15 @@ public class WebSocketActor extends AbstractActor {
     }
 
     private void askUser() {
-        this.userActor.tell(UserActor.UpdateSearchResultsRequest.class, getSelf());
+        System.out.println("ask user");
+        this.userActor.tell(new UserActor.UpdateSearchResultsRequest(), getSelf());
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(JsonNode.class, t -> {
+                    System.out.println("json message received");
                     this.webSocketResponseActor.tell(t, getSelf());
                 }).build();
     }

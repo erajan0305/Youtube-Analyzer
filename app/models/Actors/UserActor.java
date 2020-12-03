@@ -3,8 +3,10 @@ package models.Actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import com.fasterxml.jackson.databind.JsonNode;
 import models.POJO.SearchResults.SearchResultItem;
 import models.POJO.SearchResults.SearchResults;
+import play.libs.Json;
 import scala.compat.java8.FutureConverters;
 
 import java.util.LinkedHashMap;
@@ -55,7 +57,9 @@ public class UserActor extends AbstractActor {
                 tempSearchResultItem.addAll(keywordSearchResults.getItems());
             }
         });
-        getSender().tell("", getSelf());
+        System.out.println("Sender in updateSearchResults: " + getSender());
+        JsonNode jsonNode = Json.toJson(this.userSearchResultsBySearchKeywordHashMap);
+        getSender().tell(jsonNode, getSelf());
     }
 
     public UserActor(String userId, ActorRef supervisorActor) {
@@ -82,7 +86,10 @@ public class UserActor extends AbstractActor {
             } else {
                 throw new Exception("Unauthorized");
             }
-        }).match(UpdateSearchResultsRequest.class, t -> this.updateSearchResults())
+        }).match(UpdateSearchResultsRequest.class, t -> {
+            System.out.println("Update Search Results");
+            this.updateSearchResults();
+        })
                 .build();
     }
 }
