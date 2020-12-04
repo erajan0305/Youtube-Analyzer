@@ -3,10 +3,13 @@ package models.Actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
+import com.fasterxml.jackson.databind.JsonNode;
 import models.POJO.SearchResults.SearchResultItem;
 import models.POJO.SearchResults.SearchResults;
+import play.libs.Json;
 import scala.compat.java8.FutureConverters;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -47,15 +50,47 @@ public class UserActor extends AbstractActor {
             SearchResults keywordSearchResults = FutureConverters.toJava(
                     ask(supervisorActor, new YoutubeApiClientActor.FetchVideos(keyword), 5000))
                     .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
-            // TODO: think how to append only new data to existing data.
-            // 1) Append everything (because any part of existing data might have been updated
-            // 2) Append only new data (but how)?
-            if (!keywordSearchResults.toString().equals(userSearchResultsBySearchKeywordHashMap.get(keyword).toString())) {
-                List<SearchResultItem> tempSearchResultItem = userSearchResultsBySearchKeywordHashMap.get(keyword).getItems();
-                tempSearchResultItem.addAll(keywordSearchResults.getItems());
+            if (keywordSearchResults == null || userSearchResultsBySearchKeywordHashMap.get(keyword) == null) {
+                System.out.println("Results Null Pointer");
+                JsonNode jsonNode = Json.toJson("");
+                getSender().tell(jsonNode, getSelf());
+                return;
             }
+            List<SearchResultItem> updatedList = keywordSearchResults.getItems();
+            List<SearchResultItem> existingList = userSearchResultsBySearchKeywordHashMap.get(keyword).getItems();
+            List<SearchResultItem> existingListUpdate = new ArrayList<>();
+            List<SearchResultItem> newList = new ArrayList<>();
+            if (updatedList == null || existingList == null) {
+                System.out.println("Items Null Pointer");
+                JsonNode jsonNode = Json.toJson("");
+                getSender().tell(jsonNode, getSelf());
+                return;
+            }
+            System.out.println(updatedList.size());
+            System.out.println(existingList.size());
+            for (SearchResultItem searchResultItem : existingList) {
+                for (SearchResultItem updatedItem : updatedList) {
+                    if (searchResultItem.getId().getVideoId().equals(updatedItem.getId().getVideoId())) {
+                        if (!searchResultItem.toString().equals(updatedItem.toString())) {
+                            newList.add(updatedItem);
+                        } else {
+                            newList.add(searchResultItem);
+                        }
+                        existingListUpdate.add(searchResultItem);
+                        updatedList.remove(updatedItem);
+                        break;
+                    }
+                }
+            }
+            existingList.removeAll(existingListUpdate);
+            newList.addAll(existingList);
+            newList.addAll(updatedList);
+            SearchResults updatedSearchResults = new SearchResults();
+            updatedSearchResults.setItems(newList);
+            this.userSearchResultsBySearchKeywordHashMap.put(keyword, updatedSearchResults);
         });
-        getSender().tell("", getSelf());
+        JsonNode jsonNode = Json.toJson(this.userSearchResultsBySearchKeywordHashMap);
+        getSender().tell(jsonNode, getSelf());
     }
 
     public UserActor(String userId, ActorRef supervisorActor) {
@@ -82,7 +117,10 @@ public class UserActor extends AbstractActor {
             } else {
                 throw new Exception("Unauthorized");
             }
-        }).match(UpdateSearchResultsRequest.class, t -> this.updateSearchResults())
+        }).match(UpdateSearchResultsRequest.class, t -> {
+            System.out.println("Update Search Results");
+            this.updateSearchResults();
+        })
                 .build();
     }
 }

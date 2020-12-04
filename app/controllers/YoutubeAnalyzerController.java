@@ -111,6 +111,7 @@ public class YoutubeAnalyzerController extends Controller {
         System.out.println("inside create flow for results");
         ActorRef userActor = FutureConverters.toJava(ask(sessionActor, new SessionActor.GetUser(userName), 5000))
                 .toCompletableFuture().thenApply(o -> (ActorRef) o).join();
+        System.out.println(userActor);
         return ActorFlow.actorRef(actorRef -> WebSocketActor.props(actorRef, userActor), actorSystem, materializer);
     }
 

@@ -22,17 +22,19 @@ public class WebSocketActor extends AbstractActor {
     public WebSocketActor(ActorRef webSocketResponseActor, ActorRef userActor) {
         this.webSocketResponseActor = webSocketResponseActor;
         this.userActor = userActor;
-        executorService.scheduleAtFixedRate(this::askUser, 0, 30, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(this::askUser, 30, 30, TimeUnit.SECONDS);
     }
 
     private void askUser() {
-        this.userActor.tell(UserActor.UpdateSearchResultsRequest.class, getSelf());
+        System.out.println("ask user");
+        this.userActor.tell(new UserActor.UpdateSearchResultsRequest(), getSelf());
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(JsonNode.class, t -> {
+                    System.out.println("json message received");
                     this.webSocketResponseActor.tell(t, getSelf());
                 }).build();
     }
