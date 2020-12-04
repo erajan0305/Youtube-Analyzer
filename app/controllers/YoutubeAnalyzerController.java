@@ -1,13 +1,12 @@
 package controllers;
 
+import actors.*;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.stream.Materializer;
 import akka.stream.javadsl.Flow;
 import com.fasterxml.jackson.databind.JsonNode;
-import models.Actors.*;
 import models.Helper.SessionHelper;
-import models.Helper.YoutubeAnalyzer;
 import models.POJO.Channel.ChannelResultItems;
 import models.POJO.SearchResults.SearchResults;
 import models.Search;
@@ -32,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+
 import static akka.pattern.Patterns.ask;
 
 /**
@@ -52,7 +52,6 @@ public class YoutubeAnalyzerController extends Controller {
     @Inject
     Materializer materializer;
 
-    YoutubeAnalyzer youtubeAnalyzer;
     ActorSystem actorSystem = ActorSystem.create("ActorSystem");
     ActorRef sessionActor;
     ActorRef supervisorActor;
@@ -64,19 +63,11 @@ public class YoutubeAnalyzerController extends Controller {
      * Controller Constructor
      */
     public YoutubeAnalyzerController() {
-        this.youtubeAnalyzer = new YoutubeAnalyzer();
         this.sessionActor = actorSystem.actorOf(SessionActor.props(), "sessionActor");
         this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(wsClient), "supervisorActor");
         this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor), "similarityContentActor");
         this.channelInfoActor = actorSystem.actorOf(ChannelInfoActor.props(supervisorActor), "channelInfoActor");
         this.videosByChannelIdAndKeywordActor = actorSystem.actorOf(VideosActor.props(supervisorActor), "videosByChannelIdActor");
-    }
-
-    /**
-     * Instantiates the YoutubeAnalyzer helper class object
-     */
-    public void setYoutubeAnalyzer(YoutubeAnalyzer youtubeAnalyzer) {
-        this.youtubeAnalyzer = youtubeAnalyzer;
     }
 
     /**
@@ -129,9 +120,6 @@ public class YoutubeAnalyzerController extends Controller {
         String url = routes.YoutubeAnalyzerController.ws().webSocketURL(request);
         String userAgentName = SessionHelper.getUserAgentNameFromRequest(request);
         Form<Search> searchForm = formFactory.form(Search.class);
-        if (this.youtubeAnalyzer.getWsClient() == null) {
-            this.youtubeAnalyzer.setWsClient(wsClient);
-        }
         supervisorActor.tell(new YoutubeApiClientActor.SetWSClient(wsClient), ActorRef.noSender());
         if (!SessionHelper.isSessionExist(request)) {
             System.out.println("\n\nCreating session");
@@ -174,7 +162,6 @@ public class YoutubeAnalyzerController extends Controller {
         String searchKeyword = requestBody.get("searchKeyword")[0];
         CompletionStage<SearchResults> searchResponsePromise = FutureConverters.toJava(ask(supervisorActor, new YoutubeApiClientActor.FetchVideos(searchKeyword), 5000))
                 .thenApply(o -> (SearchResults) o);
-        System.out.println();
         return searchResponsePromise.thenApply(searchResults -> {
             sessionActor.tell(new SessionActor.AddSearchResultsToUser(userAgentName, searchKeyword, searchResults), ActorRef.noSender());
 

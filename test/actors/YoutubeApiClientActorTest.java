@@ -4,7 +4,6 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
 import dataset.DatasetHelper;
-import models.Actors.YoutubeApiClientActor;
 import models.POJO.Channel.ChannelResultItems;
 import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;

@@ -1,4 +1,4 @@
-package models.Actors;
+package actors;
 
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
