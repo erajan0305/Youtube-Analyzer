@@ -16,8 +16,8 @@ import java.util.concurrent.CompletionStage;
 
 public class YoutubeApiClientActor extends AbstractActor {
     private WSClient wsClient;
-    //    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
-    private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
+    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
+    //    private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     public static class SetWSClient {
