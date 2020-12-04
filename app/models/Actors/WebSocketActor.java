@@ -5,15 +5,13 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 public class WebSocketActor extends AbstractActor {
 
     private final ActorRef webSocketResponseActor;
     private final ActorRef userActor;
-    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+//    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
     public static Props props(ActorRef webSocketResponseActor, ActorRef userActor) {
         return Props.create(WebSocketActor.class, webSocketResponseActor, userActor);
@@ -22,7 +20,11 @@ public class WebSocketActor extends AbstractActor {
     public WebSocketActor(ActorRef webSocketResponseActor, ActorRef userActor) {
         this.webSocketResponseActor = webSocketResponseActor;
         this.userActor = userActor;
-        executorService.scheduleAtFixedRate(this::askUser, 30, 30, TimeUnit.SECONDS);
+//        executorService.scheduleAtFixedRate(this::askUser, 30, 30, TimeUnit.SECONDS);
+        getContext().getSystem()
+                .scheduler()
+                .scheduleWithFixedDelay(Duration.ZERO, Duration.ofSeconds(30),
+                        userActor, new UserActor.UpdateSearchResultsRequest(), getContext().getSystem().getDispatcher(), getSelf());
     }
 
     private void askUser() {

@@ -26,15 +26,14 @@
                         </span>
                         <ol id="@searchWords">
                         @for(item <- searchResults.getItems()) {
-                            <hr style="width: 75%;
-                                text-align: left;
-                                margin-left: 0">
+                            <hr style="width: 75%; text-align: left; margin-left: 0">
                             @if(item != null) {
                                 <li><a href="https://www.youtube.com/watch?v=@item.getId().getVideoId()" target="_blank">@item.getSnippet().getTitle()</a>
                                     ,
                                     <a href="@routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(item.getSnippet().getChannelId(), searchWords)"><b>@item.getSnippet().getChannelTitle()</b></a>
                                     ,@item.getViewCount(), @item.getCommentSentiment(),@item.getSnippet().getPublishTime(),
                                 </li>
+                                <hr style="width: 75%; text-align: left; margin-left: 0">
                             }
                         }
                         </ol>
@@ -66,7 +65,6 @@
 
                 function onClose(evt) {
                     writeToScreen("DISCONNECTED");
-                    appendMessageToView("DISCONNECTED");
                 }
 
                 function onError(evt) {
@@ -78,10 +76,6 @@
                     let receivedData = JSON.parse(evt.data);
                     console.log("New Data: ", receivedData);
                     addOrUpdateSearchResults(receivedData);
-                }
-
-                function appendMessageToView(json) {
-                    $("#message").append("<p>" + json.name + " " + json.age + "</p>");
                 }
 
                 function writeToScreen(message) {
@@ -104,10 +98,10 @@
                                     `<a href="/channel/${searchResult.snippet.channelId}/${key}">` +
                                     "<b>" + searchResult.snippet.channelTitle + "</b></a>" + " , "
                                     + searchResult.viewCount + " , " + searchResult.commentSentiment + " , " + searchResult.snippet.publishTime +
-                                    "</li>";
+                                    "</li>" + hr;
                         }
                         let ol = document.getElementById(key); // reference to containing element
-                        ol.innerHTML = hr + li;
+                        ol.innerHTML = li;
                     }
                 }
         </script>

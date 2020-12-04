@@ -118,9 +118,10 @@ public class UserActor extends AbstractActor {
                 throw new Exception("Unauthorized");
             }
         }).match(UpdateSearchResultsRequest.class, t -> {
-            System.out.println("Update Search Results");
-            this.updateSearchResults();
-        })
-                .build();
+            if (this.userSearchResultsBySearchKeywordHashMap.size() > 0) {
+                System.out.println("Update Search Results");
+                this.updateSearchResults();
+            }
+        }).build();
     }
 }
