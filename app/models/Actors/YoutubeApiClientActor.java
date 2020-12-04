@@ -1,21 +1,31 @@
 package models.Actors;
 
 import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
 import akka.actor.Props;
 import models.POJO.Channel.ChannelResultItems;
 import models.POJO.Comments.CommentResults;
+import models.POJO.SearchResults.SearchResultItem;
 import models.POJO.SearchResults.SearchResults;
 import models.POJO.VideoSearch.Videos;
 import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.libs.ws.WSRequest;
+import scala.compat.java8.FutureConverters;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
+
+import static akka.pattern.Patterns.ask;
 
 public class YoutubeApiClientActor extends AbstractActor {
     private WSClient wsClient;
+    // private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
+//     private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
+//     private final String API_KEY = "AIzaSyCvQ6FlySOyJn68Omj5Y6ItdwGPSFSP-ZQ";
     private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
     //    private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
@@ -95,8 +105,33 @@ public class YoutubeApiClientActor extends AbstractActor {
                         this.wsClient = t.wsClient;
                     }
                 })
-                .match(SetBaseUrl.class, t -> BASE_URL = t.baseUrl)
-                .match(FetchVideos.class, t -> getSender().tell(this.fetchVideos(t.searchKey), getSelf()))
+                .match(SetBaseUrl.class, t -> {
+                    BASE_URL = t.baseUrl;
+                })
+                .match(FetchVideos.class, t -> {
+                    System.out.println("---Sender" + getSender());
+                    ActorRef emojiAnalyzerActor = getContext().getSystem().actorOf(EmojiAnalyzerActor.props());
+                    SearchResults searchResults = this.fetchVideos(t.searchKey);
+                    // Apply getter/setter to search result items in search results
+                    List<SearchResultItem> answer =
+                            searchResults.getItems().parallelStream()
+                                    .map(searchResultItem -> this.getViewCountByVideoId(searchResultItem.getId().getVideoId()).toCompletableFuture()
+                                    .thenCombineAsync(
+                                            FutureConverters.toJava(
+                                                    ask(emojiAnalyzerActor, new EmojiAnalyzerActor.GetAnalysis(getSentimentByVideoId(searchResultItem.getId().getVideoId())), 2000))
+                                                    .thenApplyAsync(item -> (CompletableFuture<String>) item)
+                                                    .toCompletableFuture()
+                                                    .thenApplyAsync(CompletableFuture::join)
+                                            , (String viewCount, String emoji) -> {
+                                                searchResultItem.setViewCount(viewCount);
+                                                searchResultItem.setCommentSentiment(emoji);
+                                                return searchResultItem;
+                                            }
+                                    )).map(CompletableFuture::join)
+                                    .collect(Collectors.toList());
+                    searchResults.setItems(answer);
+                    getSender().tell(searchResults, getSelf());
+                })
                 .match(GetViewCountByVideoId.class, t -> getSender().tell(this.getViewCountByVideoId(t.videoId), getSelf()))
                 .match(GetVideosJsonByChannelId.class, t -> getSender().tell(this.getVideosJsonByChannelId(t.channelId, t.keyword), getSelf()))
                 .match(GetChannelInformationByChannelId.class, t -> getSender().tell(this.getChannelInformationByChannelId(t.channelId), getSelf()))
@@ -205,7 +240,7 @@ public class YoutubeApiClientActor extends AbstractActor {
                 .addQueryParameter("videoId", videoId)
                 .addQueryParameter("fields", "items(snippet(topLevelComment(snippet(textDisplay,textOriginal))))")
                 .addQueryParameter("key", API_KEY);
-        return request.get().thenApply(wsResponse -> Json.parse(wsResponse.getBody()))
+        return request.stream().thenApplyAsync(wsResponse -> Json.parse(wsResponse.getBody()))
                 .thenApplyAsync(wsResponse -> Json.fromJson(wsResponse, CommentResults.class))
                 .toCompletableFuture();
     }

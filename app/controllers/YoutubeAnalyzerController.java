@@ -32,7 +32,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-
 import static akka.pattern.Patterns.ask;
 
 /**
@@ -60,8 +59,6 @@ public class YoutubeAnalyzerController extends Controller {
     ActorRef similarityContentActor;
     ActorRef channelInfoActor;
     ActorRef videosByChannelIdAndKeywordActor;
-    ActorRef emojiAnalyserActor;
-    ActorRef viewCountActor;
 
     /**
      * Controller Constructor
@@ -73,8 +70,6 @@ public class YoutubeAnalyzerController extends Controller {
         this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor), "similarityContentActor");
         this.channelInfoActor = actorSystem.actorOf(ChannelInfoActor.props(supervisorActor), "channelInfoActor");
         this.videosByChannelIdAndKeywordActor = actorSystem.actorOf(VideosActor.props(supervisorActor), "videosByChannelIdActor");
-        this.emojiAnalyserActor = actorSystem.actorOf(EmojiAnalyzerActor.props(supervisorActor), "emojiAnalyserActor");
-        this.viewCountActor = actorSystem.actorOf(ViewCountActor.props(supervisorActor), "viewCountActor");
     }
 
     /**
@@ -181,26 +176,6 @@ public class YoutubeAnalyzerController extends Controller {
                 .thenApply(o -> (SearchResults) o);
         System.out.println();
         return searchResponsePromise.thenApply(searchResults -> {
-//            searchResults.getItems().parallelStream()
-//                    .map(searchResultItem -> CompletableFuture.allOf(
-//                            FutureConverters.toJava(
-//                                    ask(viewCountActor, new ViewCountActor.GetViewCount(searchResultItem.getId().getVideoId()), 2000))
-//                                    .thenApplyAsync(item -> (CompletableFuture<String>) item)
-//                                    .thenApplyAsync(CompletableFuture::join)
-//                                    .thenApplyAsync(viewCount -> {
-//                                        searchResultItem.setViewCount(viewCount);
-//                                        return searchResultItem;
-//                                    }).toCompletableFuture(),
-//                            FutureConverters.toJava(
-//                                    ask(emojiAnalyserActor, new EmojiAnalyzerActor.GetComments(searchResultItem.getId().getVideoId()), 2000))
-//                                    .thenApplyAsync(item -> (CompletableFuture<String>) item)
-//                                    .thenApplyAsync(CompletableFuture::join)
-//                                    .thenApplyAsync(commentSentiment -> {
-//                                        searchResultItem.setCommentSentiment(commentSentiment);
-//                                        return searchResultItem;
-//                                    }).toCompletableFuture()
-//                    )).map(CompletableFuture::join).collect(Collectors.toList());
-
             sessionActor.tell(new SessionActor.AddSearchResultsToUser(userAgentName, searchKeyword, searchResults), ActorRef.noSender());
 
             LinkedHashMap<String, SearchResults> searchResultsLinkedHashMap = FutureConverters.toJava(
