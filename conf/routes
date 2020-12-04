@@ -8,6 +8,8 @@ GET    /                           controllers.YoutubeAnalyzerController.index(r
 + nocsrf
 POST   /                           controllers.YoutubeAnalyzerController.fetchVideosByKeywords(request: Request)
 + nocsrf
+GET     /ws                         controllers.YoutubeAnalyzerController.ws()
++ nocsrf
 GET    /stats/:keyword             controllers.YoutubeAnalyzerController.fetchSimilarityStats(request : Request, keyword: String)
 + nocsrfø
 GET    /channel/:id/:keyword               controllers.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(request: Request, id: String, keyword: String)

@@ -1,13 +1,12 @@
-package models.Actors;
+package actors;
 
 import akka.actor.AbstractActor;
-import akka.actor.ActorRef;
+
 import akka.actor.Props;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
 import com.vdurmont.emoji.EmojiParser;
 import models.POJO.Comments.CommentResults;
-import scala.compat.java8.FutureConverters;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,44 +15,35 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static akka.pattern.Patterns.ask;
-
 public class EmojiAnalyzerActor extends AbstractActor {
 
-    private final ActorRef supervisorActor;
-
-    private EmojiAnalyzerActor(ActorRef supervisorActor) {
-        this.supervisorActor = supervisorActor;
+    public static Props props() {
+        return Props.create(EmojiAnalyzerActor.class);
     }
 
-    public static Props props(ActorRef supervisorActor) {
-        return Props.create(EmojiAnalyzerActor.class, supervisorActor);
+    private EmojiAnalyzerActor() {
+        System.out.println("analyzer actor called....");
     }
 
+    public static final class GetAnalysis {
+        private final CompletableFuture<CommentResults> commentResults;
 
-    public static final class GetComments {
-        private final String videoId;
-
-        public GetComments(String videoId) {
-            this.videoId = videoId;
+        public GetAnalysis(CompletableFuture<CommentResults> commentResults) {
+            this.commentResults = commentResults;
         }
     }
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(GetComments.class, this::onGetComments)
+                .match(GetAnalysis.class, this::onGetAnalysis)
                 .build();
     }
 
-    private void onGetComments(GetComments getComments) {
-        CompletableFuture<String> analysisResultFuture =
-                FutureConverters.toJava(ask(supervisorActor, new YoutubeApiClientActor.GetSentimentByVideoId(getComments.videoId), 2000))
-                        .thenApplyAsync(item -> (CompletableFuture<CommentResults>) item)
-                        .toCompletableFuture()
-                        .thenApplyAsync(CompletableFuture::join)
-                        .thenApplyAsync(EmojiAnalyzer::getAnalysisResult);
-        getSender().tell(analysisResultFuture, getSelf());
+    private void onGetAnalysis(GetAnalysis getAnalysis) {
+        CompletableFuture<String> analysisResult =
+                getAnalysis.commentResults.thenApplyAsync(EmojiAnalyzer::getAnalysisResult);
+        getSender().tell(analysisResult, getSender());
     }
 
     /**

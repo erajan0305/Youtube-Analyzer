@@ -1,4 +1,4 @@
-package models.Actors;
+package actors;
 
 import akka.actor.*;
 import akka.japi.pf.DeciderBuilder;
@@ -31,6 +31,13 @@ public class SupervisorActor extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
+//                .match(JsonNode.class, t -> {
+//                    System.out.println("json node msg");
+//                    JsonNode java = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("java"), 5000))
+//                            .toCompletableFuture().thenApply(o -> (JsonNode) o).join();
+//                    outActorRef.tell(java, getSelf());
+////                    youtubeApiClientActor.tell(new YoutubeApiClientActor.FetchVideos("java"), getSender());
+//                })
                 .match(YoutubeApiClientActor.SetWSClient.class, t -> youtubeApiClientActor.tell(t, getSender()))
                 .match(YoutubeApiClientActor.FetchVideos.class, t -> youtubeApiClientActor.tell(t, getSender()))
                 .match(YoutubeApiClientActor.GetViewCountByVideoId.class, t -> youtubeApiClientActor.tell(t, getSender()))
