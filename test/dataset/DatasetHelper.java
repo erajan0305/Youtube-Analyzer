@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * This class helps test server of {@link models.YoutubeApiClientTest} to serialize and
+ * This class helps test server of {@link actors.YoutubeApiClientActor} to serialize and
  * deserialize JSON to POJO and vice versa.
  *
  * @author Kishan Bhimani
