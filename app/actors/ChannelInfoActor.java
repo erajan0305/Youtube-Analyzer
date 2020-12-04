@@ -9,7 +9,7 @@ public class ChannelInfoActor extends AbstractActor {
     private final ActorRef supervisorActor;
 
     public static final class ChannelInfo {
-        private final String channelId;
+        public final String channelId;
 
         public ChannelInfo(String channelId) {
             this.channelId = channelId;

@@ -74,7 +74,7 @@ public class YoutubeApiClientActor extends AbstractActor {
     }
 
     public static class GetChannelInformationByChannelId {
-        private final String channelId;
+        public final String channelId;
 
         public GetChannelInformationByChannelId(String channelId) {
             this.channelId = channelId;
