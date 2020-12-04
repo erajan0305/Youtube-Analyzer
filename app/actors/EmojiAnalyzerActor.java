@@ -1,7 +1,6 @@
 package actors;
 
 import akka.actor.AbstractActor;
-
 import akka.actor.Props;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
@@ -22,7 +21,6 @@ public class EmojiAnalyzerActor extends AbstractActor {
     }
 
     private EmojiAnalyzerActor() {
-        System.out.println("analyzer actor called....");
     }
 
     public static final class GetAnalysis {

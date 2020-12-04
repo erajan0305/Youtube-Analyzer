@@ -110,10 +110,13 @@ public class YoutubeApiClientActor extends AbstractActor {
                     BASE_URL = t.baseUrl;
                 })
                 .match(FetchVideos.class, t -> {
-                    System.out.println("---Sender" + getSender());
                     ActorRef emojiAnalyzerActor = getContext().getSystem().actorOf(EmojiAnalyzerActor.props());
                     SearchResults searchResults = this.fetchVideos(t.searchKey);
                     // Apply getter/setter to search result items in search results
+                    if (searchResults.getItems() == null) {
+                        getSender().tell(searchResults, getSelf());
+                        return;
+                    }
                     List<SearchResultItem> answer =
                             searchResults.getItems().parallelStream()
                                     .map(searchResultItem -> this.getViewCountByVideoId(searchResultItem.getId().getVideoId()).toCompletableFuture()
