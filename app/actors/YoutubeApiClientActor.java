@@ -26,12 +26,16 @@ public class YoutubeApiClientActor extends AbstractActor {
     // private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
 //     private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
 //     private final String API_KEY = "AIzaSyCvQ6FlySOyJn68Omj5Y6ItdwGPSFSP-ZQ";
-//    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
-    //    private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
-    private final String API_KEY = "AIzaSyA7X8mzniYR7inFmDlAZegOdUazCuDntCk";
+    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
+    //    private final String API_KEY = "AIzaSyCyAb62tFZSq2Hek-YgnlyaL7F4x2AlH0k";
+    //    private final String API_KEY = "AIzaSyA7X8mzniYR7inFmDlAZegOdUazCuDntCk";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     public static class SetWSClient {
+        public WSClient getWsClient() {
+            return wsClient;
+        }
+
         private final WSClient wsClient;
 
         public SetWSClient(WSClient wsClient) {
@@ -99,6 +103,10 @@ public class YoutubeApiClientActor extends AbstractActor {
     }
 
     public static class GetSentimentByVideoId {
+        public String getVideoId() {
+            return videoId;
+        }
+
         private final String videoId;
 
         public GetSentimentByVideoId(String videoId) {

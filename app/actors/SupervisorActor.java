@@ -2,7 +2,6 @@ package actors;
 
 import akka.actor.*;
 import akka.japi.pf.DeciderBuilder;
-import play.libs.ws.WSClient;
 
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
@@ -15,12 +14,12 @@ public class SupervisorActor extends AbstractActor {
                     .match(TimeoutException.class, e -> (SupervisorStrategy.Directive) SupervisorStrategy.restart())
                     .build());
 
-    public static Props props(WSClient wsClient) {
-        return Props.create(SupervisorActor.class, wsClient);
+    public static Props props(ActorRef youtubeApiClientActor) {
+        return Props.create(SupervisorActor.class, youtubeApiClientActor);
     }
 
-    public SupervisorActor(WSClient wsClient) {
-        youtubeApiClientActor = getContext().actorOf(YoutubeApiClientActor.props(wsClient));
+    public SupervisorActor(ActorRef youtubeApiClientActor) {
+        this.youtubeApiClientActor = youtubeApiClientActor;
     }
 
     @Override
@@ -33,7 +32,6 @@ public class SupervisorActor extends AbstractActor {
         return receiveBuilder()
                 .match(YoutubeApiClientActor.SetWSClient.class, t -> youtubeApiClientActor.tell(t, getSender()))
                 .match(YoutubeApiClientActor.FetchVideos.class, t -> youtubeApiClientActor.tell(t, getSender()))
-                .match(YoutubeApiClientActor.GetViewCountByVideoId.class, t -> youtubeApiClientActor.tell(t, getSender()))
                 .match(YoutubeApiClientActor.GetVideosJsonByChannelId.class, t -> youtubeApiClientActor.tell(t, getSender()))
                 .match(YoutubeApiClientActor.GetChannelInformationByChannelId.class, t -> youtubeApiClientActor.tell(t, getSender()))
                 .match(YoutubeApiClientActor.GetSentimentByVideoId.class, t -> youtubeApiClientActor.tell(t, getSender()))
