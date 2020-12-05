@@ -48,6 +48,10 @@ public class YoutubeApiClientActor extends AbstractActor {
     }
 
     public static class FetchVideos {
+        public String getSearchKey() {
+            return searchKey;
+        }
+
         private final String searchKey;
 
         public FetchVideos(String searchKey) {
@@ -67,6 +71,14 @@ public class YoutubeApiClientActor extends AbstractActor {
         private final String channelId;
         private final String keyword;
 
+        public String getChannelId() {
+            return channelId;
+        }
+
+        public String getKeyword() {
+            return keyword;
+        }
+
         public GetVideosJsonByChannelId(String channelId, String keyword) {
             this.channelId = channelId;
             this.keyword = keyword;
@@ -74,7 +86,12 @@ public class YoutubeApiClientActor extends AbstractActor {
     }
 
     public static class GetChannelInformationByChannelId {
-        public final String channelId;
+
+        public String getChannelId() {
+            return channelId;
+        }
+
+        private final String channelId;
 
         public GetChannelInformationByChannelId(String channelId) {
             this.channelId = channelId;

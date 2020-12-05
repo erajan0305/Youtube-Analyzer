@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class ChannelInfoActorTest {
+public class VideosActorTest {
     static ActorSystem actorSystem;
 
     @BeforeClass
@@ -25,9 +25,10 @@ public class ChannelInfoActorTest {
     @Test
     public void test1() {
         final TestKit testKit = new TestKit(actorSystem);
-        final ActorRef channelInfoActor = actorSystem.actorOf(ChannelInfoActor.props(testKit.testActor()));
-        channelInfoActor.tell(new ChannelInfoActor.ChannelInfo("channelId"), ActorRef.noSender());
-        YoutubeApiClientActor.GetChannelInformationByChannelId channelInfo = testKit.expectMsgClass(YoutubeApiClientActor.GetChannelInformationByChannelId.class);
-        assertEquals("channelId", channelInfo.getChannelId());
+        final ActorRef videosActor = actorSystem.actorOf(VideosActor.props(testKit.testActor()));
+        videosActor.tell(new VideosActor.VideosList("channelId", "keyword"), ActorRef.noSender());
+        YoutubeApiClientActor.GetVideosJsonByChannelId videosList = testKit.expectMsgClass(YoutubeApiClientActor.GetVideosJsonByChannelId.class);
+        assertEquals("channelId", videosList.getChannelId());
+        assertEquals("keyword", videosList.getKeyword());
     }
 }
