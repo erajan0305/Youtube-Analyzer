@@ -11,7 +11,6 @@ public class WebSocketActor extends AbstractActor {
 
     private final ActorRef webSocketResponseActor;
     private final ActorRef userActor;
-//    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
     public static Props props(ActorRef webSocketResponseActor, ActorRef userActor) {
         return Props.create(WebSocketActor.class, webSocketResponseActor, userActor);
@@ -20,16 +19,10 @@ public class WebSocketActor extends AbstractActor {
     public WebSocketActor(ActorRef webSocketResponseActor, ActorRef userActor) {
         this.webSocketResponseActor = webSocketResponseActor;
         this.userActor = userActor;
-//        executorService.scheduleAtFixedRate(this::askUser, 30, 30, TimeUnit.SECONDS);
         getContext().getSystem()
                 .scheduler()
                 .scheduleWithFixedDelay(Duration.ZERO, Duration.ofSeconds(30),
                         userActor, new UserActor.UpdateSearchResultsRequest(), getContext().getSystem().getDispatcher(), getSelf());
-    }
-
-    private void askUser() {
-        System.out.println("ask user");
-        this.userActor.tell(new UserActor.UpdateSearchResultsRequest(), getSelf());
     }
 
     @Override
