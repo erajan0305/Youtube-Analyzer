@@ -58,13 +58,15 @@ public class YoutubeAnalyzerController extends Controller {
     ActorRef similarityContentActor;
     ActorRef channelInfoActor;
     ActorRef videosByChannelIdAndKeywordActor;
+    ActorRef youtubeApiClientActor;
 
     /**
      * Controller Constructor
      */
     public YoutubeAnalyzerController() {
         this.sessionActor = actorSystem.actorOf(SessionActor.props(), "sessionActor");
-        this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(wsClient), "supervisorActor");
+        this.youtubeApiClientActor = actorSystem.actorOf(YoutubeApiClientActor.props(wsClient));
+        this.supervisorActor = actorSystem.actorOf(SupervisorActor.props(youtubeApiClientActor), "supervisorActor");
         this.similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(this.sessionActor), "similarityContentActor");
         this.channelInfoActor = actorSystem.actorOf(ChannelInfoActor.props(supervisorActor), "channelInfoActor");
         this.videosByChannelIdAndKeywordActor = actorSystem.actorOf(VideosActor.props(supervisorActor), "videosByChannelIdActor");

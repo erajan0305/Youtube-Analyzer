@@ -26,12 +26,16 @@ public class YoutubeApiClientActor extends AbstractActor {
     // private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
 //     private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
 //     private final String API_KEY = "AIzaSyCvQ6FlySOyJn68Omj5Y6ItdwGPSFSP-ZQ";
-//    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
-    //    private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
-    private final String API_KEY = "AIzaSyA7X8mzniYR7inFmDlAZegOdUazCuDntCk";
+    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
+    //    private final String API_KEY = "AIzaSyCyAb62tFZSq2Hek-YgnlyaL7F4x2AlH0k";
+    //    private final String API_KEY = "AIzaSyA7X8mzniYR7inFmDlAZegOdUazCuDntCk";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     public static class SetWSClient {
+        public WSClient getWsClient() {
+            return wsClient;
+        }
+
         private final WSClient wsClient;
 
         public SetWSClient(WSClient wsClient) {
@@ -48,6 +52,10 @@ public class YoutubeApiClientActor extends AbstractActor {
     }
 
     public static class FetchVideos {
+        public String getSearchKey() {
+            return searchKey;
+        }
+
         private final String searchKey;
 
         public FetchVideos(String searchKey) {
@@ -67,6 +75,14 @@ public class YoutubeApiClientActor extends AbstractActor {
         private final String channelId;
         private final String keyword;
 
+        public String getChannelId() {
+            return channelId;
+        }
+
+        public String getKeyword() {
+            return keyword;
+        }
+
         public GetVideosJsonByChannelId(String channelId, String keyword) {
             this.channelId = channelId;
             this.keyword = keyword;
@@ -74,6 +90,11 @@ public class YoutubeApiClientActor extends AbstractActor {
     }
 
     public static class GetChannelInformationByChannelId {
+
+        public String getChannelId() {
+            return channelId;
+        }
+
         private final String channelId;
 
         public GetChannelInformationByChannelId(String channelId) {
@@ -82,6 +103,10 @@ public class YoutubeApiClientActor extends AbstractActor {
     }
 
     public static class GetSentimentByVideoId {
+        public String getVideoId() {
+            return videoId;
+        }
+
         private final String videoId;
 
         public GetSentimentByVideoId(String videoId) {
@@ -110,10 +135,13 @@ public class YoutubeApiClientActor extends AbstractActor {
                     BASE_URL = t.baseUrl;
                 })
                 .match(FetchVideos.class, t -> {
-                    System.out.println("---Sender" + getSender());
                     ActorRef emojiAnalyzerActor = getContext().getSystem().actorOf(EmojiAnalyzerActor.props());
                     SearchResults searchResults = this.fetchVideos(t.searchKey);
                     // Apply getter/setter to search result items in search results
+                    if (searchResults.getItems() == null) {
+                        getSender().tell(searchResults, getSelf());
+                        return;
+                    }
                     List<SearchResultItem> answer =
                             searchResults.getItems().parallelStream()
                                     .map(searchResultItem -> this.getViewCountByVideoId(searchResultItem.getId().getVideoId()).toCompletableFuture()

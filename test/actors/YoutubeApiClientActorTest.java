@@ -120,18 +120,30 @@ public class YoutubeApiClientActorTest {
                 .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedJava = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Java.json"), SearchResults.class);
         assert expectedJava != null;
+        expectedJava.getItems().parallelStream().forEach(searchResultItem -> {
+            searchResultItem.setViewCount("No Data");
+            searchResultItem.setCommentSentiment("\uD83D\uDE10");
+        });
         Assert.assertEquals(expectedJava.toString(), actualJava.toString());
 
         SearchResults actualPython = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("python"), 5000))
                 .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedPython = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Python.json"), SearchResults.class);
         assert expectedPython != null;
+        expectedPython.getItems().parallelStream().forEach(searchResultItem -> {
+            searchResultItem.setViewCount("No Data");
+            searchResultItem.setCommentSentiment("\uD83D\uDE10");
+        });
         Assert.assertEquals(expectedPython.toString(), actualPython.toString());
 
         SearchResults actualGolang = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("golang"), 5000))
                 .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedGolang = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Golang.json"), SearchResults.class);
         assert expectedGolang != null;
+        expectedGolang.getItems().parallelStream().forEach(searchResultItem -> {
+            searchResultItem.setViewCount("No Data");
+            searchResultItem.setCommentSentiment("\uD83D\uDE10");
+        });
         Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
 
         SearchResults actualNoResult = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("!029 ( 02 _2 (@ 92020** 7&6 ^^5"), 5000))
