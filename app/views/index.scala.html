@@ -49,8 +49,6 @@
                     initWs();
                 }
 
-                init();
-
                 function initWs() {
                     webSocket = new WebSocket("@url");
                     webSocket.onopen = onOpen;
@@ -90,7 +88,7 @@
                         const hr = " <hr style=\"width: 75%;\n" +
                                 "text-align: right;\n" +
                                 "margin-left: 100px\">"
-                        let li;
+                        let li="";
                         for (let j = 0; j < count; j++) {
                             let searchResult = value[j];
                             li += "<li>" +
@@ -99,11 +97,14 @@
                                     "<b>" + searchResult.snippet.channelTitle + "</b></a>" + " , "
                                     + searchResult.viewCount + " , " + searchResult.commentSentiment + " , " + searchResult.snippet.publishTime +
                                     "</li>" + hr;
+                            console.log(li);
                         }
                         let ol = document.getElementById(key); // reference to containing element
                         ol.innerHTML = li;
                     }
                 }
+
+                window.addEventListener("load", init, false);
         </script>
     </body>
 </html>
