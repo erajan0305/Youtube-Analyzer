@@ -6,13 +6,12 @@ import org.junit.Test;
 import play.Application;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.mvc.Http;
-import play.mvc.Result;
 import play.test.WithApplication;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static play.mvc.Http.Status.OK;
-import static play.test.Helpers.*;
+import static play.test.Helpers.GET;
+import static play.test.Helpers.fakeRequest;
 
 /**
  * This is test class for {@link SessionHelper}
@@ -38,8 +37,6 @@ public class SessionHelperTest extends WithApplication {
         request = fakeRequest(GET, "/");
         request.header("User-Agent", "chrome");
         request.session(SessionHelper.getSessionKey(), request.getHeaders().get("User-Agent").get());
-        Result result = route(app, request);
-        assertEquals(OK, result.status());
     }
 
     /**
@@ -60,6 +57,6 @@ public class SessionHelperTest extends WithApplication {
      */
     @Test
     public void getUserAgentNameFromRequestTest() {
-        System.out.println(SessionHelper.getUserAgentNameFromRequest(request.build()));
+        assertEquals("chrome", SessionHelper.getUserAgentNameFromRequest(request.build()));
     }
 }

@@ -124,13 +124,13 @@ public class YoutubeAnalyzerController extends Controller {
         Form<Search> searchForm = formFactory.form(Search.class);
         supervisorActor.tell(new YoutubeApiClientActor.SetWSClient(wsClient), ActorRef.noSender());
         if (!SessionHelper.isSessionExist(request)) {
-            System.out.println("\n\nCreating session");
+            System.out.println("\nCreating session");
             sessionActor.tell(new SessionActor.CreateUser(userAgentName, supervisorActor), ActorRef.noSender());
             return CompletableFuture.completedFuture(ok(index.render(searchForm, null, url, messagesApi.preferred(request)))
                     .addingToSession(request, SessionHelper.getSessionKey(), userAgentName));
         }
 
-        System.out.println("\n\nSession Exist/Created");
+        System.out.println("\nSession Exist/Created");
         CompletableFuture<LinkedHashMap<String, SearchResults>> linkedHashMapCompletableFuture = FutureConverters.toJava(
                 ask(sessionActor, new SessionActor.GetUserSearchResults(userAgentName), 2000))
                 .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
@@ -196,7 +196,9 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-        return FutureConverters.toJava(ask(similarityContentActor, new SimilarityContentActor.SimilarContentByKeyword(SessionHelper.getUserAgentNameFromRequest(request), keyword), 2000))
+        return FutureConverters
+                .toJava(ask(similarityContentActor, new SimilarityContentActor
+                        .SimilarContentByKeyword(SessionHelper.getUserAgentNameFromRequest(request), keyword), 2000))
                 .thenApply(o -> (LinkedHashMap<String, Long>) o)
                 .thenApply(similarityStatsMap -> ok(similarContent.render(similarityStatsMap)));
     }

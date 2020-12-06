@@ -55,7 +55,7 @@ public class SimilarityContentActor extends AbstractActor {
                 .thenApply(searchResultsLinkedHashMap -> {
                     SearchResults searchResults = searchResultsLinkedHashMap.get(keyword);
                     if (searchResults == null || (searchResults.getItems() == null || searchResults.getItems().size() == 0)) {
-                        getSender().tell(new LinkedHashMap<String, Long>(), getSelf());
+                        return null;
                     }
                     return searchResults
                             .getItems()
@@ -67,13 +67,13 @@ public class SimilarityContentActor extends AbstractActor {
                             .filter(s -> !s.isEmpty() && s.length() > 1)                          // accept only non empty string with length more than 1
                             .collect(toList());
                 })
-                .thenApply(tokens -> tokens.stream()
+                .thenApply(tokens -> tokens != null ? tokens.stream()
                         .map(String::toLowerCase)
                         .collect(Collectors.groupingBy(identity(), counting()))    // creates map of (unique words, count)
                         .entrySet().stream()
                         .sorted(Map.Entry.<String, Long>comparingByValue(reverseOrder()))
                         .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a,
-                                LinkedHashMap::new))).join();
+                                LinkedHashMap::new)) : new LinkedHashMap<String, Long>()).join();
 
         getSender().tell(computedSimilarityStatsLinkedHashmap, getSelf());
     }

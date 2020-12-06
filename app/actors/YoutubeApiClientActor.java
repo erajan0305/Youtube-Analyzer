@@ -126,15 +126,10 @@ public class YoutubeApiClientActor extends AbstractActor {
 
     @Override
     public Receive createReceive() {
+        // changes made to wsClient condition. Might produce error.
         return receiveBuilder()
-                .match(SetWSClient.class, t -> {
-                    if (this.wsClient == null) {
-                        this.wsClient = t.wsClient;
-                    }
-                })
-                .match(SetBaseUrl.class, t -> {
-                    BASE_URL = t.baseUrl;
-                })
+                .match(SetWSClient.class, t -> this.wsClient = t.wsClient)
+                .match(SetBaseUrl.class, t -> BASE_URL = t.baseUrl)
                 .match(FetchVideos.class, t -> {
                     ActorRef emojiAnalyzerActor = getContext().getSystem().actorOf(EmojiAnalyzerActor.props());
                     SearchResults searchResults = this.fetchVideos(t.searchKey);
