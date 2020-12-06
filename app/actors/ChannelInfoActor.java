@@ -9,9 +9,6 @@ public class ChannelInfoActor extends AbstractActor {
     private final ActorRef supervisorActor;
 
     public static final class ChannelInfo {
-        public String getChannelId() {
-            return channelId;
-        }
 
         private final String channelId;
 

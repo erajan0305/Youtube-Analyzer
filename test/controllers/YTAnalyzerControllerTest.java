@@ -47,6 +47,12 @@ public class YTAnalyzerControllerTest extends WithApplication {
     WSClient _wsClient;
     Server server;
 
+    /**
+     * This is an initialization method which Injects dependencies using {@link GuiceApplicationBuilder},
+     * initializes {@link YoutubeAnalyzerController} Object, creates test server to handle requests for the tests..
+     *
+     * @author Rajan Shah
+     */
     @Before
     public void init() {
         MockitoAnnotations.openMocks(this);
@@ -94,6 +100,11 @@ public class YTAnalyzerControllerTest extends WithApplication {
         youtubeAnalyzerController.youtubeApiClientActor.tell(new YoutubeApiClientActor.SetWSClient(_wsClient), ActorRef.noSender());
     }
 
+    /**
+     * This method resets the test environment after every test to avoid creating dependency among test sets.
+     *
+     * @author Rajan Shah
+     */
     @After
     public void destroy() {
         server = null;
@@ -103,6 +114,12 @@ public class YTAnalyzerControllerTest extends WithApplication {
         _wsClient = null;
     }
 
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/</code>, to Index page of the application
+     * without valid Session and expects {@link Result} 200 and creates the session.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void indexWithoutSessionTest() {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.index());
@@ -111,6 +128,13 @@ public class YTAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(OK, result.status());
     }
 
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/</code>, to Index page of the application
+     * with valid Session and expects
+     * {@link Result} 200
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void indexWithSessionTest() {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.index());
@@ -122,6 +146,12 @@ public class YTAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(OK, result.status());
     }
 
+    /**
+     * This method tests the <code>POST</code> request with a path of <code>/</code>, to Index page of the application
+     * with valid Session and expects {@link Result} 200.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void fetchVideosByKeywordTest() {
         Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.fetchVideosByKeywords());
@@ -137,6 +167,12 @@ public class YTAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(OK, result.status());
     }
 
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/:keyword</code>, to Similarity Stats page
+     * of the application without valid Session and expects {@link Result} 401.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void getSimilarityStatsTestWithoutSession() {
         youtubeAnalyzerController.sessionActor
@@ -147,6 +183,12 @@ public class YTAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(UNAUTHORIZED, result.status());
     }
 
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/:keyword</code>, to Similarity Stats page
+     * of the application with valid Session and expects {@link Result} 200.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void getSimilarityStatsTestWithSession() {
         youtubeAnalyzerController.sessionActor
@@ -158,6 +200,12 @@ public class YTAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(OK, result.status());
     }
 
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/:id/:keyword</code>, to Channel Information
+     * page of the application with valid Session and expects {@link Result} 404 when no channel information is available.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void fetchChannelInformationAndTop10VideosTest0() {
         youtubeAnalyzerController.sessionActor
@@ -169,6 +217,13 @@ public class YTAnalyzerControllerTest extends WithApplication {
         Assert.assertEquals(NOT_FOUND, resultCompletionStage.toCompletableFuture().join().status());
     }
 
+    /**
+     * This method tests the <code>GET</code> request with a path of <code>/:id/:keyword</code>, to Channel Information
+     * page of the application with valid Session and expects {@link Result} 200 when channel information and
+     * videos for channel id and keyword is available.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void fetchChannelInformationAndTop10VideosTest1() {
         youtubeAnalyzerController.sessionActor

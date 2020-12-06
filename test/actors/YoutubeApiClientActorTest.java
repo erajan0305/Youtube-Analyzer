@@ -23,6 +23,11 @@ import java.util.concurrent.ExecutionException;
 import static akka.pattern.Patterns.ask;
 import static play.mvc.Results.ok;
 
+/**
+ * This is a test call for {@link YoutubeApiClientActor}.
+ *
+ * @author Rajan Shah
+ */
 public class YoutubeApiClientActorTest {
     ActorRef youtubeApiClientActor;
     WSClient wsTestClient;
@@ -32,6 +37,11 @@ public class YoutubeApiClientActorTest {
     @ClassRule
     public static final TestKitJunitResource testKit = new TestKitJunitResource();
 
+    /**
+     * This method initializes the server to handle requests for the test cases and instantiates {@link YoutubeApiClientActor} actor.
+     *
+     * @author Rajan Shah
+     */
     @Before
     public void setup() {
         server = Server.forRouter(
@@ -114,6 +124,11 @@ public class YoutubeApiClientActorTest {
         youtubeApiClientActor.tell(new YoutubeApiClientActor.SetBaseUrl("/"), ActorRef.noSender());
     }
 
+    /**
+     * This method tests the {@link YoutubeApiClientActor#fetchVideos(String keyword)} for various keywords.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void fetchVideosTest() {
         SearchResults actualJava = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("java"), 5000))
@@ -153,6 +168,12 @@ public class YoutubeApiClientActorTest {
         assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 
+    /**
+     * This method tests the {@link YoutubeApiClientActor#getVideosJsonByChannelId(String channelId, String keyword)}}
+     * for various channelId's and  keywords.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void getVideosJsonByChannelId() {
         SearchResults actualJava = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetVideosJsonByChannelId("UC0RhatS1pyxInC00YKjjBqQ", "java"), 5000))
@@ -180,6 +201,12 @@ public class YoutubeApiClientActorTest {
         assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 
+    /**
+     * This method tests the {@link YoutubeApiClientActor#getChannelInformationByChannelId(String channelId)} for
+     * various channelId's.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void getChannelInformationByChannelId() {
         ChannelResultItems actualJava = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetChannelInformationByChannelId("UC0RhatS1pyxInC00YKjjBqQ"), 5000))
@@ -207,6 +234,11 @@ public class YoutubeApiClientActorTest {
         assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 
+    /**
+     * This method tests the {@link YoutubeApiClientActor#getViewCountByVideoId(String videoId)} for various videoId's.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void getViewCountByVideoId() {
         CompletionStage<String> uhp3GbQiSRs = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetViewCountByVideoId("uhp3GbQiSRs"), 5000))
@@ -239,6 +271,11 @@ public class YoutubeApiClientActorTest {
         Assert.assertEquals(noData, actualNoResult);
     }
 
+    /**
+     * This method tests the {@link YoutubeApiClientActor#getSentimentByVideoId(String videoId)} for various videoIds.
+     *
+     * @author Rajan Shah
+     */
     @Test
     public void testSentimentAnalysis() throws ExecutionException, InterruptedException {
         CompletionStage<CommentResults> x2lIovmNsUY = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetSentimentByVideoId("X2lIovmNsUY"), 5000))
@@ -274,8 +311,8 @@ public class YoutubeApiClientActorTest {
     /**
      * This method destroys resources used for testing.
      *
-     * @throws Exception
-     * @author Kishan Bhimani
+     * @throws IOException
+     * @author Rajan Shah
      */
     @After
     public void destroy() throws IOException {
