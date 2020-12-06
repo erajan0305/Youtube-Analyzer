@@ -14,20 +14,45 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * EmojiAnalyzerActor documentation
+ *
+ * @author Umang Patel
+ */
 public class EmojiAnalyzerActor extends AbstractActor {
 
+    /**
+     * Factory method for the {@link EmojiAnalyzerActor}
+     *
+     * @return Actor configuration in the form of {@link Props}
+     * @author Umang Patel
+     */
     public static Props props() {
         return Props.create(EmojiAnalyzerActor.class);
     }
 
+    /**
+     * Protocol message for retrieving the analysis result.
+     *
+     * @author Umang Patel
+     */
     public static final class GetAnalysis {
         private final CompletableFuture<CommentResults> commentResults;
 
+        /**
+         * Constructor of the {@link GetAnalysis} protocol message class that stores the Youtube comments for processing
+         * @param commentResults is the Youtube comments that are to be processed.
+         * @author Umang Patel
+         */
         public GetAnalysis(CompletableFuture<CommentResults> commentResults) {
             this.commentResults = commentResults;
         }
     }
 
+    /**
+     * Message handling for the {@link EmojiAnalyzerActor}.
+     * @author Umang Patel
+     */
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -35,6 +60,13 @@ public class EmojiAnalyzerActor extends AbstractActor {
                 .build();
     }
 
+    /**
+     * This method is called when it receives the {@link GetAnalysis} protocol message.
+     * It processes the comments and generates the overall sentiment of the comments in the emoji form.
+     *
+     * @param getAnalysis is the protocol message
+     * @author Umang Patel
+     */
     private void onGetAnalysis(GetAnalysis getAnalysis) {
         CompletableFuture<String> result;
         if (getAnalysis != null && getAnalysis.commentResults != null) {
@@ -104,7 +136,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param commentStream represents the stream of Youtube comments
          * @return all the concatenated string consisting of only emojis.
-         * @author Umang J Patel
+         * @author Umang Patel
          */
         static String processCommentStream(Stream<String> commentStream) {
             return commentStream
@@ -120,7 +152,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param emoji represents the emoji
          * @return the string whether the emoji represents 'happy' or 'sad'
-         * @author Umang J Patel
+         * @author Umang Patel
          */
         static String encodeEmojiSentiment(String emoji) {
             String parsedEmoji = EmojiParser.parseToUnicode(emoji);
@@ -135,7 +167,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param comments represents the comments of a Youtube video
          * @return the emoji representing the sentiment (happy, sad or neutral)
-         * @author Umang J Patel
+         * @author Umang Patel
          */
         static String generateReport(String comments) {
             Map<String, Long> emojiCounts = EmojiParser.extractEmojis(comments).parallelStream()
@@ -158,7 +190,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param commentResults {@link CommentResults} object containing list of 100 Comments for video
          * @return String of filtered emojis.
-         * @author Umang J Patel
+         * @author Umang Patel
          */
         static String getCommentsString(CommentResults commentResults) {
             if (commentResults.getItems() == null)
@@ -173,7 +205,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param commentResults {@link CommentResults} object containing list of 100 Comments for video
          * @return Sentiment emoji as a string (happy: grin emoji, sad: pensive emoji, neutral: neutral_face emoji).
-         * @author Umang J Patel
+         * @author Umang Patel
          */
         static String getAnalysisResult(CommentResults commentResults) {
             return generateReport(getCommentsString(commentResults));
