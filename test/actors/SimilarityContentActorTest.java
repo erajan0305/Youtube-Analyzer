@@ -33,7 +33,7 @@ public class SimilarityContentActorTest {
     }
 
     @Test
-    public void test1() {
+    public void similarityContentMessageTest() {
         final TestKit testKit = new TestKit(actorSystem);
         final ActorRef similarityContentActor = actorSystem.actorOf(SimilarityContentActor.props(testKit.testActor()));
         similarityContentActor.tell(new SimilarityContentActor.SimilarContentByKeyword("xyz", "hello world"), ActorRef.noSender());
@@ -42,7 +42,7 @@ public class SimilarityContentActorTest {
     }
 
     @Test
-    public void test2() {
+    public void noSimilarityContentTest() {
         final TestProbe child = new TestProbe(actorSystem);
 
         child.setAutoPilot(new TestActor.AutoPilot() {
@@ -64,7 +64,7 @@ public class SimilarityContentActorTest {
     }
 
     @Test
-    public void test3() {
+    public void similarityContentCountTest() {
         final TestProbe child = new TestProbe(actorSystem);
 
         child.setAutoPilot(new TestActor.AutoPilot() {
