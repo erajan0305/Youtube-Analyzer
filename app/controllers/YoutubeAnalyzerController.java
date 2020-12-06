@@ -196,7 +196,9 @@ public class YoutubeAnalyzerController extends Controller {
         if (!SessionHelper.isSessionExist(request)) {
             return CompletableFuture.completedFuture(unauthorized("No Session Exist"));
         }
-        return FutureConverters.toJava(ask(similarityContentActor, new SimilarityContentActor.SimilarContentByKeyword(SessionHelper.getUserAgentNameFromRequest(request), keyword), 2000))
+        return FutureConverters
+                .toJava(ask(similarityContentActor, new SimilarityContentActor
+                        .SimilarContentByKeyword(SessionHelper.getUserAgentNameFromRequest(request), keyword), 2000))
                 .thenApply(o -> (LinkedHashMap<String, Long>) o)
                 .thenApply(similarityStatsMap -> ok(similarContent.render(similarityStatsMap)));
     }
