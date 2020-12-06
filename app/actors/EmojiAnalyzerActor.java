@@ -20,9 +20,6 @@ public class EmojiAnalyzerActor extends AbstractActor {
         return Props.create(EmojiAnalyzerActor.class);
     }
 
-    private EmojiAnalyzerActor() {
-    }
-
     public static final class GetAnalysis {
         private final CompletableFuture<CommentResults> commentResults;
 
@@ -39,9 +36,16 @@ public class EmojiAnalyzerActor extends AbstractActor {
     }
 
     private void onGetAnalysis(GetAnalysis getAnalysis) {
-        CompletableFuture<String> analysisResult =
-                getAnalysis.commentResults.thenApplyAsync(EmojiAnalyzer::getAnalysisResult);
-        getSender().tell(analysisResult, getSender());
+        CompletableFuture<String> result;
+        if (getAnalysis != null && getAnalysis.commentResults != null) {
+            result = getAnalysis.commentResults
+                    .thenApplyAsync(EmojiAnalyzer::getAnalysisResult)
+                    .exceptionallyAsync(throwable -> EmojiManager.getForAlias("neutral_face").getUnicode());
+        } else {
+            result = CompletableFuture.supplyAsync(() -> EmojiManager.getForAlias("neutral_face").getUnicode());
+
+        }
+        getSender().tell(result, getSender());
     }
 
     /**
@@ -49,7 +53,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
      *
      * @author Umang J Patel
      */
-    private static final class EmojiAnalyzer {
+    static final class EmojiAnalyzer {
 
         /**
          * Set of Happy Emojis
@@ -102,7 +106,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          * @return all the concatenated string consisting of only emojis.
          * @author Umang J Patel
          */
-        private static String processCommentStream(Stream<String> commentStream) {
+        static String processCommentStream(Stream<String> commentStream) {
             return commentStream
                     .filter(comment -> EmojiParser.extractEmojis(comment).size() != 0)
                     .map(comment -> String.join("", EmojiParser.extractEmojis(comment)))
@@ -118,7 +122,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          * @return the string whether the emoji represents 'happy' or 'sad'
          * @author Umang J Patel
          */
-        private static String encodeEmojiSentiment(String emoji) {
+        static String encodeEmojiSentiment(String emoji) {
             String parsedEmoji = EmojiParser.parseToUnicode(emoji);
             if (HAPPY_EMOJI_UNICODE_SET.contains(parsedEmoji))
                 return "happy";
@@ -133,7 +137,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          * @return the emoji representing the sentiment (happy, sad or neutral)
          * @author Umang J Patel
          */
-        private static String generateReport(String comments) {
+        static String generateReport(String comments) {
             Map<String, Long> emojiCounts = EmojiParser.extractEmojis(comments).parallelStream()
                     .collect(Collectors.groupingBy(EmojiAnalyzer::encodeEmojiSentiment,
                             Collectors.counting()));
@@ -156,7 +160,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          * @return String of filtered emojis.
          * @author Umang J Patel
          */
-        private static String getCommentsString(CommentResults commentResults) {
+        static String getCommentsString(CommentResults commentResults) {
             if (commentResults.getItems() == null)
                 return "";  //Empty String
             Stream<String> commentStream = commentResults.getItems().parallelStream()
@@ -171,7 +175,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
          * @return Sentiment emoji as a string (happy: grin emoji, sad: pensive emoji, neutral: neutral_face emoji).
          * @author Umang J Patel
          */
-        private static String getAnalysisResult(CommentResults commentResults) {
+        static String getAnalysisResult(CommentResults commentResults) {
             return generateReport(getCommentsString(commentResults));
         }
     }
