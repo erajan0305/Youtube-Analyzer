@@ -87,16 +87,31 @@ public class YoutubeAnalyzerController extends Controller {
     }
 
     /**
-     * Instantiates the Play Framework MessagesApi object
+     * Instantiates the Play Framework Materializer object
      */
     public void setMaterializer(Materializer materializer) {
         this.materializer = materializer;
     }
 
+    /**
+     * An action that renders an HTML page with search form and updates the {@link SearchResults} for
+     * all the {@link Search#searchKeyword} searched for, after every 30 seconds.
+     *
+     * @return {@link WebSocket} Json Flow of updated {@link SearchResults}
+     * @author Rajan Shah, Kishan Bhimani, Umang Patel
+     */
     public WebSocket ws() {
         return WebSocket.Json.acceptOrResult(this::createFlow);
     }
 
+    /**
+     * Checks for existing user and for existing user creates Flow of {@link SearchResults}, and for non-existing user,
+     * return error 403.
+     *
+     * @param requestHeader Request Header of current request.
+     * @return CompletionStage of either Flow of {@link SearchResults} or 403 (Forbidden).
+     * @author Kishan Bhimani, Rajan Shah, Umang Patel
+     */
     protected CompletionStage<F.Either<Result, Flow<JsonNode, JsonNode, ?>>> createFlow(Http.RequestHeader requestHeader) {
         return CompletableFuture.completedFuture(
                 requestHeader.session().get("sessionId")
@@ -105,6 +120,13 @@ public class YoutubeAnalyzerController extends Controller {
                         .orElseGet(() -> F.Either.Left(forbidden())));
     }
 
+    /**
+     * Fetches the user information from Session and creates a WebSocket to provide a flow of {@link SearchResults}.
+     *
+     * @param userName for which to create the Flow of {@link SearchResults}
+     * @return Flow of {@link JsonNode} of {@link SearchResults}
+     * @author Umang Patel, Kishan Bhimani, Rajan Shah
+     */
     private Flow<JsonNode, JsonNode, ?> createFlowOfResults(String userName) {
         ActorRef userActor = FutureConverters.toJava(ask(sessionActor, new SessionActor.GetUser(userName), 5000))
                 .toCompletableFuture().thenApply(o -> (ActorRef) o).join();
