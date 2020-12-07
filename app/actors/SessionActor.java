@@ -65,12 +65,9 @@ public class SessionActor extends AbstractActor {
     private void addUserToCurrentRecord(CreateUser createUser) {
         ActorRef user = getContext().actorOf(UserActor.props(createUser.userId, createUser.supervisorActor));
         activeUsers.put(createUser.userId, user);
-        System.out.println("Adding to Hashmap");
     }
 
     private void addSearchResultsToUserRecord(AddSearchResultsToUser addSearchResultsToUser) {
-        System.out.println("Searching Hashmap");
-        activeUsers.entrySet().forEach(System.out::println);
         ActorRef user = activeUsers.get(addSearchResultsToUser.userId);
         user.tell(new UserActor.AddSearchResult(addSearchResultsToUser.userId, addSearchResultsToUser.key, addSearchResultsToUser.searchResults), self());
     }

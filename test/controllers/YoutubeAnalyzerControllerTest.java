@@ -3,6 +3,9 @@ package controllers;
 import actors.SessionActor;
 import actors.YoutubeApiClientActor;
 import akka.actor.ActorRef;
+import akka.stream.Materializer;
+import akka.stream.javadsl.Flow;
+import com.fasterxml.jackson.databind.JsonNode;
 import dataset.DatasetHelper;
 import models.Helper.SessionHelper;
 import org.junit.After;
@@ -16,9 +19,11 @@ import play.Application;
 import play.data.FormFactory;
 import play.i18n.MessagesApi;
 import play.inject.guice.GuiceApplicationBuilder;
+import play.libs.F;
 import play.libs.ws.WSClient;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.WebSocket;
 import play.routing.RoutingDsl;
 import play.server.Server;
 import play.test.Helpers;
@@ -30,11 +35,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletionStage;
 
+import static org.junit.Assert.assertEquals;
 import static play.mvc.Http.Status.*;
 import static play.mvc.Results.ok;
 
 @RunWith(MockitoJUnitRunner.class)
-public class YTAnalyzerControllerTest extends WithApplication {
+public class YoutubeAnalyzerControllerTest extends WithApplication {
 
     @Override
     protected Application provideApplication() {
@@ -46,10 +52,11 @@ public class YTAnalyzerControllerTest extends WithApplication {
     MessagesApi _messagesApi;
     WSClient _wsClient;
     Server server;
+    Materializer _materializer;
 
     /**
      * This is an initialization method which Injects dependencies using {@link GuiceApplicationBuilder},
-     * initializes {@link YoutubeAnalyzerController} Object, creates test server to handle requests for the tests..
+     * initializes {@link YoutubeAnalyzerController} Object, creates test server to handle requests for the tests.
      *
      * @author Rajan Shah
      */
@@ -59,8 +66,10 @@ public class YTAnalyzerControllerTest extends WithApplication {
         youtubeAnalyzerController = new YoutubeAnalyzerController();
         _mockFormFactory = new GuiceApplicationBuilder().injector().instanceOf(FormFactory.class);
         _messagesApi = new GuiceApplicationBuilder().injector().instanceOf(MessagesApi.class);
+        _materializer = new GuiceApplicationBuilder().injector().instanceOf(Materializer.class);
         youtubeAnalyzerController.setFormFactory(_mockFormFactory);
         youtubeAnalyzerController.setMessagesApi(_messagesApi);
+        youtubeAnalyzerController.setMaterializer(_materializer);
         server = Server.forRouter(
                 (components) -> RoutingDsl.fromComponents(components)
                         .GET("/search")
@@ -234,4 +243,36 @@ public class YTAnalyzerControllerTest extends WithApplication {
         CompletionStage<Result> resultCompletionStage = youtubeAnalyzerController.fetchChannelInformationAndTop10Videos(requestBuilder.build(), "UC0RhatS1pyxInC00YKjjBqQ", "java");
         Assert.assertEquals(OK, resultCompletionStage.toCompletableFuture().join().status());
     }
+
+    @Test
+    public void webSocketTest0() {
+        Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.ws());
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.getSessionKey(), "chrome");
+        youtubeAnalyzerController.sessionActor
+                .tell(new SessionActor.CreateUser("chrome", youtubeAnalyzerController.supervisorActor), ActorRef.noSender());
+        WebSocket webSocket = youtubeAnalyzerController.ws();
+    }
+
+    @Test
+    public void createFlowWithSessionTest() {
+        Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.ws());
+        requestBuilder.header("User-Agent", "chrome");
+        requestBuilder.session(SessionHelper.getSessionKey(), "chrome");
+        youtubeAnalyzerController.sessionActor
+                .tell(new SessionActor.CreateUser("chrome", youtubeAnalyzerController.supervisorActor), ActorRef.noSender());
+        CompletionStage<F.Either<Result, Flow<JsonNode, JsonNode, ?>>> flow = youtubeAnalyzerController.createFlow(requestBuilder.build());
+    }
+
+    @Test
+    public void createFlowWithoutSessionTest() {
+        Http.RequestBuilder requestBuilder = Helpers.fakeRequest(routes.YoutubeAnalyzerController.ws());
+        requestBuilder.header("User-Agent", "chrome");
+        youtubeAnalyzerController.sessionActor
+                .tell(new SessionActor.CreateUser("chrome", youtubeAnalyzerController.supervisorActor), ActorRef.noSender());
+        CompletionStage<F.Either<Result, Flow<JsonNode, JsonNode, ?>>> flow = youtubeAnalyzerController.createFlow(requestBuilder.build());
+        F.Either<Result, Flow<JsonNode, JsonNode, ?>> flowJoin = flow.toCompletableFuture().join();
+        assertEquals(FORBIDDEN, flowJoin.left.get().status());
+    }
 }
+

@@ -53,14 +53,15 @@ public class YoutubeApiClientActor extends AbstractActor {
     }
 
     public static class FetchVideos {
-        public String getSearchKey() {
-            return searchKey;
-        }
 
         private final String searchKey;
 
         public FetchVideos(String searchKey) {
             this.searchKey = searchKey;
+        }
+
+        public String getSearchKey() {
+            return searchKey;
         }
     }
 
@@ -126,7 +127,6 @@ public class YoutubeApiClientActor extends AbstractActor {
 
     @Override
     public Receive createReceive() {
-        // changes made to wsClient condition. Might produce error.
         return receiveBuilder()
                 .match(SetWSClient.class, t -> this.wsClient = t.wsClient)
                 .match(SetBaseUrl.class, t -> BASE_URL = t.baseUrl)

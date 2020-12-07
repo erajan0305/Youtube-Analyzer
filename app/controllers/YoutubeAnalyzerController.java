@@ -86,13 +86,33 @@ public class YoutubeAnalyzerController extends Controller {
         this.messagesApi = messagesApi;
     }
 
+    /**
+     * Instantiates the Play Framework Materializer object
+     */
+    public void setMaterializer(Materializer materializer) {
+        this.materializer = materializer;
+    }
+
+    /**
+     * An action that renders an HTML page with search form and updates the {@link SearchResults} for
+     * all the {@link Search#searchKeyword} searched for, after every 30 seconds.
+     *
+     * @return {@link WebSocket} Json Flow of updated {@link SearchResults}
+     * @author Rajan Shah, Kishan Bhimani, Umang Patel
+     */
     public WebSocket ws() {
-        System.out.println("inside ws");
         return WebSocket.Json.acceptOrResult(this::createFlow);
     }
 
-    private CompletionStage<F.Either<Result, Flow<JsonNode, JsonNode, ?>>> createFlow(Http.RequestHeader requestHeader) {
-        System.out.println("inside createFlow");
+    /**
+     * Checks for existing user and for existing user creates Flow of {@link SearchResults}, and for non-existing user,
+     * return error 403.
+     *
+     * @param requestHeader Request Header of current request.
+     * @return CompletionStage of either Flow of {@link SearchResults} or 403 (Forbidden).
+     * @author Kishan Bhimani, Rajan Shah, Umang Patel
+     */
+    protected CompletionStage<F.Either<Result, Flow<JsonNode, JsonNode, ?>>> createFlow(Http.RequestHeader requestHeader) {
         return CompletableFuture.completedFuture(
                 requestHeader.session().get("sessionId")
                         .map(user -> F.Either.<Result, Flow<JsonNode, JsonNode, ?>>Right(
@@ -100,11 +120,16 @@ public class YoutubeAnalyzerController extends Controller {
                         .orElseGet(() -> F.Either.Left(forbidden())));
     }
 
+    /**
+     * Fetches the user information from Session and creates a WebSocket to provide a flow of {@link SearchResults}.
+     *
+     * @param userName for which to create the Flow of {@link SearchResults}
+     * @return Flow of {@link JsonNode} of {@link SearchResults}
+     * @author Umang Patel, Kishan Bhimani, Rajan Shah
+     */
     private Flow<JsonNode, JsonNode, ?> createFlowOfResults(String userName) {
-        System.out.println("inside create flow for results");
         ActorRef userActor = FutureConverters.toJava(ask(sessionActor, new SessionActor.GetUser(userName), 5000))
                 .toCompletableFuture().thenApply(o -> (ActorRef) o).join();
-        System.out.println(userActor);
         return ActorFlow.actorRef(actorRef -> WebSocketActor.props(actorRef, userActor), actorSystem, materializer);
     }
 
@@ -124,13 +149,13 @@ public class YoutubeAnalyzerController extends Controller {
         Form<Search> searchForm = formFactory.form(Search.class);
         supervisorActor.tell(new YoutubeApiClientActor.SetWSClient(wsClient), ActorRef.noSender());
         if (!SessionHelper.isSessionExist(request)) {
-            System.out.println("\nCreating session");
+            System.out.println("Creating session");
             sessionActor.tell(new SessionActor.CreateUser(userAgentName, supervisorActor), ActorRef.noSender());
             return CompletableFuture.completedFuture(ok(index.render(searchForm, null, url, messagesApi.preferred(request)))
                     .addingToSession(request, SessionHelper.getSessionKey(), userAgentName));
         }
 
-        System.out.println("\nSession Exist/Created");
+        System.out.println("Session Exist");
         CompletableFuture<LinkedHashMap<String, SearchResults>> linkedHashMapCompletableFuture = FutureConverters.toJava(
                 ask(sessionActor, new SessionActor.GetUserSearchResults(userAgentName), 2000))
                 .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)
