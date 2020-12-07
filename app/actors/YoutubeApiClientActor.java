@@ -21,6 +21,11 @@ import java.util.stream.Collectors;
 
 import static akka.pattern.Patterns.ask;
 
+/**
+ * Documentation of the {@link YoutubeApiClientActor} class.
+ *
+ * @author Kishan Bhimani, Rajan Shah and Umang Patel
+ */
 public class YoutubeApiClientActor extends AbstractActor {
     private WSClient wsClient;
     // private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
@@ -32,99 +37,233 @@ public class YoutubeApiClientActor extends AbstractActor {
 
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
+    /**
+     * Protocol message for establishing the web service client.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class SetWSClient {
+        /**
+         * Getter method for {@link SetWSClient#wsClient} retrieving the web service client.
+         * @return the web service client.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public WSClient getWsClient() {
             return wsClient;
         }
 
         private final WSClient wsClient;
 
+        /**
+         * Constructor for the {@link SetWSClient} protocol message
+         * @param wsClient is the web service client.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public SetWSClient(WSClient wsClient) {
             this.wsClient = wsClient;
         }
     }
 
+    /**
+     * Protocol message for establishing the base URL.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class SetBaseUrl {
         private final String baseUrl;
 
+        /**
+         * Constructor for the {@link SetBaseUrl} protocol message.
+         * @param baseUrl is the base URL
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public SetBaseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
         }
     }
 
+    /**
+     * Protocol message for fetching the videos.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class FetchVideos {
 
         private final String searchKey;
 
+        /**
+         * Constructor for the {@link FetchVideos} protocol message.
+         * @param searchKey is the search keyword.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public FetchVideos(String searchKey) {
             this.searchKey = searchKey;
         }
 
+        /**
+         * Getter method for the {@link FetchVideos#searchKey} retrieving the search keyword.
+         * @return the search keyword
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public String getSearchKey() {
             return searchKey;
         }
     }
 
+    /**
+     * Protocol message for fetching the view count from a video ID.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class GetViewCountByVideoId {
         private final String videoId;
 
+        /**
+         * Constructor for the {@link GetViewCountByVideoId} protocol message.
+         * @param videoId is the video ID.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public GetViewCountByVideoId(String videoId) {
             this.videoId = videoId;
         }
     }
 
+    /**
+     * Protocol message for fetching the videos from a channel ID.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class GetVideosJsonByChannelId {
         private final String channelId;
         private final String keyword;
 
+        /**
+         * Getter method for {@link GetVideosJsonByChannelId#channelId} which retrieves the channel ID.
+         * @return the channel ID.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public String getChannelId() {
             return channelId;
         }
 
+        /**
+         * Getter method for {@link GetVideosJsonByChannelId#keyword} which retrieves the search keyword.
+         * @return the search keyword.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public String getKeyword() {
             return keyword;
         }
 
+        /**
+         * Constructor for the {@link GetVideosJsonByChannelId} protocol message.
+         * @param channelId is the channel ID.
+         * @param keyword is the search keyword.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public GetVideosJsonByChannelId(String channelId, String keyword) {
             this.channelId = channelId;
             this.keyword = keyword;
         }
     }
 
+    /**
+     * Protocol message for fetching the channel information using a video ID.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class GetChannelInformationByChannelId {
 
+        /**
+         * Getter method of {@link GetChannelInformationByChannelId#channelId} which retrieves the channel ID.
+         * @return the channel ID.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public String getChannelId() {
             return channelId;
         }
 
         private final String channelId;
 
+        /**
+         * Constructor for the {@link GetChannelInformationByChannelId} protocol message.
+         * @param channelId is the channel ID.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public GetChannelInformationByChannelId(String channelId) {
             this.channelId = channelId;
         }
     }
 
+    /**
+     * Protocol message for retrieving the sentiments of comments of a particular video.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class GetSentimentByVideoId {
+
+        /**
+         * Getter method for {@link GetSentimentByVideoId#videoId} which retrives the video ID.
+         * @return the video ID.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public String getVideoId() {
             return videoId;
         }
 
         private final String videoId;
 
+        /**
+         * Constructor for the {@link GetSentimentByVideoId} protocol message.
+         * @param videoId is the video ID.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public GetSentimentByVideoId(String videoId) {
             this.videoId = videoId;
         }
     }
 
+    /**
+     * Factory method for the {@link YoutubeApiClientActor}.
+     * @param wsClient is the web service client.
+     * @return the actor configuration in the form of {@link Props} object.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static Props props(WSClient wsClient) {
         return Props.create(YoutubeApiClientActor.class, wsClient);
     }
 
+    /**
+     * Dependency injection which instantiates the web service client for the {@link YoutubeApiClientActor}.
+     * @param wsClient is the web service client.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     @Inject
     public YoutubeApiClientActor(WSClient wsClient) {
         this.wsClient = wsClient;
     }
 
+    /**
+     * Message handling method for the {@link YoutubeApiClientActor}.
+     * Overridden from the {@link AbstractActor} class.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -164,6 +303,13 @@ public class YoutubeApiClientActor extends AbstractActor {
                 .build();
     }
 
+    /**
+     * Helper method for fetching the videos for particular search keyword by calling the Youtube API.
+     * @param searchKey is the search keyword
+     * @return the search results in the form of {@link SearchResults} object.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public SearchResults fetchVideos(String searchKey) {
         WSRequest request = this.wsClient
                 .url(BASE_URL + "search")
@@ -185,7 +331,8 @@ public class YoutubeApiClientActor extends AbstractActor {
      *
      * @param videoId id for which information is to be fetched
      * @return {@link CompletionStage} of {@link Videos} viewCount
-     * @author Rajan Shah, Kishan Bhimani, Umang J Patel
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
      */
     public CompletionStage<String> getViewCountByVideoId(String videoId) {
         WSRequest request = this.wsClient
@@ -208,7 +355,8 @@ public class YoutubeApiClientActor extends AbstractActor {
      * @param channelId id for which information is to be fetched
      * @param keyword   keyword for which top 10 videos is to be fetched for <code>id</code>
      * @return {@link CompletionStage} of {@link SearchResults}
-     * @author Rajan Shah
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
      */
     public SearchResults getVideosJsonByChannelId(String channelId, String keyword) {
         WSRequest request = this.wsClient
@@ -233,7 +381,8 @@ public class YoutubeApiClientActor extends AbstractActor {
      *
      * @param channelId id for which channel information is to be fetched
      * @return {@link CompletionStage} of {@link ChannelResultItems}
-     * @author Rajan Shah
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
      */
     public ChannelResultItems getChannelInformationByChannelId(String channelId) {
         WSRequest request = this.wsClient
@@ -254,7 +403,8 @@ public class YoutubeApiClientActor extends AbstractActor {
      *
      * @param videoId id for which sentiment is to be calculated.
      * @return {@link CompletableFuture} of {@link CommentResults}
-     * @author Umang J Patel
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
      */
     public CompletableFuture<CommentResults> getSentimentByVideoId(String videoId) {
         WSRequest request = this.wsClient

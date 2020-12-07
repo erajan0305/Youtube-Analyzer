@@ -16,16 +16,34 @@ import java.util.Set;
 
 import static akka.pattern.Patterns.ask;
 
+/**
+ * Documentation for the {@link UserActor} class
+ *
+ * @author Kishan Bhimani, Rajan Shah and Umang Patel
+ */
 public class UserActor extends AbstractActor {
     private String userId;
     private final LinkedHashMap<String, SearchResults> userSearchResultsBySearchKeywordHashMap = new LinkedHashMap<>();
     private final ActorRef supervisorActor;
 
+    /**
+     * Message protocol for storing search results of a particular user identified by a user ID.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class AddSearchResult {
         public final String userId;
         public final String key;
         public SearchResults searchResults;
 
+        /**
+         * Constructor of the {@link AddSearchResult} message protocol
+         * @param userId is the user ID
+         * @param key is the search keyword
+         * @param searchResults is the search results obtained from the Youtube API.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public AddSearchResult(String userId, String key, SearchResults searchResults) {
             this.userId = userId;
             this.key = key;
@@ -33,17 +51,38 @@ public class UserActor extends AbstractActor {
         }
     }
 
+    /**
+     * Message protocol for fetching the search results given a user ID.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class GetSearchResults {
         public final String userId;
 
+        /**
+         * Constructor for the {@link GetSearchResults} message protocol.
+         * @param userId is the user ID.
+         *
+         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         */
         public GetSearchResults(String userId) {
             this.userId = userId;
         }
     }
 
+    /**
+     * Message protocol for requests pertaining to updation of the search results.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static class UpdateSearchResultsRequest {
     }
 
+    /**
+     * Helper method for updating the search results of a particular user.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     private void updateSearchResults() {
         Set<String> strings = this.userSearchResultsBySearchKeywordHashMap.keySet();
         strings.parallelStream().forEach(keyword -> {
@@ -91,15 +130,36 @@ public class UserActor extends AbstractActor {
         getSender().tell(jsonNode, getSelf());
     }
 
+    /**
+     * Constructor of the {@link UserActor}.
+     * @param userId is the user ID.
+     * @param supervisorActor is the supervisor actor supervising this actor.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public UserActor(String userId, ActorRef supervisorActor) {
         this.userId = userId;
         this.supervisorActor = supervisorActor;
     }
 
+    /**
+     * Factory method for instantiating the {@link UserActor}
+     * @param userId is the user ID.
+     * @param supervisorActor is the supervisor actor supervising this actor.
+     * @return actor configuration in the form of {@link Props} object
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     public static Props props(String userId, ActorRef supervisorActor) {
         return Props.create(UserActor.class, userId, supervisorActor);
     }
 
+    /**
+     * Message handling method for the {@link UserActor}.
+     * Overridden from the {@link AbstractActor} class.
+     *
+     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     */
     @Override
     public Receive createReceive() {
         return receiveBuilder().match(AddSearchResult.class, t -> {
