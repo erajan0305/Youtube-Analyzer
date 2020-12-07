@@ -66,8 +66,6 @@ public class UserActor extends AbstractActor {
                 getSender().tell(jsonNode, getSelf());
                 return;
             }
-            System.out.println(updatedList.size());
-            System.out.println(existingList.size());
             for (SearchResultItem searchResultItem : existingList) {
                 for (SearchResultItem updatedItem : updatedList) {
                     if (searchResultItem.getId().getVideoId().equals(updatedItem.getId().getVideoId())) {
@@ -112,14 +110,12 @@ public class UserActor extends AbstractActor {
             }
         }).match(GetSearchResults.class, t -> {
             if (t.userId.equals(this.userId)) {
-                System.out.println("\n\ntelling sender");
                 getSender().tell(this.userSearchResultsBySearchKeywordHashMap, getSelf());
             } else {
                 throw new Exception("Unauthorized");
             }
         }).match(UpdateSearchResultsRequest.class, t -> {
             if (this.userSearchResultsBySearchKeywordHashMap.size() > 0) {
-                System.out.println("Update Search Results");
                 this.updateSearchResults();
             }
         }).build();

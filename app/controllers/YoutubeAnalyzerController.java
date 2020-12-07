@@ -86,13 +86,18 @@ public class YoutubeAnalyzerController extends Controller {
         this.messagesApi = messagesApi;
     }
 
+    /**
+     * Instantiates the Play Framework MessagesApi object
+     */
+    public void setMaterializer(Materializer materializer) {
+        this.materializer = materializer;
+    }
+
     public WebSocket ws() {
-        System.out.println("inside ws");
         return WebSocket.Json.acceptOrResult(this::createFlow);
     }
 
-    private CompletionStage<F.Either<Result, Flow<JsonNode, JsonNode, ?>>> createFlow(Http.RequestHeader requestHeader) {
-        System.out.println("inside createFlow");
+    protected CompletionStage<F.Either<Result, Flow<JsonNode, JsonNode, ?>>> createFlow(Http.RequestHeader requestHeader) {
         return CompletableFuture.completedFuture(
                 requestHeader.session().get("sessionId")
                         .map(user -> F.Either.<Result, Flow<JsonNode, JsonNode, ?>>Right(
@@ -101,10 +106,8 @@ public class YoutubeAnalyzerController extends Controller {
     }
 
     private Flow<JsonNode, JsonNode, ?> createFlowOfResults(String userName) {
-        System.out.println("inside create flow for results");
         ActorRef userActor = FutureConverters.toJava(ask(sessionActor, new SessionActor.GetUser(userName), 5000))
                 .toCompletableFuture().thenApply(o -> (ActorRef) o).join();
-        System.out.println(userActor);
         return ActorFlow.actorRef(actorRef -> WebSocketActor.props(actorRef, userActor), actorSystem, materializer);
     }
 
@@ -124,13 +127,13 @@ public class YoutubeAnalyzerController extends Controller {
         Form<Search> searchForm = formFactory.form(Search.class);
         supervisorActor.tell(new YoutubeApiClientActor.SetWSClient(wsClient), ActorRef.noSender());
         if (!SessionHelper.isSessionExist(request)) {
-            System.out.println("\nCreating session");
+            System.out.println("Creating session");
             sessionActor.tell(new SessionActor.CreateUser(userAgentName, supervisorActor), ActorRef.noSender());
             return CompletableFuture.completedFuture(ok(index.render(searchForm, null, url, messagesApi.preferred(request)))
                     .addingToSession(request, SessionHelper.getSessionKey(), userAgentName));
         }
 
-        System.out.println("\nSession Exist/Created");
+        System.out.println("Session Exist");
         CompletableFuture<LinkedHashMap<String, SearchResults>> linkedHashMapCompletableFuture = FutureConverters.toJava(
                 ask(sessionActor, new SessionActor.GetUserSearchResults(userAgentName), 2000))
                 .thenApply(o -> (LinkedHashMap<String, SearchResults>) o)

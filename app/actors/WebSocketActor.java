@@ -29,7 +29,6 @@ public class WebSocketActor extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(JsonNode.class, t -> {
-                    System.out.println("json message received");
                     this.webSocketResponseActor.tell(t, getSelf());
                 }).build();
     }
