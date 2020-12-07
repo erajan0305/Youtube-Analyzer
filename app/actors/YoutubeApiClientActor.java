@@ -24,11 +24,12 @@ import static akka.pattern.Patterns.ask;
 public class YoutubeApiClientActor extends AbstractActor {
     private WSClient wsClient;
     // private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
-//     private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
-//     private final String API_KEY = "AIzaSyCvQ6FlySOyJn68Omj5Y6ItdwGPSFSP-ZQ";
-    private final String API_KEY = "AIzaSyC3b5LuRNndEHOlKdir8ReTMOec1A5t1n4";
-    //    private final String API_KEY = "AIzaSyCyAb62tFZSq2Hek-YgnlyaL7F4x2AlH0k";
-    //    private final String API_KEY = "AIzaSyA7X8mzniYR7inFmDlAZegOdUazCuDntCk";
+    // private final String API_KEY = "AIzaSyAW3TfIG7ebUDcVQaYWHWPha3CXiATdzGE";
+    // private final String API_KEY = "AIzaSyCvQ6FlySOyJn68Omj5Y6ItdwGPSFSP-ZQ";
+    // private final String API_KEY = "AIzaSyCyAb62tFZSq2Hek-YgnlyaL7F4x2AlH0k";
+    // private final String API_KEY = "AIzaSyA7X8mzniYR7inFmDlAZegOdUazCuDntCk";
+    private final String API_KEY = "AIzaSyDCo0jpTa1TPM4afzuoG0-lZjm0OQPsL4s";
+
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     public static class SetWSClient {

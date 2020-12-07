@@ -14,23 +14,45 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * EmojiAnalyzerActor documentation
+ *
+ * @author Umang Patel
+ */
 public class EmojiAnalyzerActor extends AbstractActor {
 
+    /**
+     * Factory method for the {@link EmojiAnalyzerActor}
+     *
+     * @return Actor configuration in the form of {@link Props}
+     * @author Umang Patel
+     */
     public static Props props() {
         return Props.create(EmojiAnalyzerActor.class);
     }
 
-    private EmojiAnalyzerActor() {
-    }
-
+    /**
+     * Protocol message for retrieving the analysis result.
+     *
+     * @author Umang Patel
+     */
     public static final class GetAnalysis {
         private final CompletableFuture<CommentResults> commentResults;
 
+        /**
+         * Constructor of the {@link GetAnalysis} protocol message class that stores the Youtube comments for processing
+         * @param commentResults is the Youtube comments that are to be processed.
+         * @author Umang Patel
+         */
         public GetAnalysis(CompletableFuture<CommentResults> commentResults) {
             this.commentResults = commentResults;
         }
     }
 
+    /**
+     * Message handling for the {@link EmojiAnalyzerActor}.
+     * @author Umang Patel
+     */
     @Override
     public Receive createReceive() {
         return receiveBuilder()
@@ -38,10 +60,24 @@ public class EmojiAnalyzerActor extends AbstractActor {
                 .build();
     }
 
+    /**
+     * This method is called when it receives the {@link GetAnalysis} protocol message.
+     * It processes the comments and generates the overall sentiment of the comments in the emoji form.
+     *
+     * @param getAnalysis is the protocol message
+     * @author Umang Patel
+     */
     private void onGetAnalysis(GetAnalysis getAnalysis) {
-        CompletableFuture<String> analysisResult =
-                getAnalysis.commentResults.thenApplyAsync(EmojiAnalyzer::getAnalysisResult);
-        getSender().tell(analysisResult, getSender());
+        CompletableFuture<String> result;
+        if (getAnalysis != null && getAnalysis.commentResults != null) {
+            result = getAnalysis.commentResults
+                    .thenApplyAsync(EmojiAnalyzer::getAnalysisResult)
+                    .exceptionallyAsync(throwable -> EmojiManager.getForAlias("neutral_face").getUnicode());
+        } else {
+            result = CompletableFuture.supplyAsync(() -> EmojiManager.getForAlias("neutral_face").getUnicode());
+
+        }
+        getSender().tell(result, getSender());
     }
 
     /**
@@ -49,7 +85,7 @@ public class EmojiAnalyzerActor extends AbstractActor {
      *
      * @author Umang J Patel
      */
-    private static final class EmojiAnalyzer {
+    static final class EmojiAnalyzer {
 
         /**
          * Set of Happy Emojis
@@ -100,9 +136,9 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param commentStream represents the stream of Youtube comments
          * @return all the concatenated string consisting of only emojis.
-         * @author Umang J Patel
+         * @author Umang Patel
          */
-        private static String processCommentStream(Stream<String> commentStream) {
+        static String processCommentStream(Stream<String> commentStream) {
             return commentStream
                     .filter(comment -> EmojiParser.extractEmojis(comment).size() != 0)
                     .map(comment -> String.join("", EmojiParser.extractEmojis(comment)))
@@ -116,9 +152,9 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param emoji represents the emoji
          * @return the string whether the emoji represents 'happy' or 'sad'
-         * @author Umang J Patel
+         * @author Umang Patel
          */
-        private static String encodeEmojiSentiment(String emoji) {
+        static String encodeEmojiSentiment(String emoji) {
             String parsedEmoji = EmojiParser.parseToUnicode(emoji);
             if (HAPPY_EMOJI_UNICODE_SET.contains(parsedEmoji))
                 return "happy";
@@ -131,9 +167,9 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param comments represents the comments of a Youtube video
          * @return the emoji representing the sentiment (happy, sad or neutral)
-         * @author Umang J Patel
+         * @author Umang Patel
          */
-        private static String generateReport(String comments) {
+        static String generateReport(String comments) {
             Map<String, Long> emojiCounts = EmojiParser.extractEmojis(comments).parallelStream()
                     .collect(Collectors.groupingBy(EmojiAnalyzer::encodeEmojiSentiment,
                             Collectors.counting()));
@@ -154,9 +190,9 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param commentResults {@link CommentResults} object containing list of 100 Comments for video
          * @return String of filtered emojis.
-         * @author Umang J Patel
+         * @author Umang Patel
          */
-        private static String getCommentsString(CommentResults commentResults) {
+        static String getCommentsString(CommentResults commentResults) {
             if (commentResults.getItems() == null)
                 return "";  //Empty String
             Stream<String> commentStream = commentResults.getItems().parallelStream()
@@ -169,9 +205,9 @@ public class EmojiAnalyzerActor extends AbstractActor {
          *
          * @param commentResults {@link CommentResults} object containing list of 100 Comments for video
          * @return Sentiment emoji as a string (happy: grin emoji, sad: pensive emoji, neutral: neutral_face emoji).
-         * @author Umang J Patel
+         * @author Umang Patel
          */
-        private static String getAnalysisResult(CommentResults commentResults) {
+        static String getAnalysisResult(CommentResults commentResults) {
             return generateReport(getCommentsString(commentResults));
         }
     }
