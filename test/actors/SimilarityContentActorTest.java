@@ -71,7 +71,7 @@ public class SimilarityContentActorTest {
             @Override
             public TestActor.AutoPilot run(ActorRef sender, Object msg) {
                 sender.tell(new LinkedHashMap<String, SearchResults>() {{
-                    put("python", DatasetHelper.jsonFileToObject(new File("test/dataset/searchResults/Python.json"), SearchResults.class));
+                    put("python", DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Python.json"), SearchResults.class));
                 }}, ActorRef.noSender());
                 return null;
             }
