@@ -19,11 +19,11 @@ public class WebSocketActor extends AbstractActor {
 
     /**
      * Factory method for instantiating the {@link WebSocketActor}.
-     * @param webSocketResponseActor is the response actor for the websocket.
-     * @param userActor is the user actor associated with the websocket.
-     * @return the actor configuration in the form of {@link Props} object.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @param webSocketResponseActor is the response actor for the websocket.
+     * @param userActor              is the user actor associated with the websocket.
+     * @return the actor configuration in the form of {@link Props} object.
+     * @author Umang Patel
      */
     public static Props props(ActorRef webSocketResponseActor, ActorRef userActor) {
         return Props.create(WebSocketActor.class, webSocketResponseActor, userActor);
@@ -31,10 +31,10 @@ public class WebSocketActor extends AbstractActor {
 
     /**
      * Constructor of the {@link WebSocketActor}.
-     * @param webSocketResponseActor is the response actor for the websocket.
-     * @param userActor is the user actor associated with the websocket
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @param webSocketResponseActor is the response actor for the websocket.
+     * @param userActor              is the user actor associated with the websocket
+     * @author Rajan Shah
      */
     public WebSocketActor(ActorRef webSocketResponseActor, ActorRef userActor) {
         this.webSocketResponseActor = webSocketResponseActor;
@@ -49,7 +49,7 @@ public class WebSocketActor extends AbstractActor {
      * Message handling method for the {@link WebSocketActor}.
      * Overridden from the {@link AbstractActor} class.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     @Override
     public Receive createReceive() {

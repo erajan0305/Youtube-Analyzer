@@ -40,14 +40,14 @@ public class YoutubeApiClientActor extends AbstractActor {
     /**
      * Protocol message for establishing the web service client.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     public static class SetWSClient {
         /**
          * Getter method for {@link SetWSClient#wsClient} retrieving the web service client.
-         * @return the web service client.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @return the web service client.
+         * @author Kishan Bhimani
          */
         public WSClient getWsClient() {
             return wsClient;
@@ -57,9 +57,9 @@ public class YoutubeApiClientActor extends AbstractActor {
 
         /**
          * Constructor for the {@link SetWSClient} protocol message
-         * @param wsClient is the web service client.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param wsClient is the web service client.
+         * @author Rajan Shah
          */
         public SetWSClient(WSClient wsClient) {
             this.wsClient = wsClient;
@@ -69,16 +69,16 @@ public class YoutubeApiClientActor extends AbstractActor {
     /**
      * Protocol message for establishing the base URL.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Rajan Shah
      */
     public static class SetBaseUrl {
         private final String baseUrl;
 
         /**
          * Constructor for the {@link SetBaseUrl} protocol message.
-         * @param baseUrl is the base URL
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param baseUrl is the base URL
+         * @author Rajan Shah
          */
         public SetBaseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
@@ -88,7 +88,7 @@ public class YoutubeApiClientActor extends AbstractActor {
     /**
      * Protocol message for fetching the videos.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Umang Patel
      */
     public static class FetchVideos {
 
@@ -96,9 +96,9 @@ public class YoutubeApiClientActor extends AbstractActor {
 
         /**
          * Constructor for the {@link FetchVideos} protocol message.
-         * @param searchKey is the search keyword.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param searchKey is the search keyword.
+         * @author Umang Patel
          */
         public FetchVideos(String searchKey) {
             this.searchKey = searchKey;
@@ -106,9 +106,9 @@ public class YoutubeApiClientActor extends AbstractActor {
 
         /**
          * Getter method for the {@link FetchVideos#searchKey} retrieving the search keyword.
-         * @return the search keyword
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @return the search keyword
+         * @author Umang Patel
          */
         public String getSearchKey() {
             return searchKey;
@@ -118,16 +118,16 @@ public class YoutubeApiClientActor extends AbstractActor {
     /**
      * Protocol message for fetching the view count from a video ID.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     public static class GetViewCountByVideoId {
         private final String videoId;
 
         /**
          * Constructor for the {@link GetViewCountByVideoId} protocol message.
-         * @param videoId is the video ID.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param videoId is the video ID.
+         * @author Kishan Bhimani
          */
         public GetViewCountByVideoId(String videoId) {
             this.videoId = videoId;
@@ -137,7 +137,7 @@ public class YoutubeApiClientActor extends AbstractActor {
     /**
      * Protocol message for fetching the videos from a channel ID.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Rajan Shah
      */
     public static class GetVideosJsonByChannelId {
         private final String channelId;
@@ -145,9 +145,9 @@ public class YoutubeApiClientActor extends AbstractActor {
 
         /**
          * Getter method for {@link GetVideosJsonByChannelId#channelId} which retrieves the channel ID.
-         * @return the channel ID.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @return the channel ID.
+         * @author Rajan Shah
          */
         public String getChannelId() {
             return channelId;
@@ -155,9 +155,9 @@ public class YoutubeApiClientActor extends AbstractActor {
 
         /**
          * Getter method for {@link GetVideosJsonByChannelId#keyword} which retrieves the search keyword.
-         * @return the search keyword.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @return the search keyword.
+         * @author Rajan Shah
          */
         public String getKeyword() {
             return keyword;
@@ -165,10 +165,10 @@ public class YoutubeApiClientActor extends AbstractActor {
 
         /**
          * Constructor for the {@link GetVideosJsonByChannelId} protocol message.
-         * @param channelId is the channel ID.
-         * @param keyword is the search keyword.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param channelId is the channel ID.
+         * @param keyword   is the search keyword.
+         * @author Rajan Shah
          */
         public GetVideosJsonByChannelId(String channelId, String keyword) {
             this.channelId = channelId;
@@ -179,15 +179,15 @@ public class YoutubeApiClientActor extends AbstractActor {
     /**
      * Protocol message for fetching the channel information using a video ID.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Rajan Shah
      */
     public static class GetChannelInformationByChannelId {
 
         /**
          * Getter method of {@link GetChannelInformationByChannelId#channelId} which retrieves the channel ID.
-         * @return the channel ID.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @return the channel ID.
+         * @author Rajan Shah
          */
         public String getChannelId() {
             return channelId;
@@ -197,9 +197,9 @@ public class YoutubeApiClientActor extends AbstractActor {
 
         /**
          * Constructor for the {@link GetChannelInformationByChannelId} protocol message.
-         * @param channelId is the channel ID.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param channelId is the channel ID.
+         * @author Rajan Shah
          */
         public GetChannelInformationByChannelId(String channelId) {
             this.channelId = channelId;
@@ -209,15 +209,15 @@ public class YoutubeApiClientActor extends AbstractActor {
     /**
      * Protocol message for retrieving the sentiments of comments of a particular video.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Umang Patel
      */
     public static class GetSentimentByVideoId {
 
         /**
          * Getter method for {@link GetSentimentByVideoId#videoId} which retrives the video ID.
-         * @return the video ID.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @return the video ID.
+         * @author Umang Patel
          */
         public String getVideoId() {
             return videoId;
@@ -227,9 +227,9 @@ public class YoutubeApiClientActor extends AbstractActor {
 
         /**
          * Constructor for the {@link GetSentimentByVideoId} protocol message.
-         * @param videoId is the video ID.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param videoId is the video ID.
+         * @author Umang Patel
          */
         public GetSentimentByVideoId(String videoId) {
             this.videoId = videoId;
@@ -238,10 +238,10 @@ public class YoutubeApiClientActor extends AbstractActor {
 
     /**
      * Factory method for the {@link YoutubeApiClientActor}.
+     *
      * @param wsClient is the web service client.
      * @return the actor configuration in the form of {@link Props} object.
-     *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     public static Props props(WSClient wsClient) {
         return Props.create(YoutubeApiClientActor.class, wsClient);
@@ -249,9 +249,9 @@ public class YoutubeApiClientActor extends AbstractActor {
 
     /**
      * Dependency injection which instantiates the web service client for the {@link YoutubeApiClientActor}.
-     * @param wsClient is the web service client.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @param wsClient is the web service client.
+     * @author Kishan Bhimani
      */
     @Inject
     public YoutubeApiClientActor(WSClient wsClient) {
@@ -262,7 +262,7 @@ public class YoutubeApiClientActor extends AbstractActor {
      * Message handling method for the {@link YoutubeApiClientActor}.
      * Overridden from the {@link AbstractActor} class.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani and Umang Patel
      */
     @Override
     public Receive createReceive() {
@@ -305,10 +305,10 @@ public class YoutubeApiClientActor extends AbstractActor {
 
     /**
      * Helper method for fetching the videos for particular search keyword by calling the Youtube API.
+     *
      * @param searchKey is the search keyword
      * @return the search results in the form of {@link SearchResults} object.
-     *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     public SearchResults fetchVideos(String searchKey) {
         WSRequest request = this.wsClient
@@ -331,8 +331,7 @@ public class YoutubeApiClientActor extends AbstractActor {
      *
      * @param videoId id for which information is to be fetched
      * @return {@link CompletionStage} of {@link Videos} viewCount
-     *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     public CompletionStage<String> getViewCountByVideoId(String videoId) {
         WSRequest request = this.wsClient
@@ -355,8 +354,7 @@ public class YoutubeApiClientActor extends AbstractActor {
      * @param channelId id for which information is to be fetched
      * @param keyword   keyword for which top 10 videos is to be fetched for <code>id</code>
      * @return {@link CompletionStage} of {@link SearchResults}
-     *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Rajan Shah
      */
     public SearchResults getVideosJsonByChannelId(String channelId, String keyword) {
         WSRequest request = this.wsClient
@@ -381,8 +379,7 @@ public class YoutubeApiClientActor extends AbstractActor {
      *
      * @param channelId id for which channel information is to be fetched
      * @return {@link CompletionStage} of {@link ChannelResultItems}
-     *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Rajan Shah
      */
     public ChannelResultItems getChannelInformationByChannelId(String channelId) {
         WSRequest request = this.wsClient
@@ -403,8 +400,7 @@ public class YoutubeApiClientActor extends AbstractActor {
      *
      * @param videoId id for which sentiment is to be calculated.
      * @return {@link CompletableFuture} of {@link CommentResults}
-     *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Umang Patel
      */
     public CompletableFuture<CommentResults> getSentimentByVideoId(String videoId) {
         WSRequest request = this.wsClient

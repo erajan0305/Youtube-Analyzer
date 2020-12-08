@@ -98,7 +98,7 @@ public class YoutubeAnalyzerController extends Controller {
      * all the {@link Search#searchKeyword} searched for, after every 30 seconds.
      *
      * @return {@link WebSocket} Json Flow of updated {@link SearchResults}
-     * @author Rajan Shah, Kishan Bhimani, Umang Patel
+     * @author Rajan Shah
      */
     public WebSocket ws() {
         return WebSocket.Json.acceptOrResult(this::createFlow);
@@ -110,7 +110,7 @@ public class YoutubeAnalyzerController extends Controller {
      *
      * @param requestHeader Request Header of current request.
      * @return CompletionStage of either Flow of {@link SearchResults} or 403 (Forbidden).
-     * @author Kishan Bhimani, Rajan Shah, Umang Patel
+     * @author Umang Patel
      */
     protected CompletionStage<F.Either<Result, Flow<JsonNode, JsonNode, ?>>> createFlow(Http.RequestHeader requestHeader) {
         return CompletableFuture.completedFuture(
@@ -125,7 +125,7 @@ public class YoutubeAnalyzerController extends Controller {
      *
      * @param userName for which to create the Flow of {@link SearchResults}
      * @return Flow of {@link JsonNode} of {@link SearchResults}
-     * @author Umang Patel, Kishan Bhimani, Rajan Shah
+     * @author Kishan Bhimani
      */
     private Flow<JsonNode, JsonNode, ?> createFlowOfResults(String userName) {
         ActorRef userActor = FutureConverters.toJava(ask(sessionActor, new SessionActor.GetUser(userName), 5000))
@@ -189,6 +189,7 @@ public class YoutubeAnalyzerController extends Controller {
         String searchKeyword = requestBody.get("searchKeyword")[0];
         CompletionStage<SearchResults> searchResponsePromise = FutureConverters.toJava(ask(supervisorActor, new YoutubeApiClientActor.FetchVideos(searchKeyword), 5000))
                 .thenApply(o -> (SearchResults) o);
+        // try using then compose
         return searchResponsePromise.thenApply(searchResults -> {
             sessionActor.tell(new SessionActor.AddSearchResultsToUser(userAgentName, searchKeyword, searchResults), ActorRef.noSender());
 

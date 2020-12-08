@@ -16,33 +16,75 @@ import static java.util.Collections.reverseOrder;
 import static java.util.function.UnaryOperator.identity;
 import static java.util.stream.Collectors.*;
 
+/**
+ * This actor handles the messages for fetching Similarity Stats for search keyword.
+ *
+ * @author Kishan Bhimani
+ */
 public class SimilarityContentActor extends AbstractActor {
 
     private final ActorRef sessionActor;
 
+    /**
+     * This class is a message type for fetching similarity content by keyword.
+     *
+     * @author Kishan Bhimani
+     */
     public static class SimilarContentByKeyword {
         private final String userId;
         private final String keyword;
 
+        /**
+         * Instantiates a new Similar content by keyword.
+         *
+         * @param userId  the user id
+         * @param keyword the keyword
+         * @author Kishan Bhimani
+         */
         public SimilarContentByKeyword(String userId, String keyword) {
             this.userId = userId;
             this.keyword = keyword;
         }
     }
 
+    /**
+     * Factory method for the {@link SimilarityContentActor}
+     *
+     * @param sessionActor the session actor
+     * @return the props
+     * @author Kishan Bhimani
+     */
     public static Props props(ActorRef sessionActor) {
         return Props.create(SimilarityContentActor.class, sessionActor);
     }
 
+    /**
+     * Instantiates a new Similarity content actor.
+     *
+     * @param sessionActor the session actor
+     * @author Kishan Bhimani
+     */
     SimilarityContentActor(ActorRef sessionActor) {
         this.sessionActor = sessionActor;
     }
 
+    /**
+     * Message Handling for {@link SimilarityContentActor}
+     *
+     * @author Kishan Bhimani
+     */
     @Override
     public Receive createReceive() {
-        return receiveBuilder().match(SimilarContentByKeyword.class, t -> this.getSimilarityStats(t)).build();
+        return receiveBuilder().match(SimilarContentByKeyword.class, this::getSimilarityStats).build();
     }
 
+    /**
+     * This method calculates the similarity between the given search keyword and other words in the title of the
+     * videos related to the search keyword and sends the similarity stats to the sender of the message.
+     *
+     * @param similarContentByKeyword the object holding the keyword for which similarity stats are to be found.
+     * @author Kishan Bhimani
+     */
     private void getSimilarityStats(SimilarContentByKeyword similarContentByKeyword) {
         String keyword = similarContentByKeyword.keyword;
         String userId = similarContentByKeyword.userId;

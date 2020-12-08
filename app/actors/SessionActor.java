@@ -18,7 +18,7 @@ public class SessionActor extends AbstractActor {
     /**
      * Protocol message for creating a user.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     public static class CreateUser {
         private final String userId;
@@ -26,10 +26,10 @@ public class SessionActor extends AbstractActor {
 
         /**
          * Constructor for the {@link CreateUser} protocol message.
-         * @param userId is the user ID.
-         * @param supervisorActor is the supervisor actor supervising this actor.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param userId          is the user ID.
+         * @param supervisorActor is the supervisor actor supervising this actor.
+         * @author Kishan Bhimani
          */
         public CreateUser(String userId, ActorRef supervisorActor) {
             this.userId = userId;
@@ -40,16 +40,16 @@ public class SessionActor extends AbstractActor {
     /**
      * Protocol message for getting a user.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Umang Patel
      */
     public static class GetUser {
         public final String userId;
 
         /**
          * Constructor for the {@link GetUser} protocol message.
-         * @param userId is the user ID.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param userId is the user ID.
+         * @author Umang Patel
          */
         public GetUser(String userId) {
             this.userId = userId;
@@ -59,16 +59,16 @@ public class SessionActor extends AbstractActor {
     /**
      * Protocol message for retrieving the search results of a user.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Rajan Shah
      */
     public static class GetUserSearchResults {
         public final String userId;
 
         /**
          * Constructor for the {@link GetUserSearchResults} protocol message.
-         * @param userId is the user ID.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param userId is the user ID.
+         * @author Rajan Shah
          */
         public GetUserSearchResults(String userId) {
             this.userId = userId;
@@ -78,7 +78,7 @@ public class SessionActor extends AbstractActor {
     /**
      * Protocol message for appending the search results of a user.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     public static class AddSearchResultsToUser {
         public final String userId;
@@ -87,11 +87,11 @@ public class SessionActor extends AbstractActor {
 
         /**
          * Constructor for the {@link AddSearchResultsToUser} protocol message.
-         * @param userId is the user ID.
-         * @param key is the search keyword.
-         * @param searchResults is the search results.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param userId        is the user ID.
+         * @param key           is the search keyword.
+         * @param searchResults is the search results.
+         * @author Kishan Bhimani
          */
         public AddSearchResultsToUser(String userId, String key, SearchResults searchResults) {
             this.userId = userId;
@@ -103,7 +103,7 @@ public class SessionActor extends AbstractActor {
     /**
      * Factory method for instantiating the {@link SessionActor}.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     public static Props props() {
         return Props.create(SessionActor.class);
@@ -113,7 +113,7 @@ public class SessionActor extends AbstractActor {
      * Message handling method for {@link SessionActor}
      * Overridden from the {@link AbstractActor} class.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     @Override
     public Receive createReceive() {
@@ -127,9 +127,9 @@ public class SessionActor extends AbstractActor {
 
     /**
      * Helper method for handling user creation.
-     * @param createUser is the message protocol for creating a user
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @param createUser is the message protocol for creating a user
+     * @author Kishan Bhimani
      */
     private void addUserToCurrentRecord(CreateUser createUser) {
         ActorRef user = getContext().actorOf(UserActor.props(createUser.userId, createUser.supervisorActor));
@@ -138,9 +138,9 @@ public class SessionActor extends AbstractActor {
 
     /**
      * Helper method for handling appending search results of a user.
-     * @param addSearchResultsToUser is the message protocol for appending the search results of a user.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @param addSearchResultsToUser is the message protocol for appending the search results of a user.
+     * @author Kishan Bhimani
      */
     private void addSearchResultsToUserRecord(AddSearchResultsToUser addSearchResultsToUser) {
         ActorRef user = activeUsers.get(addSearchResultsToUser.userId);
@@ -149,9 +149,9 @@ public class SessionActor extends AbstractActor {
 
     /**
      * Helper method for handling the retrieval of a user.
-     * @param getUser is the message protocol for retrieving the user.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @param getUser is the message protocol for retrieving the user.
+     * @author Umang Patel
      */
     private void getUser(GetUser getUser) {
         ActorRef user = activeUsers.get(getUser.userId);
@@ -160,9 +160,9 @@ public class SessionActor extends AbstractActor {
 
     /**
      * Helper method for handling the retrieval of search results of a user.
-     * @param getUserSearchResults is the message protocol for retrieving the search results of a user.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @param getUserSearchResults is the message protocol for retrieving the search results of a user.
+     * @author Rajan Shah
      */
     private void getUserSearchResults(GetUserSearchResults getUserSearchResults) {
         ActorRef user = activeUsers.get(getUserSearchResults.userId);

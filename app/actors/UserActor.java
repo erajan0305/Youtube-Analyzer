@@ -29,7 +29,7 @@ public class UserActor extends AbstractActor {
     /**
      * Message protocol for storing search results of a particular user identified by a user ID.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Kishan Bhimani
      */
     public static class AddSearchResult {
         public final String userId;
@@ -38,11 +38,11 @@ public class UserActor extends AbstractActor {
 
         /**
          * Constructor of the {@link AddSearchResult} message protocol
-         * @param userId is the user ID
-         * @param key is the search keyword
-         * @param searchResults is the search results obtained from the Youtube API.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param userId        is the user ID
+         * @param key           is the search keyword
+         * @param searchResults is the search results obtained from the Youtube API.
+         * @author Kishan Bhimani
          */
         public AddSearchResult(String userId, String key, SearchResults searchResults) {
             this.userId = userId;
@@ -54,16 +54,16 @@ public class UserActor extends AbstractActor {
     /**
      * Message protocol for fetching the search results given a user ID.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Umang Patel
      */
     public static class GetSearchResults {
         public final String userId;
 
         /**
          * Constructor for the {@link GetSearchResults} message protocol.
-         * @param userId is the user ID.
          *
-         * @author Kishan Bhimani, Rajan Shah and Umang Patel
+         * @param userId is the user ID.
+         * @author Umang Patel
          */
         public GetSearchResults(String userId) {
             this.userId = userId;
@@ -73,7 +73,7 @@ public class UserActor extends AbstractActor {
     /**
      * Message protocol for requests pertaining to updation of the search results.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Rajan Shah
      */
     public static class UpdateSearchResultsRequest {
     }
@@ -81,7 +81,7 @@ public class UserActor extends AbstractActor {
     /**
      * Helper method for updating the search results of a particular user.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Rajan Shah
      */
     private void updateSearchResults() {
         Set<String> strings = this.userSearchResultsBySearchKeywordHashMap.keySet();
@@ -132,10 +132,10 @@ public class UserActor extends AbstractActor {
 
     /**
      * Constructor of the {@link UserActor}.
-     * @param userId is the user ID.
-     * @param supervisorActor is the supervisor actor supervising this actor.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @param userId          is the user ID.
+     * @param supervisorActor is the supervisor actor supervising this actor.
+     * @author Kishan Bhimani
      */
     public UserActor(String userId, ActorRef supervisorActor) {
         this.userId = userId;
@@ -144,11 +144,11 @@ public class UserActor extends AbstractActor {
 
     /**
      * Factory method for instantiating the {@link UserActor}
-     * @param userId is the user ID.
+     *
+     * @param userId          is the user ID.
      * @param supervisorActor is the supervisor actor supervising this actor.
      * @return actor configuration in the form of {@link Props} object
-     *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Umang Patel
      */
     public static Props props(String userId, ActorRef supervisorActor) {
         return Props.create(UserActor.class, userId, supervisorActor);
@@ -158,7 +158,7 @@ public class UserActor extends AbstractActor {
      * Message handling method for the {@link UserActor}.
      * Overridden from the {@link AbstractActor} class.
      *
-     * @author Kishan Bhimani, Rajan Shah and Umang Patel
+     * @author Umang Patel
      */
     @Override
     public Receive createReceive() {
