@@ -156,7 +156,7 @@ public class SessionActorTest {
      * Helper method for fetching search results from a downloaded JSON file.
      *
      * @param fileName represents the file name (without extension) in string
-     * @return search results in the form of {@link CompletableFuture<SearchResults>}
+     * @return search results in the form of {@link CompletableFuture}
      * @author Umang Patel
      */
     @Ignore

@@ -102,8 +102,11 @@ public class EmojiAnalyzerActorTest {
 
     /**
      * This method tests the {@link EmojiAnalyzerActor.EmojiAnalyzer#processCommentStream(Stream commentStream)} method and matches the result with the expected result.
+     * @throws ExecutionException for safety
+     * @throws InterruptedException for safety
      *
      * @author Umang Patel
+     *
      */
     @Test
     public void testHappyAnalysisResultWithExpectedOutput() throws ExecutionException, InterruptedException {
@@ -170,7 +173,7 @@ public class EmojiAnalyzerActorTest {
     /**
      * Helper method to fetch downloaded JSON files for emoji analysis tests.
      * @param commentResultsPromise is the Youtube comments promise
-     * @return emoji response in the form of {@link CompletableFuture<String>}
+     * @return emoji response in the form of {@link CompletableFuture}
      *
      * @author Umang Patel
      */
@@ -185,7 +188,7 @@ public class EmojiAnalyzerActorTest {
     /**
      * Helper method to fetch comments from downloaded JSON files.
      * @param fileName is the name of the file (excluding extension) in {@link String}
-     * @return comments in the form of {@link CompletableFuture<CommentResults>}
+     * @return comment results in the form of {@link CompletableFuture}
      *
      * @author Umang Patel
      */

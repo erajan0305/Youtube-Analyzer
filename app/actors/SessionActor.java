@@ -102,6 +102,7 @@ public class SessionActor extends AbstractActor {
 
     /**
      * Factory method for instantiating the {@link SessionActor}.
+     * @return Actor configuration in the form of {@link Props} object.
      *
      * @author Kishan Bhimani
      */

@@ -72,6 +72,7 @@ public class YoutubeAnalyzerController extends Controller {
 
     /**
      * Instantiates the FormFactory object
+     * @param formFactory is the form object in Play framework
      */
     public void setFormFactory(FormFactory formFactory) {
         this.formFactory = formFactory;
@@ -79,6 +80,7 @@ public class YoutubeAnalyzerController extends Controller {
 
     /**
      * Instantiates the Play Framework MessagesApi object
+     * @param messagesApi is the {@link MessagesApi} object from the Play Framework
      */
     public void setMessagesApi(MessagesApi messagesApi) {
         this.messagesApi = messagesApi;
@@ -86,6 +88,7 @@ public class YoutubeAnalyzerController extends Controller {
 
     /**
      * Instantiates the Play Framework Materializer object
+     * @param materializer is the {@link Materializer} object from the Play Framework.
      */
     public void setMaterializer(Materializer materializer) {
         this.materializer = materializer;
@@ -234,7 +237,7 @@ public class YoutubeAnalyzerController extends Controller {
      * this method will be called when the application receives a
      * <code>GET</code> request with a path of <code>/:id/:keyword</code>.<br>
      * Searches for videos by <code>id,keyword</code> sent in request query.<br>
-     * Fetches channel information and 10 latest videos sorted by <code>date</code> and <code>id</code}.
+     * Fetches channel information and 10 latest videos sorted by <code>date</code> and <code>id</code>}.
      * <p>
      *
      * @param id      channel id for which information is requested

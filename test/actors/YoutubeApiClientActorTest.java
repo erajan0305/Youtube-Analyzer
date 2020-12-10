@@ -273,6 +273,8 @@ public class YoutubeApiClientActorTest {
 
     /**
      * This method tests the {@link YoutubeApiClientActor#getSentimentByVideoId(String videoId)} for various videoIds.
+     * @throws ExecutionException for safety
+     * @throws InterruptedException for safety
      *
      * @author Rajan Shah
      */
@@ -311,7 +313,7 @@ public class YoutubeApiClientActorTest {
     /**
      * This method destroys resources used for testing.
      *
-     * @throws IOException
+     * @throws IOException for safety
      * @author Rajan Shah
      */
     @After
