@@ -214,7 +214,7 @@ public class YoutubeApiClientActor extends AbstractActor {
     public static class GetSentimentByVideoId {
 
         /**
-         * Getter method for {@link GetSentimentByVideoId#videoId} which retrives the video ID.
+         * Getter method for {@link GetSentimentByVideoId#videoId} which retrieves the video ID.
          *
          * @return the video ID.
          * @author Umang Patel
@@ -277,23 +277,23 @@ public class YoutubeApiClientActor extends AbstractActor {
                         getSender().tell(searchResults, getSelf());
                         return;
                     }
-                    List<SearchResultItem> answer =
-                            searchResults.getItems().parallelStream()
-                                    .map(searchResultItem -> this.getViewCountByVideoId(searchResultItem.getId().getVideoId()).toCompletableFuture()
-                                            .thenCombineAsync(
-                                                    FutureConverters.toJava(
-                                                            ask(emojiAnalyzerActor, new EmojiAnalyzerActor.GetAnalysis(getSentimentByVideoId(searchResultItem.getId().getVideoId())), 2000))
-                                                            .thenApplyAsync(item -> (CompletableFuture<String>) item)
-                                                            .toCompletableFuture()
-                                                            .thenApplyAsync(CompletableFuture::join)
-                                                    , (String viewCount, String emoji) -> {
-                                                        searchResultItem.setViewCount(viewCount);
-                                                        searchResultItem.setCommentSentiment(emoji);
-                                                        return searchResultItem;
-                                                    }
-                                            )).map(CompletableFuture::join)
-                                    .collect(Collectors.toList());
-                    searchResults.setItems(answer);
+//                    List<SearchResultItem> answer =
+//                            searchResults.getItems().parallelStream()
+//                                    .map(searchResultItem -> this.getViewCountByVideoId(searchResultItem.getId().getVideoId()).toCompletableFuture()
+//                                            .thenCombineAsync(
+//                                                    FutureConverters.toJava(
+//                                                            ask(emojiAnalyzerActor, new EmojiAnalyzerActor.GetAnalysis(getSentimentByVideoId(searchResultItem.getId().getVideoId())), 2000))
+//                                                            .thenApplyAsync(item -> (CompletableFuture<String>) item)
+//                                                            .toCompletableFuture()
+//                                                            .thenApplyAsync(CompletableFuture::join)
+//                                                    , (String viewCount, String emoji) -> {
+//                                                        searchResultItem.setViewCount(viewCount);
+//                                                        searchResultItem.setCommentSentiment(emoji);
+//                                                        return searchResultItem;
+//                                                    }
+//                                            )).map(CompletableFuture::join)
+//                                    .collect(Collectors.toList());
+//                    searchResults.setItems(answer);
                     getSender().tell(searchResults, getSelf());
                 })
                 .match(GetViewCountByVideoId.class, t -> getSender().tell(this.getViewCountByVideoId(t.videoId), getSelf()))

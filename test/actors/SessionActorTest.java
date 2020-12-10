@@ -162,7 +162,7 @@ public class SessionActorTest {
     @Ignore
     private static CompletableFuture<SearchResults> fetchDummyResults(String fileName) {
         return fileName.equals("null") ? null : CompletableFuture.supplyAsync(() ->
-                DatasetHelper.jsonFileToObject(new File("test/dataset/searchResults/" + fileName + ".json"),
+                DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/" + fileName + ".json"),
                         SearchResults.class)
         );
     }
