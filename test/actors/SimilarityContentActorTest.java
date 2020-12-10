@@ -18,20 +18,43 @@ import java.util.LinkedHashMap;
 import static akka.pattern.Patterns.ask;
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Unit tests for the {@link SimilarityContentActor}
+ *
+ * @author Kishan Bhimani
+ */
 public class SimilarityContentActorTest {
 
+    /**
+     * The Actor system.
+     */
     static ActorSystem actorSystem;
 
+    /**
+     * Initializes the actor system for tests
+     *
+     * @author Kishan Bhimani
+     */
     @BeforeClass
     public static void init() {
         actorSystem = ActorSystem.create();
     }
 
+    /**
+     * Destroys the instantiated objects at the end of all the tests.
+     *
+     * @author Kishan Bhimani
+     */
     @AfterClass
     public static void destroy() {
         actorSystem = null;
     }
 
+    /**
+     * This test checks messageType for {@link SimilarityContentActor}.
+     *
+     * @author Kishan Bhimani
+     */
     @Test
     public void similarityContentMessageTest() {
         final TestKit testKit = new TestKit(actorSystem);
@@ -41,6 +64,11 @@ public class SimilarityContentActorTest {
         assertEquals("xyz", userSearchResults.userId);
     }
 
+    /**
+     * This method tests {@link SimilarityContentActor} when there is no similarity at all.
+     *
+     * @author Kishan Bhimani
+     */
     @Test
     public void noSimilarityContentTest() {
         final TestProbe child = new TestProbe(actorSystem);
@@ -63,6 +91,11 @@ public class SimilarityContentActorTest {
         assertEquals(0, similarityContentLinkedHashmap.size());
     }
 
+    /**
+     * This method tests {@link SimilarityContentActor} for similarity content.
+     *
+     * @author Kishan Bhimani
+     */
     @Test
     public void similarityContentCountTest() {
         final TestProbe child = new TestProbe(actorSystem);

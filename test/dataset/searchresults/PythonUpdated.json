@@ -1,0 +1,144 @@
+{
+  "items": [
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "bImREvZ2MKM"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-10T01:09:27Z",
+        "channelId": "UCAykbCi_wrR10EskHm71fJw",
+        "title": "#CSEdWeek - Coding with Python to Make a Digital Mood Ring",
+        "description": "Join us as we celebrate #CSEdWeek! In this session, we will break down how to use Python on the TI-Nspire CX II graphing calculator to code a working digital ...",
+        "channelTitle": "Texas Instruments Education",
+        "publishTime": "2020-12-10T01:09:27Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "08ODPRPYz7k"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-10T00:54:35Z",
+        "channelId": "UCm63tB8wsKOVvxoU4iMpS2A",
+        "title": "🔴APP de INVESTIMENTOS do ZERO - 100% no Terminal com Python - CRUD Python",
+        "description": "Quer se tornar um Programador Python Profissional? ACESSE JÁ! http://cursodepython.net/ Código fonte apenas para membros do canal exclusivo do ...",
+        "channelTitle": "Dev Aprender",
+        "publishTime": "2020-12-10T00:54:35Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "gRXsUqXuAtk"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-09T23:18:43Z",
+        "channelId": "UCJLZOWAy4TN7kt0SLyoBQ5Q",
+        "title": "Betfury BFG Automatic BFG Farming Strategy with Python",
+        "description": "This is a fun project I am making for the BetFury BFG token farming out of interest for the platform and a good coding exercise, all code is open source and if you ...",
+        "channelTitle": "Crypto Gnome",
+        "publishTime": "2020-12-09T23:18:43Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "J248QT7qvfE"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-09T23:14:11Z",
+        "channelId": "UCLiU3BzWeBoQjCgeu1kL8Bw",
+        "title": "15FT KING COBRA EATS FLORIDA PYTHON!!!",
+        "description": "HELP SUPPORT THE SHOW AND JOIN PATREON FOR EXCLUSIVE VIDEOS AND MERCH! https://www.patreon.com/chandlerswildclub CHECK OUT OUR ...",
+        "channelTitle": "Chandler's Wild Life",
+        "publishTime": "2020-12-09T23:14:11Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "HaGITUUv8aY"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-09T23:08:06Z",
+        "channelId": "UCKeFq9ZJC_3Z_i6IR5Xeygw",
+        "title": "Instrucciones Webinar: Análisis de Series Temporales de Datos Cambio Climático con Python - 13Dic20",
+        "description": "El presente webinar cubre un ejemplo aplicado de análisis de datos sobre el cambio climático con Python, Pandas y librerias relacionadas. El caso de estudio ...",
+        "channelTitle": "Gidahatari",
+        "publishTime": "2020-12-09T23:08:06Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "ANDXIKsLCOk"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-09T23:00:03Z",
+        "channelId": "UCIveI1ySN5FBe4GyiIJCDig",
+        "title": "10 décembre : Calendrier de l&#39;avent Python et JavaScript pour débutant",
+        "description": "Je vous propose un petit calendrier de l'avent où chaque jour vous aurez une petite énigme à résoudre. Mettre votre réponse en commentaire ou attendez le ...",
+        "channelTitle": "Schraf : Maths-info",
+        "publishTime": "2020-12-09T23:00:03Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "KuO6K3gkVqA"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-09T21:42:44Z",
+        "channelId": "UCJRhK2b92UpOr4LBCWVaFDw",
+        "title": "COVID VACCINE ALLERGIES... and reading/writing to files with Python",
+        "description": "Tip Here: https://streamlabs.com/elithecomputerguypage Find more at: https://www.EliTheComputerGuy.com.",
+        "channelTitle": "The Daily Blob",
+        "publishTime": "2020-12-09T21:42:44Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "V4JRKk6NjWQ"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-09T20:27:02Z",
+        "channelId": "UCwLy_PYrnCEhCU-Ay2F5Drw",
+        "title": "Warsztat PoweR 02 - Podstawy Python - Kasia Stankiewicz",
+        "description": "Warsztaty będą poświęcone podstawom języka Python. Zaczynając od typów danych, operatory liczbowe, wektory i operatory wektorowe po listy. Kolejno ...",
+        "channelTitle": "Why R? Foundation",
+        "publishTime": "2020-12-09T20:27:02Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "C3QHhKUMAbQ"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-09T19:48:04Z",
+        "channelId": "UClfgZJjJnk20ORdWpK3ySTA",
+        "title": "Day 1 Hands-on Practical Oriented Session on “Python Programming&quot; By Prashant Jha",
+        "description": "JD College of Engineering Nagpur is Conducting 4 Days Online Hands-on Practical Oriented Session on “Python Programming“ in association with APS ...",
+        "channelTitle": "Help4code eLearning",
+        "publishTime": "2020-12-09T19:48:04Z"
+      }
+    },
+    {
+      "id": {
+        "kind": "youtube#video",
+        "videoId": "eCkN1jLUVtA"
+      },
+      "snippet": {
+        "publishedAt": "2020-12-09T19:39:56Z",
+        "channelId": "UCw4nW20DmN2eh7o2ZL2gfWA",
+        "title": "How to Install Python | Install Python on Window 7(32 bit/64bit)",
+        "description": "Download link- https://www.python.org/downloads/ Check the Entire Playlist (Class 12 Python) ...",
+        "channelTitle": "Edutainment 1.0",
+        "publishTime": "2020-12-09T19:39:56Z"
+      }
+    }
+  ]
+}
