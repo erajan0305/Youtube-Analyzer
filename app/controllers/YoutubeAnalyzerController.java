@@ -21,9 +21,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.WebSocket;
 import scala.compat.java8.FutureConverters;
-import views.html.channelInfo;
-import views.html.index;
-import views.html.similarContent;
+import views.html.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
