@@ -1,12 +1,13 @@
 @import models.POJO.SearchResults.SearchResults
-@(searchForm: Form[Search], searchResultsMap: Map[String, SearchResults])(implicit messages: play.i18n.Messages)
-
+@(searchForm: Form[Search], searchResultsMap: Map[String, SearchResults], url: String)(implicit messages: play.i18n.Messages)
 
 <html>
     <head>
         <title>Youtube Analyzer</title>
     </head>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <body>
+        <div id="message"></div>
         <section id="content">
             <h1>Youtube Analyzer</h1>
             <br/>
@@ -15,32 +16,94 @@
                 @helper.inputText(searchForm("searchKeyword"))
                 <input type="submit" value="Search">
             }
-                <div>
-                @if(searchResultsMap != null && searchResultsMap.size > 0) {
-                    @for((searchWords, searchResults) <- searchResultsMap) {
-                        @if(searchResults != null && searchResults.getItems() != null) {
-                            <span>
-                                <b>Search Terms: </b>
-                                <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchWords)'>@searchWords</a>
-                            </span>
-                            <ol>
-                            @for(item <- searchResults.getItems()) {
-                                <hr style="width: 75%;
-                                    text-align: left;
-                                    margin-left: 0">
-                                @if(item != null) {
-                                    <li><a href="https://www.youtube.com/watch?v=@item.getId().getVideoId()" target="_blank">@item.getSnippet().getTitle()</a>
-                                        ,
-                                        <a href="@routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(item.getSnippet().getChannelId(), searchWords)"><b>@item.getSnippet().getChannelTitle()</b></a>
-                                        ,@item.getViewCount(), @item.getCommentSentiment(),@item.getSnippet().getPublishTime(),
-                                    </li>
-                                }
+            <div>
+            @if(searchResultsMap != null && searchResultsMap.size > 0) {
+                @for((searchWords, searchResults) <- searchResultsMap) {
+                    @if(searchResults != null && searchResults.getItems() != null) {
+                        <span>
+                            <b>Search Terms: </b>
+                            <a href='@routes.YoutubeAnalyzerController.fetchSimilarityStats(searchWords)'>@searchWords</a>
+                        </span>
+                        <ol id="@searchWords">
+                        @for(item <- searchResults.getItems()) {
+                            <hr style="width: 75%; text-align: left; margin-left: 0">
+                            @if(item != null) {
+                                <li><a href="https://www.youtube.com/watch?v=@item.getId().getVideoId()" target="_blank">@item.getSnippet().getTitle()</a>
+                                    ,
+                                    <a href="@routes.YoutubeAnalyzerController.fetchChannelInformationAndTop10Videos(item.getSnippet().getChannelId(), searchWords)"><b>@item.getSnippet().getChannelTitle()</b></a>
+                                    ,@item.getViewCount(), @item.getCommentSentiment(),@item.getSnippet().getPublishTime(),
+                                </li>
+                                <hr style="width: 75%; text-align: left; margin-left: 0">
                             }
-                            </ol>
                         }
+                        </ol>
                     }
                 }
-        </div>
-        </section>
+            }
+            </div>
+            </section>
+        <script>
+                var webSocket;
+
+                function init() {
+                    initWs();
+                }
+
+                function initWs() {
+                    webSocket = new WebSocket("@url");
+                    webSocket.onopen = onOpen;
+                    webSocket.onclose = onClose;
+                    webSocket.onmessage = onMessage;
+                    webSocket.onerror = onError;
+                }
+
+                function onOpen(evt) {
+                    writeToScreen("CONNECTED");
+                }
+
+                function onClose(evt) {
+                    writeToScreen("DISCONNECTED");
+                }
+
+                function onError(evt) {
+                    writeToScreen("ERROR: " + evt.data);
+                    writeToScreen("ERROR: " + JSON.stringify(evt));
+                }
+
+                function onMessage(evt) {
+                    let receivedData = JSON.parse(evt.data);
+                    console.log("New Data: ", receivedData);
+                    addOrUpdateSearchResults(receivedData);
+                }
+
+                function writeToScreen(message) {
+                    console.log("New message: ", message);
+                }
+
+                function addOrUpdateSearchResults(jsonResponse) {
+                    for (let i = 0; i < Object.keys(jsonResponse).length; i++) {
+                        let key = Object.keys(jsonResponse)[i]
+                        let value = jsonResponse[key].items
+                        let count = value.length;
+                        const hr = " <hr style=\"width: 75%;\n" +
+                                "text-align: right;\n" +
+                                "margin-left: 100px\">"
+                        let li="";
+                        for (let j = 0; j < count; j++) {
+                            let searchResult = value[j];
+                            li += "<li>" +
+                                    `<a href="https://www.youtube.com/watch?v=${searchResult.id.videoId}" target=_blank'>` + searchResult.snippet.title + "</a>" + " , " +
+                                    `<a href="/channel/${searchResult.snippet.channelId}/${key}">` +
+                                    "<b>" + searchResult.snippet.channelTitle + "</b></a>" + " , "
+                                    + searchResult.viewCount + " , " + searchResult.commentSentiment + " , " + searchResult.snippet.publishTime +
+                                    "</li>" + hr;
+                        }
+                        let ol = document.getElementById(key); // reference to containing element
+                        ol.innerHTML = li;
+                    }
+                }
+
+                window.addEventListener("load", init, false);
+        </script>
     </body>
 </html>
