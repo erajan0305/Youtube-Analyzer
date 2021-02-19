@@ -1,40 +1,46 @@
-package models;
+package actors;
 
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.testkit.typed.javadsl.TestKitJunitResource;
 import dataset.DatasetHelper;
-import models.Helper.YouTubeApiClient;
 import models.POJO.Channel.ChannelResultItems;
 import models.POJO.Comments.CommentResults;
 import models.POJO.SearchResults.SearchResults;
 import models.POJO.VideoSearch.Videos;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import play.libs.ws.WSClient;
 import play.routing.RoutingDsl;
 import play.server.Server;
+import scala.compat.java8.FutureConverters;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
+import static akka.pattern.Patterns.ask;
 import static play.mvc.Results.ok;
 
 /**
- * This is test class for {@link YouTubeApiClient}
+ * This is a test call for {@link YoutubeApiClientActor}.
  *
- * @author Kishan Bhimani
+ * @author Rajan Shah
  */
-public class YoutubeApiClientTest {
-    private YouTubeApiClient youTubeApiClient;
-    private WSClient wsTestClient;
-    private Server server;
+public class YoutubeApiClientActorTest {
+    ActorRef youtubeApiClientActor;
+    WSClient wsTestClient;
+    ActorSystem actorSystem;
+    Server server;
+
+    @ClassRule
+    public static final TestKitJunitResource testKit = new TestKitJunitResource();
 
     /**
-     * This methods sets up Fake Youtube Server. It uses data from {@link dataset} to generate responses.
+     * This method initializes the server to handle requests for the test cases and instantiates {@link YoutubeApiClientActor} actor.
      *
-     * @author Kishan Bhimani
+     * @author Rajan Shah
      */
     @Before
     public void setup() {
@@ -111,152 +117,193 @@ public class YoutubeApiClientTest {
                             }
                         })
                         .build());
+
         wsTestClient = play.test.WSTestClient.newClient(server.httpPort());
-        youTubeApiClient = new YouTubeApiClient(wsTestClient);
-        youTubeApiClient.BASE_URL = "/";
+        actorSystem = ActorSystem.create("TestActorSystem");
+        youtubeApiClientActor = actorSystem.actorOf(YoutubeApiClientActor.props(wsTestClient));
+        youtubeApiClientActor.tell(new YoutubeApiClientActor.SetBaseUrl("/"), ActorRef.noSender());
     }
 
     /**
-     * This method is test method for {@link YouTubeApiClient#fetchVideos(String)}
+     * This method tests the {@link YoutubeApiClientActor#fetchVideos(String keyword)} for various keywords.
      *
-     * @throws Exception
-     * @author Kishan Bhimani
+     * @author Rajan Shah
      */
     @Test
-    public void fetchVideos() throws Exception {
-        SearchResults actualJava = youTubeApiClient.fetchVideos("java").toCompletableFuture().get();
+    public void fetchVideosTest() {
+        SearchResults actualJava = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("java"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedJava = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Java.json"), SearchResults.class);
         assert expectedJava != null;
+        expectedJava.getItems().parallelStream().forEach(searchResultItem -> {
+            searchResultItem.setViewCount("No Data");
+            searchResultItem.setCommentSentiment("\uD83D\uDE10");
+        });
         Assert.assertEquals(expectedJava.toString(), actualJava.toString());
 
-        SearchResults actualPython = youTubeApiClient.fetchVideos("python").toCompletableFuture().get();
+        SearchResults actualPython = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("python"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedPython = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Python.json"), SearchResults.class);
         assert expectedPython != null;
+        expectedPython.getItems().parallelStream().forEach(searchResultItem -> {
+            searchResultItem.setViewCount("No Data");
+            searchResultItem.setCommentSentiment("\uD83D\uDE10");
+        });
         Assert.assertEquals(expectedPython.toString(), actualPython.toString());
 
-        SearchResults actualGolang = youTubeApiClient.fetchVideos("golang").toCompletableFuture().get();
+        SearchResults actualGolang = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("golang"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedGolang = DatasetHelper.jsonFileToObject(new File("test/dataset/searchresults/Golang.json"), SearchResults.class);
         assert expectedGolang != null;
+        expectedGolang.getItems().parallelStream().forEach(searchResultItem -> {
+            searchResultItem.setViewCount("No Data");
+            searchResultItem.setCommentSentiment("\uD83D\uDE10");
+        });
         Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
 
-        SearchResults actualNoResult = youTubeApiClient.fetchVideos("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
+        SearchResults actualNoResult = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.FetchVideos("!029 ( 02 _2 (@ 92020** 7&6 ^^5"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), SearchResults.class);
         assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
         assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 
     /**
-     * This method is test method for {@link YouTubeApiClient#getViewCountByVideoId(String)}
+     * This method tests the {@link YoutubeApiClientActor#getVideosJsonByChannelId(String channelId, String keyword)}}
+     * for various channelId's and  keywords.
      *
-     * @throws Exception
-     * @author Kishan Bhimani
+     * @author Rajan Shah
      */
     @Test
-    public void getViewCountByVideoId() throws Exception {
-        String actualJavaViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("uhp3GbQiSRs").toCompletableFuture().get();
-        Videos expectedJavaVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Java_uhp3GbQiSRs.json"), Videos.class);
-        assert expectedJavaVideoItems != null;
-        Assert.assertEquals(expectedJavaVideoItems.getItems().get(0).getStatistics().getViewCount(), actualJavaViewCountByVideoId);
-
-        String actualPythonViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("OsKQw3qTMMk").toCompletableFuture().get();
-        Videos expectedPythonVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Python_OsKQw3qTMMk.json"), Videos.class);
-        assert expectedPythonVideoItems != null;
-        Assert.assertEquals(expectedPythonVideoItems.getItems().get(0).getStatistics().getViewCount(), actualPythonViewCountByVideoId);
-
-        String actualGolangViewCountByVideoId = youTubeApiClient.getViewCountByVideoId("FxxkOfvY39c").toCompletableFuture().get();
-        Videos expectedGolangVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Golang_FxxkOfvY39c.json"), Videos.class);
-        assert expectedGolangVideoItems != null;
-        Assert.assertEquals(expectedGolangVideoItems.getItems().get(0).getStatistics().getViewCount(), actualGolangViewCountByVideoId);
-
-        String actualNoResult = youTubeApiClient.getViewCountByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
-        Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
-        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
-        String noData = "No Data";
-        Assert.assertEquals(actualNoResult, noData);
-    }
-
-    /**
-     * This method is test method for {@link YouTubeApiClient#getVideosJsonByChannelId(String, String)}
-     *
-     * @throws Exception
-     * @author Kishan Bhimani
-     */
-    @Test
-    public void getVideosJsonByChannelId() throws Exception {
-        SearchResults actualJava = youTubeApiClient.getVideosJsonByChannelId("UC0RhatS1pyxInC00YKjjBqQ", "java").toCompletableFuture().get();
+    public void getVideosJsonByChannelId() {
+        SearchResults actualJava = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetVideosJsonByChannelId("UC0RhatS1pyxInC00YKjjBqQ", "java"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedJava = DatasetHelper.jsonFileToObject(new File("test/dataset/channelvideos/Java_UC0RhatS1pyxInC00YKjjBqQ.json"), SearchResults.class);
         assert expectedJava != null;
         Assert.assertEquals(expectedJava.toString(), actualJava.toString());
 
-        SearchResults actualPython = youTubeApiClient.getVideosJsonByChannelId("UCWr0mx597DnSGLFk1WfvSkQ", "python").toCompletableFuture().get();
+        SearchResults actualPython = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetVideosJsonByChannelId("UCWr0mx597DnSGLFk1WfvSkQ", "python"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedPython = DatasetHelper.jsonFileToObject(new File("test/dataset/channelvideos/Python_UCWr0mx597DnSGLFk1WfvSkQ.json"), SearchResults.class);
         assert expectedPython != null;
         Assert.assertEquals(expectedPython.toString(), actualPython.toString());
 
-        SearchResults actualGolang = youTubeApiClient.getVideosJsonByChannelId("UC-R1UuxHVDyNoJN0Tn4nkiQ", "golang").toCompletableFuture().get();
+        SearchResults actualGolang = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetVideosJsonByChannelId("UC-R1UuxHVDyNoJN0Tn4nkiQ", "golang"), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         SearchResults expectedGolang = DatasetHelper.jsonFileToObject(new File("test/dataset/channelvideos/Golang_UC-R1UuxHVDyNoJN0Tn4nkiQ.json"), SearchResults.class);
         assert expectedGolang != null;
         Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
 
-        SearchResults actualNoResult = youTubeApiClient.getVideosJsonByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5", "").toCompletableFuture().get();
+        SearchResults actualNoResult = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetVideosJsonByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5", ""), 5000))
+                .toCompletableFuture().thenApply(o -> (SearchResults) o).join();
         Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
         assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
         assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 
     /**
-     * This method is test method for {@link YouTubeApiClient#getChannelInformationByChannelId(String)}
+     * This method tests the {@link YoutubeApiClientActor#getChannelInformationByChannelId(String channelId)} for
+     * various channelId's.
      *
-     * @throws Exception
-     * @author Kishan Bhimani
+     * @author Rajan Shah
      */
     @Test
-    public void getChannelInformationByChannelId() throws Exception {
-        ChannelResultItems actualJava = youTubeApiClient.getChannelInformationByChannelId("UC0RhatS1pyxInC00YKjjBqQ").toCompletableFuture().get();
+    public void getChannelInformationByChannelId() {
+        ChannelResultItems actualJava = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetChannelInformationByChannelId("UC0RhatS1pyxInC00YKjjBqQ"), 5000))
+                .toCompletableFuture().thenApply(o -> (ChannelResultItems) o).join();
         ChannelResultItems expectedJava = DatasetHelper.jsonFileToObject(new File("test/dataset/channelinformation/Channel_Java_UC0RhatS1pyxInC00YKjjBqQ.json"), ChannelResultItems.class);
         assert expectedJava != null;
         Assert.assertEquals(expectedJava.toString(), actualJava.toString());
 
-        ChannelResultItems actualPython = youTubeApiClient.getChannelInformationByChannelId("UCWr0mx597DnSGLFk1WfvSkQ").toCompletableFuture().get();
+        ChannelResultItems actualPython = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetChannelInformationByChannelId("UCWr0mx597DnSGLFk1WfvSkQ"), 5000))
+                .toCompletableFuture().thenApply(o -> (ChannelResultItems) o).join();
         ChannelResultItems expectedPython = DatasetHelper.jsonFileToObject(new File("test/dataset/channelinformation/Channel_Python_UCWr0mx597DnSGLFk1WfvSkQ.json"), ChannelResultItems.class);
         assert expectedPython != null;
         Assert.assertEquals(expectedPython.toString(), actualPython.toString());
 
-        ChannelResultItems actualGolang = youTubeApiClient.getChannelInformationByChannelId("UC-R1UuxHVDyNoJN0Tn4nkiQ").toCompletableFuture().get();
+        ChannelResultItems actualGolang = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetChannelInformationByChannelId("UC-R1UuxHVDyNoJN0Tn4nkiQ"), 5000))
+                .toCompletableFuture().thenApply(o -> (ChannelResultItems) o).join();
         ChannelResultItems expectedGolang = DatasetHelper.jsonFileToObject(new File("test/dataset/channelinformation/Channel_Golang_UC-R1UuxHVDyNoJN0Tn4nkiQ.json"), ChannelResultItems.class);
         assert expectedGolang != null;
         Assert.assertEquals(expectedGolang.toString(), actualGolang.toString());
 
-        ChannelResultItems actualNoResult = youTubeApiClient.getChannelInformationByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
+        ChannelResultItems actualNoResult = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetChannelInformationByChannelId("!029 ( 02 _2 (@ 92020** 7&6 ^^5"), 5000))
+                .toCompletableFuture().thenApply(o -> (ChannelResultItems) o).join();
         ChannelResultItems expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), ChannelResultItems.class);
         assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
         assert Objects.requireNonNull(actualNoResult).getItems() == null;
     }
 
     /**
-     * This method is test method for {@link YouTubeApiClient#getSentimentByVideoId(String)}
+     * This method tests the {@link YoutubeApiClientActor#getViewCountByVideoId(String videoId)} for various videoId's.
      *
-     * @throws Exception
-     * @author Kishan Bhimani
+     * @author Rajan Shah
+     */
+    @Test
+    public void getViewCountByVideoId() {
+        CompletionStage<String> uhp3GbQiSRs = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetViewCountByVideoId("uhp3GbQiSRs"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<String>) o).join();
+        String actualJavaViewCountByVideoId = uhp3GbQiSRs.toCompletableFuture().join();
+        Videos expectedJavaVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Java_uhp3GbQiSRs.json"), Videos.class);
+        assert expectedJavaVideoItems != null;
+        Assert.assertEquals(expectedJavaVideoItems.getItems().get(0).getStatistics().getViewCount(), actualJavaViewCountByVideoId);
+
+        CompletionStage<String> osKQw3qTMMk = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetViewCountByVideoId("OsKQw3qTMMk"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<String>) o).join();
+        String actualPythonViewCountByVideoId = osKQw3qTMMk.toCompletableFuture().join();
+        Videos expectedPythonVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Python_OsKQw3qTMMk.json"), Videos.class);
+        assert expectedPythonVideoItems != null;
+        Assert.assertEquals(expectedPythonVideoItems.getItems().get(0).getStatistics().getViewCount(), actualPythonViewCountByVideoId);
+
+        CompletionStage<String> fxxkOfvY39c = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetViewCountByVideoId("FxxkOfvY39c"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<String>) o).join();
+        String actualGolangViewCountByVideoId = fxxkOfvY39c.toCompletableFuture().join();
+        Videos expectedGolangVideoItems = DatasetHelper.jsonFileToObject(new File("test/dataset/viewcount/Golang_FxxkOfvY39c.json"), Videos.class);
+        assert expectedGolangVideoItems != null;
+        Assert.assertEquals(expectedGolangVideoItems.getItems().get(0).getStatistics().getViewCount(), actualGolangViewCountByVideoId);
+
+        CompletionStage<String> noDataCompletionStage = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetViewCountByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<String>) o).join();
+        String actualNoResult = noDataCompletionStage.toCompletableFuture().join();
+        Videos expectedEmptyJson = DatasetHelper.jsonFileToObject(new File("test/dataset/empty.json"), Videos.class);
+        assert Objects.requireNonNull(expectedEmptyJson).getItems() == null;
+        String noData = "No Data";
+        Assert.assertEquals(noData, actualNoResult);
+    }
+
+    /**
+     * This method tests the {@link YoutubeApiClientActor#getSentimentByVideoId(String videoId)} for various videoIds.
+     * @throws ExecutionException for safety
+     * @throws InterruptedException for safety
+     *
+     * @author Rajan Shah
      */
     @Test
     public void testSentimentAnalysis() throws ExecutionException, InterruptedException {
-        CommentResults actualHappyComments = youTubeApiClient.getSentimentByVideoId("X2lIovmNsUY").toCompletableFuture().get();
+        CompletionStage<CommentResults> x2lIovmNsUY = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetSentimentByVideoId("X2lIovmNsUY"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<CommentResults>) o).join();
+        CommentResults actualHappyComments = x2lIovmNsUY.toCompletableFuture().join();
         CommentResults expectedHappyComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/happy_video.json"), CommentResults.class);
         assert expectedHappyComments != null;
         Assert.assertEquals(expectedHappyComments.toString(), actualHappyComments.toString());
 
-        CommentResults actualSadComments = youTubeApiClient.getSentimentByVideoId("iupakooy3pU").toCompletableFuture().get();
+        CompletionStage<CommentResults> iupakooy3pU = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetSentimentByVideoId("iupakooy3pU"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<CommentResults>) o).join();
+        CommentResults actualSadComments = iupakooy3pU.toCompletableFuture().join();
         CommentResults expectedSadComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/sad_video.json"), CommentResults.class);
         assert expectedSadComments != null;
         Assert.assertEquals(expectedSadComments.toString(), actualSadComments.toString());
 
-        CommentResults actualNeutralComments = youTubeApiClient.getSentimentByVideoId("Bi7f1JSSlh8").toCompletableFuture().get();
+        CompletionStage<CommentResults> Bi7f1JSSlh8 = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetSentimentByVideoId("Bi7f1JSSlh8"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<CommentResults>) o).join();
+        CommentResults actualNeutralComments = Bi7f1JSSlh8.toCompletableFuture().join();
         CommentResults expectedNeutralComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/neutral_video.json"), CommentResults.class);
         assert expectedNeutralComments != null;
         Assert.assertEquals(expectedNeutralComments.toString(), actualNeutralComments.toString());
 
-        CommentResults actualNoComments = youTubeApiClient.getSentimentByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5").toCompletableFuture().get();
+        CompletionStage<CommentResults> noCommentsCompletionStage = FutureConverters.toJava(ask(youtubeApiClientActor, new YoutubeApiClientActor.GetSentimentByVideoId("!029 ( 02 _2 (@ 92020** 7&6 ^^5"), 5000))
+                .toCompletableFuture().thenApply(o -> (CompletionStage<CommentResults>) o).join();
+        CommentResults actualNoComments = noCommentsCompletionStage.toCompletableFuture().join();
         CommentResults expectedNoComments = DatasetHelper.jsonFileToObject(new File("test/dataset/comments/zero_comments.json"), CommentResults.class);
         assert expectedNoComments != null;
         assert actualNoComments != null;
@@ -264,15 +311,17 @@ public class YoutubeApiClientTest {
     }
 
     /**
-     * This method destroys resources used by {@link YoutubeAnalyzerTest} for testing.
+     * This method destroys resources used for testing.
      *
-     * @throws Exception
-     * @author Kishan Bhimani
+     * @throws IOException for safety
+     * @author Rajan Shah
      */
     @After
     public void destroy() throws IOException {
         try {
             wsTestClient.close();
+            actorSystem = null;
+            youtubeApiClientActor = null;
         } finally {
             server.stop();
         }
