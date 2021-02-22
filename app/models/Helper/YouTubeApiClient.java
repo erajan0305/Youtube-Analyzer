@@ -20,7 +20,7 @@ import java.util.concurrent.CompletionStage;
  */
 public class YouTubeApiClient implements WSBodyReadables, WSBodyWritables {
     private final WSClient wsClient;
-    private final String API_KEY = "AIzaSyCnECnkJrVZIjtA_1_zvbiBqkHTwfaBDlk";
+    private final String API_KEY = "";
     public String BASE_URL = "https://www.googleapis.com/youtube/v3/";
 
     public YouTubeApiClient(WSClient wsClient) {
